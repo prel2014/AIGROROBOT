@@ -1,0 +1,157 @@
+{
+  "Isaac/Robots/Robotiq/2F-140/Robotiq_2F_140_base.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/Robotiq_2F_140_base.usd",
+    "bytes": 6849,
+    "sha256": "d8c995e05525f5267c4a9cbb61ca7270551f2b47b16fcde71af4e3c3fa2a64fb"
+  },
+  "Isaac/Robots/Robotiq/2F-140/Robotiq_2F_140_physics_edit.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/Robotiq_2F_140_physics_edit.usd",
+    "bytes": 41016,
+    "sha256": "884617da51151359baa8d12f97a9e746ab5ebcccb1018d1217cd4dae98b3119d"
+  },
+  "Isaac/Robots/Robotiq/2F-140/configuration/Robotiq_2F_140_robot.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/configuration/Robotiq_2F_140_robot.usd",
+    "bytes": 3576,
+    "sha256": "1bd2d1d09f9e0cbbae6ceb56e93e879bc140bd4c6a716c6b642b90e54f702353"
+  },
+  "Isaac/Robots/Robotiq/2F-140/materials/materials.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/materials/materials.usd",
+    "bytes": 8262,
+    "sha256": "5dda4c5f38ad7ecbf734e8fc9681f419e6f358cda848d2f524ad3aa683da30ac"
+  },
+  "Isaac/Robots/Robotiq/2F-140/parts/Finger1_JFT.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/parts/Finger1_JFT.usd",
+    "bytes": 16432,
+    "sha256": "e86261753dd9264b43c0d4321ca69e2fe29027e117b6aea2269a4c3e7d81acdc"
+  },
+  "Isaac/Robots/Robotiq/2F-140/parts/Finger2_JFP.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/parts/Finger2_JFP.usd",
+    "bytes": 336533,
+    "sha256": "ee993d6d35c3a6a30d4aa0f51ae5536f162c5494fe45654e259ed37ae6b151a4"
+  },
+  "Isaac/Robots/Robotiq/2F-140/parts/Finger3_JFH.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/parts/Finger3_JFH.usd",
+    "bytes": 183509,
+    "sha256": "9c08ba65173b0a8f40e46a90962cf45b08b3ec3e2c93b94b1085f89ae67ded39"
+  },
+  "Isaac/Robots/Robotiq/2F-140/parts/Finger4_JFL.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/parts/Finger4_JFL.usd",
+    "bytes": 173935,
+    "sha256": "d118ceb30bf7eee70c2c79daef9ff09f611a83287a8d246eeb96a0406eedd186"
+  },
+  "Isaac/Robots/Robotiq/2F-140/parts/Fingertip_JFD.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/parts/Fingertip_JFD.usd",
+    "bytes": 53078,
+    "sha256": "b921ef19658b0e4732e555c954c853b61117240e9fdf6948fea5f0b8a82e1629"
+  },
+  "Isaac/Robots/Robotiq/2F-140/parts/_F_Body_JFX.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-140/parts/_F_Body_JFX.usd",
+    "bytes": 4351738,
+    "sha256": "a4eae6e66d77b87a4dcc8c41a42becdbc0f4e5164bc696950dd40c887b9d65f0"
+  },
+  "Isaac/Robots/Robotiq/2F-85/Robotiq_2F_85_edit.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/Robotiq_2F_85_edit.usd",
+    "bytes": 7691,
+    "sha256": "3b69fbb560dba20a77d09dcf845bedfbc2b6b1cfda9de10f8e3b22fd6ca97d43"
+  },
+  "Isaac/Robots/Robotiq/2F-85/configuration/Robotiq_2F_85_robot.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/configuration/Robotiq_2F_85_robot.usd",
+    "bytes": 4123,
+    "sha256": "905a0e1326ed57e6c5925072ee778ce9ad71bfc662ac787d45c48a12fa207269"
+  },
+  "Isaac/Robots/Robotiq/2F-85/materials/materials.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/materials/materials.usd",
+    "bytes": 10361,
+    "sha256": "58537bfe12667e0dd30903e9adb7ea1d48f7843620162e3aa0ab9a59b6180545"
+  },
+  "Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_Finger1step_JFT.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_Finger1step_JFT.usd",
+    "bytes": 77992,
+    "sha256": "446419dcab650d66482157f7c009a058a269d3f112549b5f3774cbbaf52f4f33"
+  },
+  "Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_basestep_JFX.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_basestep_JFX.usd",
+    "bytes": 3373227,
+    "sha256": "65ab3ec6f3d5b02fda2ab408d3a42e8857ca5cb157d8e3f2d00451d89369d531"
+  },
+  "Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_finger2step_JFP.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_finger2step_JFP.usd",
+    "bytes": 230153,
+    "sha256": "5c71d8ea3eef8f985092eb75f74124d299960531f0518047d33187e015cc50cb"
+  },
+  "Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_finger3step_JFL.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_finger3step_JFL.usd",
+    "bytes": 143687,
+    "sha256": "88e81d87b4802684c2b035d72a01ff181b8b8df64c01854891c2feec1ffc5a4d"
+  },
+  "Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_finger4step_JFH.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_finger4step_JFH.usd",
+    "bytes": 135710,
+    "sha256": "65353dd1e6179373a26762fc005c6fb43f65142ccc8707f9a09bb2e0131805e5"
+  },
+  "Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_fingertipsstep_JFD.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/parts/Defeatured_2F_85_PAD_OPEN_fingertipsstep_JFD.usd",
+    "bytes": 43102,
+    "sha256": "8a291a7b7a8ba6a2e1762e7d4bb937828c99f929edd8f82fdbd1cb9f1b51da18"
+  },
+  "Isaac/Robots/Robotiq/2F-85/payloads/Robotiq_2F_85_base.usda": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/payloads/Robotiq_2F_85_base.usda",
+    "bytes": 22063,
+    "sha256": "bc05efd5965c09a64e286ebbb202e1681f57971823906c682495233f7fb33e67"
+  },
+  "Isaac/Robots/Robotiq/2F-85/payloads/Robotiq_2F_85_phyisics_loop.usda": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/payloads/Robotiq_2F_85_phyisics_loop.usda",
+    "bytes": 19966,
+    "sha256": "dfda251fceb523e98f224568cf1c2c595a45d79a359b004249844fd2ef01f2a9"
+  },
+  "Isaac/Robots/Robotiq/2F-85/payloads/Robotiq_2F_85_phyisics_mimic.usda": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/Robotiq/2F-85/payloads/Robotiq_2F_85_phyisics_mimic.usda",
+    "bytes": 21833,
+    "sha256": "1b9625826ff31675b15c5ac117e81c69ebe5e3364efd1b9fa6d40f9dcbaac386"
+  },
+  "Isaac/Robots/ShadowRobot/ShadowHand/configuration/shadow_hand_robot_schema.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/ShadowRobot/ShadowHand/configuration/shadow_hand_robot_schema.usd",
+    "bytes": 3605,
+    "sha256": "56cdb56d77b00d58225c05ba798250723510713f75262e1d20f7ad39cc1b5100"
+  },
+  "Isaac/Robots/ShadowRobot/ShadowHand/shadow_hand.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/ShadowRobot/ShadowHand/shadow_hand.usd",
+    "bytes": 2486083,
+    "sha256": "0c739409491fba323a65f0c7786d8254516a182a442cab315faf071e553dd2c4"
+  },
+  "Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_Gripper_2F_140.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_Gripper_2F_140.usd",
+    "bytes": 9953,
+    "sha256": "b3494503c007334781279744718d6015c77525e23b5ed9d56ca6253396eedada"
+  },
+  "Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_Gripper_2F_85.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_Gripper_2F_85.usd",
+    "bytes": 12115,
+    "sha256": "acdc8ac02a715590e579d866956e814688c1dc24d82e66d8c94fee739124a0f4"
+  },
+  "Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_base.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_base.usd",
+    "bytes": 71673458,
+    "sha256": "181e9d42cbb4e448e0c0ec70e4dabcec30654839ce6077c8fcd090fa00fdd696"
+  },
+  "Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_physics.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_physics.usd",
+    "bytes": 8367,
+    "sha256": "792f3a0ae043c3060b06aced76b7dc2c39cd3cc4b73018d8a9b2a3b24228c497"
+  },
+  "Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_robot.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_robot.usd",
+    "bytes": 3536,
+    "sha256": "061c091b5fae9578a7180a7a35ee04829d5007cd6670a7f001ea2c7454c035d8"
+  },
+  "Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_sensor.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/UniversalRobots/ur10e/configuration/ur10e_sensor.usd",
+    "bytes": 602,
+    "sha256": "3d589a64b5a80d8fe923fd29ca1cba8c9c37468e026ef7f39f37913797c78dfe"
+  },
+  "Isaac/Robots/UniversalRobots/ur10e/ur10e.usd": {
+    "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.2/Isaac/Robots/UniversalRobots/ur10e/ur10e.usd",
+    "bytes": 8654,
+    "sha256": "a4d618c48de9d7384247f7928eb722c4704047cde903bc245c71f3e4b76a4e32"
+  }
+}

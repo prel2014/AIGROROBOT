@@ -1,0 +1,4 @@
+# Offline VLA environment; install only when ready to train.
+# Torch/NumPy/Pillow are inherited from the prepared Isaac Lab environment.
+transformers==5.10.4
+h5py>=3.15.0

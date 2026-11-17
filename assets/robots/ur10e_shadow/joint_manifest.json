@@ -1,0 +1,182 @@
+[
+  {
+    "name": "shoulder_pan_joint",
+    "path": "/Robot/Arm/joints/shoulder_pan_joint",
+    "lower_rad": -6.283185307179586,
+    "upper_rad": 6.283185307179586
+  },
+  {
+    "name": "shoulder_lift_joint",
+    "path": "/Robot/Arm/joints/shoulder_lift_joint",
+    "lower_rad": -6.283185307179586,
+    "upper_rad": 6.283185307179586
+  },
+  {
+    "name": "elbow_joint",
+    "path": "/Robot/Arm/joints/elbow_joint",
+    "lower_rad": -3.141592653589793,
+    "upper_rad": 3.141592653589793
+  },
+  {
+    "name": "wrist_1_joint",
+    "path": "/Robot/Arm/joints/wrist_1_joint",
+    "lower_rad": -6.283185307179586,
+    "upper_rad": 6.283185307179586
+  },
+  {
+    "name": "wrist_2_joint",
+    "path": "/Robot/Arm/joints/wrist_2_joint",
+    "lower_rad": -6.283185307179586,
+    "upper_rad": 6.283185307179586
+  },
+  {
+    "name": "wrist_3_joint",
+    "path": "/Robot/Arm/joints/wrist_3_joint",
+    "lower_rad": -6.283185307179586,
+    "upper_rad": 6.283185307179586
+  },
+  {
+    "name": "robot0_WRJ1",
+    "path": "/Robot/Hand/joints/robot0_WRJ1",
+    "lower_rad": -0.4889999521118846,
+    "upper_rad": 0.1399999983052413
+  },
+  {
+    "name": "robot0_WRJ0",
+    "path": "/Robot/Hand/joints/robot0_WRJ0",
+    "lower_rad": -0.6980000074818274,
+    "upper_rad": 0.4889999521118846
+  },
+  {
+    "name": "robot0_FFJ3",
+    "path": "/Robot/Hand/joints/robot0_FFJ3",
+    "lower_rad": -0.3490000037409137,
+    "upper_rad": 0.3490000037409137
+  },
+  {
+    "name": "robot0_FFJ2",
+    "path": "/Robot/Hand/joints/robot0_FFJ2",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_FFJ1",
+    "path": "/Robot/Hand/joints/robot0_FFJ1",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_FFJ0",
+    "path": "/Robot/Hand/joints/robot0_FFJ0",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_MFJ3",
+    "path": "/Robot/Hand/joints/robot0_MFJ3",
+    "lower_rad": -0.3490000037409137,
+    "upper_rad": 0.3490000037409137
+  },
+  {
+    "name": "robot0_MFJ2",
+    "path": "/Robot/Hand/joints/robot0_MFJ2",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_MFJ1",
+    "path": "/Robot/Hand/joints/robot0_MFJ1",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_MFJ0",
+    "path": "/Robot/Hand/joints/robot0_MFJ0",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_RFJ3",
+    "path": "/Robot/Hand/joints/robot0_RFJ3",
+    "lower_rad": -0.3490000037409137,
+    "upper_rad": 0.3490000037409137
+  },
+  {
+    "name": "robot0_RFJ2",
+    "path": "/Robot/Hand/joints/robot0_RFJ2",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_RFJ1",
+    "path": "/Robot/Hand/joints/robot0_RFJ1",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_RFJ0",
+    "path": "/Robot/Hand/joints/robot0_RFJ0",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_LFJ4",
+    "path": "/Robot/Hand/joints/robot0_LFJ4",
+    "lower_rad": 0.0,
+    "upper_rad": 0.7850000208144815
+  },
+  {
+    "name": "robot0_LFJ3",
+    "path": "/Robot/Hand/joints/robot0_LFJ3",
+    "lower_rad": -0.3490000037409137,
+    "upper_rad": 0.3490000037409137
+  },
+  {
+    "name": "robot0_LFJ2",
+    "path": "/Robot/Hand/joints/robot0_LFJ2",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_LFJ1",
+    "path": "/Robot/Hand/joints/robot0_LFJ1",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_LFJ0",
+    "path": "/Robot/Hand/joints/robot0_LFJ0",
+    "lower_rad": 0.0,
+    "upper_rad": 1.5709999254602331
+  },
+  {
+    "name": "robot0_THJ4",
+    "path": "/Robot/Hand/joints/robot0_THJ4",
+    "lower_rad": -1.0470000112227411,
+    "upper_rad": 1.0470000112227411
+  },
+  {
+    "name": "robot0_THJ3",
+    "path": "/Robot/Hand/joints/robot0_THJ3",
+    "lower_rad": 0.0,
+    "upper_rad": 1.2219999882983468
+  },
+  {
+    "name": "robot0_THJ2",
+    "path": "/Robot/Hand/joints/robot0_THJ2",
+    "lower_rad": -0.2090000054356724,
+    "upper_rad": 0.2090000054356724
+  },
+  {
+    "name": "robot0_THJ1",
+    "path": "/Robot/Hand/joints/robot0_THJ1",
+    "lower_rad": -0.5239999808165193,
+    "upper_rad": 0.5239999808165193
+  },
+  {
+    "name": "robot0_THJ0",
+    "path": "/Robot/Hand/joints/robot0_THJ0",
+    "lower_rad": -1.5709999254602331,
+    "upper_rad": 0.0
+  }
+]

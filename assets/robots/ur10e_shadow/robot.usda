@@ -1,0 +1,365 @@
+#usda 1.0
+(
+    defaultPrim = "Robot"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Robot" (
+    customData = {
+        dictionary project = {
+            string handControl = "angular drives with software finger synergies"
+            string mountAssumption = "flange and hand mount aligned; zero spacer"
+        }
+    }
+)
+{
+    def Xform "Arm" (
+        prepend references = @../../vendor/Isaac/Robots/UniversalRobots/ur10e/ur10e.usd@
+    )
+    {
+        over "joints"
+        {
+            over "ee_joint" (
+                active = false
+            )
+            {
+            }
+        }
+
+        over "wrist_3_link" (
+            prepend apiSchemas = ["PhysicsFilteredPairsAPI"]
+        )
+        {
+            rel physics:filteredPairs = [
+                </Robot/Hand/robot0_hand_mount>,
+                </Robot/Hand/robot0_forearm>,
+            ]
+        }
+    }
+
+    def Xform "Hand" (
+        delete apiSchemas = ["PhysicsArticulationRootAPI"]
+        prepend references = @../../vendor/Isaac/Robots/ShadowRobot/ShadowHand/shadow_hand.usd@
+    )
+    {
+        matrix4d xformOp:transform = ( (0.9999998998569208, 1.28942578594374e-13, -0.0000024477587169024766, 0), (8.996782240195902e-12, -0.9999999499233896, 0.0000036746987416724575, 0), (-0.0000024477587125086702, -0.0000035745586576174268, -0.9999999499203936, 0), (1.1842499971389762, 0.29070007801055914, 0.06084999999999942, 1.0000000000000002) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+
+        over "joints"
+        {
+            over "rootJoint" (
+                active = false
+            )
+            {
+            }
+
+            over "robot0_WRJ1" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_WRJ0" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_FFJ3" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_FFJ2" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_FFJ1" (
+                delete apiSchemas = ["PhysxTendonAxisRootAPI:robot0_T_FFJ1c"]
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_FFJ0" (
+                delete apiSchemas = ["PhysxTendonAxisAPI:robot0_T_FFJ1c"]
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_MFJ3" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_MFJ2" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_MFJ1" (
+                delete apiSchemas = ["PhysxTendonAxisRootAPI:robot0_T_MFJ1c"]
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_MFJ0" (
+                delete apiSchemas = ["PhysxTendonAxisAPI:robot0_T_MFJ1c"]
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_RFJ3" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_RFJ2" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_RFJ1" (
+                delete apiSchemas = ["PhysxTendonAxisRootAPI:robot0_T_RFJ1c"]
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_RFJ0" (
+                delete apiSchemas = ["PhysxTendonAxisAPI:robot0_T_RFJ1c"]
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_LFJ4" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_LFJ3" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_LFJ2" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_LFJ1" (
+                delete apiSchemas = ["PhysxTendonAxisRootAPI:robot0_T_LFJ1c"]
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_LFJ0" (
+                delete apiSchemas = ["PhysxTendonAxisAPI:robot0_T_LFJ1c"]
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_THJ4" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_THJ3" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_THJ2" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_THJ1" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+
+            over "robot0_THJ0" (
+                prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+            )
+            {
+                float drive:angular:physics:damping = 0.15
+                float drive:angular:physics:maxForce = 2
+                float drive:angular:physics:stiffness = 2
+                float drive:angular:physics:targetPosition = 0
+                float drive:angular:physics:targetVelocity = 0
+                uniform token drive:angular:physics:type = "force"
+            }
+        }
+    }
+
+    def PhysicsFixedJoint "hand_attachment"
+    {
+        rel physics:body0 = </Robot/Arm/wrist_3_link>
+        rel physics:body1 = </Robot/Hand/robot0_hand_mount>
+        bool physics:collisionEnabled = 0
+        point3f physics:localPos0 = (0, 1.3029575e-8, 0)
+        point3f physics:localPos1 = (0, 0, 0)
+        quatf physics:localRot0 = (1, 0, 0, 0)
+        quatf physics:localRot1 = (1, 0, 0, 0)
+    }
+}

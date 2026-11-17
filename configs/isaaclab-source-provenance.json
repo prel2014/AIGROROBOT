@@ -1,0 +1,184 @@
+{
+  "sha": "44044b0963001962abe5701133427e37b003fffe",
+  "node_id": "C_kwDOIcxRJNoAKDQ0MDQ0YjA5NjMwMDE5NjJhYmU1NzAxMTMzNDI3ZTM3YjAwM2ZmZmU",
+  "commit": {
+    "author": {
+      "name": "isaaclab-bot[bot]",
+      "email": "282401363+isaaclab-bot[bot]@users.noreply.github.com",
+      "date": "2026-10-28T05:09:09Z"
+    },
+    "committer": {
+      "name": "isaaclab-bot[bot]",
+      "email": "282401363+isaaclab-bot[bot]@users.noreply.github.com",
+      "date": "2026-10-28T05:09:09Z"
+    },
+    "message": "[CI][Auto Version Bump] Compile changelog fragments (schedule)\n\nBumped packages:\n- isaaclab_ov: 5.1.5 → 5.1.6\n- isaaclab_physx: 8.0.1 → 8.0.2",
+    "tree": {
+      "sha": "ccb0964e0b977c830c1a72a0fe861d94e3d81c96",
+      "url": "https://api.github.com/repos/isaac-sim/IsaacLab/git/trees/ccb0964e0b977c830c1a72a0fe861d94e3d81c96"
+    },
+    "url": "https://api.github.com/repos/isaac-sim/IsaacLab/git/commits/44044b0963001962abe5701133427e37b003fffe",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/isaac-sim/IsaacLab/commits/44044b0963001962abe5701133427e37b003fffe",
+  "html_url": "https://github.com/isaac-sim/IsaacLab/commit/44044b0963001962abe5701133427e37b003fffe",
+  "comments_url": "https://api.github.com/repos/isaac-sim/IsaacLab/commits/44044b0963001962abe5701133427e37b003fffe/comments",
+  "author": {
+    "login": "isaaclab-bot[bot]",
+    "id": 282401363,
+    "node_id": "BOT_kgDOENUaUw",
+    "avatar_url": "https://avatars.githubusercontent.com/u/157846462?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D",
+    "html_url": "https://github.com/apps/isaaclab-bot",
+    "followers_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/followers",
+    "following_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/following{/other_user}",
+    "gists_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/subscriptions",
+    "organizations_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/orgs",
+    "repos_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/repos",
+    "events_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/received_events",
+    "type": "Bot",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "isaaclab-bot[bot]",
+    "id": 282401363,
+    "node_id": "BOT_kgDOENUaUw",
+    "avatar_url": "https://avatars.githubusercontent.com/u/157846462?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D",
+    "html_url": "https://github.com/apps/isaaclab-bot",
+    "followers_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/followers",
+    "following_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/following{/other_user}",
+    "gists_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/subscriptions",
+    "organizations_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/orgs",
+    "repos_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/repos",
+    "events_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/isaaclab-bot%5Bbot%5D/received_events",
+    "type": "Bot",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "270a8c1d4a26181adf2c5bd2fc9a3c649f17a294",
+      "url": "https://api.github.com/repos/isaac-sim/IsaacLab/commits/270a8c1d4a26181adf2c5bd2fc9a3c649f17a294",
+      "html_url": "https://github.com/isaac-sim/IsaacLab/commit/270a8c1d4a26181adf2c5bd2fc9a3c649f17a294"
+    }
+  ],
+  "stats": {
+    "total": 34,
+    "additions": 25,
+    "deletions": 9
+  },
+  "files": [
+    {
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "filename": "source/isaaclab/changelog.d/fix-physx-joint-friction-float-release-3-0-0.skip",
+      "status": "removed",
+      "additions": 0,
+      "deletions": 0,
+      "changes": 0,
+      "blob_url": "https://github.com/isaac-sim/IsaacLab/blob/270a8c1d4a26181adf2c5bd2fc9a3c649f17a294/source%2Fisaaclab%2Fchangelog.d%2Ffix-physx-joint-friction-float-release-3-0-0.skip",
+      "raw_url": "https://github.com/isaac-sim/IsaacLab/raw/270a8c1d4a26181adf2c5bd2fc9a3c649f17a294/source%2Fisaaclab%2Fchangelog.d%2Ffix-physx-joint-friction-float-release-3-0-0.skip",
+      "contents_url": "https://api.github.com/repos/isaac-sim/IsaacLab/contents/source%2Fisaaclab%2Fchangelog.d%2Ffix-physx-joint-friction-float-release-3-0-0.skip?ref=270a8c1d4a26181adf2c5bd2fc9a3c649f17a294"
+    },
+    {
+      "sha": "79339b7183a6178ababce9cefbb2f4f7c1aa99f9",
+      "filename": "source/isaaclab_ov/changelog.d/fix-joint-friction-scalar-dispatch-release-3-0-0.fixed.rst",
+      "status": "removed",
+      "additions": 0,
+      "deletions": 2,
+      "changes": 2,
+      "blob_url": "https://github.com/isaac-sim/IsaacLab/blob/270a8c1d4a26181adf2c5bd2fc9a3c649f17a294/source%2Fisaaclab_ov%2Fchangelog.d%2Ffix-joint-friction-scalar-dispatch-release-3-0-0.fixed.rst",
+      "raw_url": "https://github.com/isaac-sim/IsaacLab/raw/270a8c1d4a26181adf2c5bd2fc9a3c649f17a294/source%2Fisaaclab_ov%2Fchangelog.d%2Ffix-joint-friction-scalar-dispatch-release-3-0-0.fixed.rst",
+      "contents_url": "https://api.github.com/repos/isaac-sim/IsaacLab/contents/source%2Fisaaclab_ov%2Fchangelog.d%2Ffix-joint-friction-scalar-dispatch-release-3-0-0.fixed.rst?ref=270a8c1d4a26181adf2c5bd2fc9a3c649f17a294",
+      "patch": "@@ -1,2 +0,0 @@\n-* Fixed joint friction writers to broadcast scalar coefficients directly in the fused Warp kernels,\n-  including integer zero, without allocating expanded input tensors."
+    },
+    {
+      "sha": "366eeae422b05e39e6c5b2c772af59b6750d3bdb",
+      "filename": "source/isaaclab_ov/docs/CHANGELOG.rst",
+      "status": "modified",
+      "additions": 10,
+      "deletions": 0,
+      "changes": 10,
+      "blob_url": "https://github.com/isaac-sim/IsaacLab/blob/44044b0963001962abe5701133427e37b003fffe/source%2Fisaaclab_ov%2Fdocs%2FCHANGELOG.rst",
+      "raw_url": "https://github.com/isaac-sim/IsaacLab/raw/44044b0963001962abe5701133427e37b003fffe/source%2Fisaaclab_ov%2Fdocs%2FCHANGELOG.rst",
+      "contents_url": "https://api.github.com/repos/isaac-sim/IsaacLab/contents/source%2Fisaaclab_ov%2Fdocs%2FCHANGELOG.rst?ref=44044b0963001962abe5701133427e37b003fffe",
+      "patch": "@@ -3,6 +3,16 @@ Changelog\n \n .. towncrier release notes start\n \n+5.1.6 (2026-10-28)\n+~~~~~~~~~~~~~~~~~~\n+\n+Fixed\n+^^^^^\n+\n+* Fixed joint friction writers to broadcast scalar coefficients directly in the fused Warp kernels,\n+  including integer zero, without allocating expanded input tensors.\n+\n+\n 5.1.5 (2026-10-13)\n ~~~~~~~~~~~~~~~~~~\n "
+    },
+    {
+      "sha": "cd239ff329834c7552e7bc32d74a9d1611111b18",
+      "filename": "source/isaaclab_ov/pyproject.toml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/isaac-sim/IsaacLab/blob/44044b0963001962abe5701133427e37b003fffe/source%2Fisaaclab_ov%2Fpyproject.toml",
+      "raw_url": "https://github.com/isaac-sim/IsaacLab/raw/44044b0963001962abe5701133427e37b003fffe/source%2Fisaaclab_ov%2Fpyproject.toml",
+      "contents_url": "https://api.github.com/repos/isaac-sim/IsaacLab/contents/source%2Fisaaclab_ov%2Fpyproject.toml?ref=44044b0963001962abe5701133427e37b003fffe",
+      "patch": "@@ -9,7 +9,7 @@ build-backend = \"setuptools.build_meta\"\n \n [project]\n name = \"isaaclab_ov\"\n-version = \"5.1.5\"\n+version = \"5.1.6\"\n description = \"Extension providing Omniverse rendering and OVPhysX simulation integrations.\"\n license = {text = \"BSD-3-Clause\"}\n authors = [{name = \"Isaac Lab Project Developers\"}]"
+    },
+    {
+      "sha": "668291404bb1656a09d120031166672a5a2c039f",
+      "filename": "source/isaaclab_physx/changelog.d/fix-physx-joint-friction-float-release-3-0-0.fixed.rst",
+      "status": "removed",
+      "additions": 0,
+      "deletions": 3,
+      "changes": 3,
+      "blob_url": "https://github.com/isaac-sim/IsaacLab/blob/270a8c1d4a26181adf2c5bd2fc9a3c649f17a294/source%2Fisaaclab_physx%2Fchangelog.d%2Ffix-physx-joint-friction-float-release-3-0-0.fixed.rst",
+      "raw_url": "https://github.com/isaac-sim/IsaacLab/raw/270a8c1d4a26181adf2c5bd2fc9a3c649f17a294/source%2Fisaaclab_physx%2Fchangelog.d%2Ffix-physx-joint-friction-float-release-3-0-0.fixed.rst",
+      "contents_url": "https://api.github.com/repos/isaac-sim/IsaacLab/contents/source%2Fisaaclab_physx%2Fchangelog.d%2Ffix-physx-joint-friction-float-release-3-0-0.fixed.rst?ref=270a8c1d4a26181adf2c5bd2fc9a3c649f17a294",
+      "patch": "@@ -1,3 +0,0 @@\n-* Fixed :meth:`~isaaclab_physx.assets.Articulation.write_joint_friction_coefficient_to_sim_index`\n-  and its mask variant to broadcast scalar coefficients directly in the fused Warp kernel, including integer zero,\n-  without allocating expanded input arrays."
+    },
+    {
+      "sha": "41f6039dfad5631a16af844952e32f4103cf755a",
+      "filename": "source/isaaclab_physx/docs/CHANGELOG.rst",
+      "status": "modified",
+      "additions": 11,
+      "deletions": 0,
+      "changes": 11,
+      "blob_url": "https://github.com/isaac-sim/IsaacLab/blob/44044b0963001962abe5701133427e37b003fffe/source%2Fisaaclab_physx%2Fdocs%2FCHANGELOG.rst",
+      "raw_url": "https://github.com/isaac-sim/IsaacLab/raw/44044b0963001962abe5701133427e37b003fffe/source%2Fisaaclab_physx%2Fdocs%2FCHANGELOG.rst",
+      "contents_url": "https://api.github.com/repos/isaac-sim/IsaacLab/contents/source%2Fisaaclab_physx%2Fdocs%2FCHANGELOG.rst?ref=44044b0963001962abe5701133427e37b003fffe",
+      "patch": "@@ -3,6 +3,17 @@ Changelog\n \n .. towncrier release notes start\n \n+8.0.2 (2026-10-28)\n+~~~~~~~~~~~~~~~~~~\n+\n+Fixed\n+^^^^^\n+\n+* Fixed :meth:`~isaaclab_physx.assets.Articulation.write_joint_friction_coefficient_to_sim_index`\n+  and its mask variant to broadcast scalar coefficients directly in the fused Warp kernel, including integer zero,\n+  without allocating expanded input arrays.\n+\n+\n 8.0.1 (2026-10-27)\n ~~~~~~~~~~~~~~~~~~\n "
+    },
+    {
+      "sha": "bd2a63dd01ef3ef191919c818c30796b459bb21c",
+      "filename": "source/isaaclab_physx/pyproject.toml",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/isaac-sim/IsaacLab/blob/44044b0963001962abe5701133427e37b003fffe/source%2Fisaaclab_physx%2Fpyproject.toml",
+      "raw_url": "https://github.com/isaac-sim/IsaacLab/raw/44044b0963001962abe5701133427e37b003fffe/source%2Fisaaclab_physx%2Fpyproject.toml",
+      "contents_url": "https://api.github.com/repos/isaac-sim/IsaacLab/contents/source%2Fisaaclab_physx%2Fpyproject.toml?ref=44044b0963001962abe5701133427e37b003fffe",
+      "patch": "@@ -9,7 +9,7 @@ build-backend = \"setuptools.build_meta\"\n \n [project]\n name = \"isaaclab_physx\"\n-version = \"8.0.1\"\n+version = \"8.0.2\"\n description = \"Extension providing IsaacLab with PhysX specific abstractions.\"\n license = {text = \"BSD-3-Clause\"}\n authors = [{name = \"Isaac Lab Project Developers\"}]"
+    },
+    {
+      "sha": "c788415fd1cb3af91a6f4eeff37369bd79f6f033",
+      "filename": "uv.lock",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 2,
+      "changes": 4,
+      "blob_url": "https://github.com/isaac-sim/IsaacLab/blob/44044b0963001962abe5701133427e37b003fffe/uv.lock",
+      "raw_url": "https://github.com/isaac-sim/IsaacLab/raw/44044b0963001962abe5701133427e37b003fffe/uv.lock",
+      "contents_url": "https://api.github.com/repos/isaac-sim/IsaacLab/contents/uv.lock?ref=44044b0963001962abe5701133427e37b003fffe",
+      "patch": "@@ -2165,7 +2165,7 @@ requires-dist = [{ name = \"isaaclab\", editable = \"source/isaaclab\" }]\n \n [[package]]\n name = \"isaaclab-ov\"\n-version = \"5.1.5\"\n+version = \"5.1.6\"\n source = { editable = \"source/isaaclab_ov\" }\n dependencies = [\n     { name = \"isaaclab\" },\n@@ -2180,7 +2180,7 @@ requires-dist = [\n \n [[package]]\n name = \"isaaclab-physx\"\n-version = \"8.0.1\"\n+version = \"8.0.2\"\n source = { editable = \"source/isaaclab_physx\" }\n dependencies = [\n     { name = \"isaaclab\" },"
+    }
+  ]
+}

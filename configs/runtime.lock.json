@@ -1,0 +1,17 @@
+{
+  "isaac_sim": "6.2.0",
+  "isaac_lab_branch": "release/3.0.0",
+  "isaac_lab_commit": "44044b0963001962abe5701133427e37b003fffe",
+  "isaac_lab_repository": "https://github.com/isaac-sim/IsaacLab",
+  "python": "3.12 (bundled Isaac Sim)",
+  "physics": "isaacsim_physx",
+  "rsl_rl": "5.5.1 (pinned by Isaac Lab)",
+  "quaternion_order": "xyzw",
+  "policy_actions": 26,
+  "physical_revolute_joints": 30,
+  "state_policy_observations": 95,
+  "control_hz": 30,
+  "physics_hz": 120,
+  "camera_resolution": [224, 224],
+  "scope": "Runtime/control specification. Execution evidence is stored separately in docs/*validation.json."
+}

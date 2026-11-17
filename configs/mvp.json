@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "task": "Dexman-UR10e-Shadow-Lift-v1",
+  "target_lift_m": 0.15,
+  "reset": "calibrated_pregrasp",
+  "training_seed": 42,
+  "teacher_bootstrap_updates": 600,
+  "teacher_bootstrap_batch_size": 512,
+  "teacher_bootstrap_learning_rate": 0.0005,
+  "collection_seed": 2026,
+  "correction_seed": 4242,
+  "split_seed": 42,
+  "evaluation_seeds": [1001, 1002, 1003],
+  "episodes_per_seed": 200,
+  "min_success_rate": 0.9,
+  "student_sequence_length": 16,
+  "interpretation": "Acceptance target, not an achieved training result. Language is fixed for the lift MVP."
+}

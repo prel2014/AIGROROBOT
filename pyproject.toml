@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dexterous-manipulation"
+version = "0.1.0"
+description = "UR10e + five-finger Shadow Hand: RL and visual-language-action data"
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy>=2", "h5py>=3.15", "gymnasium>=1.2", "torch>=2.11", "pillow>=12.3", "pyyaml>=6"]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.9"]
+visual = ["transformers==5.10.4"]
+
+[project.scripts]
+dexman-doctor = "dexman.cli.doctor:main"
+dexman-dataset = "dexman.cli.dataset:main"
+dexman-evaluate = "dexman.cli.evaluate:main"
+dexman-corrections = "dexman.cli.collect_corrections:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
