@@ -39,7 +39,7 @@ def main():
         if not 0 <= args.frame < len(episode["action"]):
             parser.error("frame outside episode")
         joint_angles, memory = predictor.predict(
-            episode["rgb"][args.frame], args.instruction or episode.attrs["instruction"],
+            np.stack((episode["rgb"][args.frame], episode["rgb_secondary"][args.frame])), args.instruction or episode.attrs["instruction"],
             episode["qpos"][args.frame], episode["qvel"][args.frame], memory)
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("xb") as stream:

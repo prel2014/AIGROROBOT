@@ -28,6 +28,15 @@ def inspect_episode(path):
         rgb = episode["rgb"]
         if rgb.ndim != 4 or rgb.shape[0] != length or rgb.shape[-1] != 3 or rgb.dtype != np.uint8:
             raise ValueError("Expected uint8 RGB [T,H,W,3]")
+        if "rgb_secondary" not in episode or episode["rgb_secondary"].shape != rgb.shape or episode["rgb_secondary"].dtype != np.uint8:
+            raise ValueError("Expected synchronized uint8 secondary RGB with identical shape")
+        for key in ("depth_m", "depth_secondary_m"):
+            if key not in episode or episode[key].shape != (*rgb.shape[:3], 1):
+                raise ValueError(f"Expected aligned metric depth [T,H,W,1]: {key}")
+            for start in range(0, length, 256):
+                values = episode[key][start:start+256]
+                if not np.isfinite(values).all() or (values < 0).any():
+                    raise ValueError(f"Invalid metric depth: {key}")
         forces = episode.get("fingertip_normal_force_w_n")
         if forces is not None or "fingertip_contact_names" in metadata:
             if (metadata.get("fingertip_contact_names") != list(FINGERTIPS)

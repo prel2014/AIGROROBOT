@@ -1,3 +1,5 @@
+> Estado actual: VLA v5 con dos vistas y criterio de contacto v4; recapturar datos y entrenar desde cero. Ver [README](../README.md) y [escenarios](../assets/procedural/README.md).
+
 # MVP teacher → estudiante visual
 
 La primera entrega resuelve elevación de un cubo de 5 cm con UR10e + Shadow en simulación.
@@ -29,7 +31,7 @@ con `configs/vla-requirements.txt`, usando las restricciones del runtime.
   -StartLiftCm 15 -ExplorationStdScale 0.5 -Headless -RunName teacher01
 ```
 
-En modo ventana, cada réplica tiene una cámara RGB-D simulada con carcasa y soporte.
+En modo ventana, cada réplica tiene dos cámaras RGB-D simulada con carcasa y soporte.
 El panel **Cámara RGB-D del teacher** muestra la imagen, la profundidad en metros y
 la orden fija de la tarea. Actor y crítico PPO usan Transformers de estado, con tres bloques,
 ancho 128 y cuatro cabezas. Reciben las observaciones de estado; las imágenes no entran a PPO.
@@ -174,7 +176,7 @@ o cambiar de instrucción. Por defecto se replantea tras cada acción.
 `best.pt` se selecciona por pérdida de validación; demostrar destreza requiere rollouts físicos.
 La salida conserva 30 juntas independientes, pero el teacher de 26 mandos proporciona cuatro
 sinergias: estos datos no acreditan aprendizaje de movimientos independientes de esas falanges.
-Los checkpoints VLA v4 guardan también el contrato de tokens y la arquitectura completa.
+Los checkpoints VLA v5 guardan también el contrato de tokens y la arquitectura completa.
 Para control en lazo cerrado, `ChunkController` conserva la memoria por réplica.
 
 `last.pt` guarda Transformer, AdamW, épocas completas, mejor pérdida, historial y estados
@@ -186,8 +188,7 @@ y la ventana de gráfica de pérdidas; el entrenamiento del estudiante es por im
 La memoria de una trayectoria física no se guarda como memoria de entrenamiento: cada nueva
 secuencia empieza con cero. No se retoma una época interrumpida a mitad.
 
-Los checkpoints VLA v3 requieren una corrida v4 nueva; las demostraciones compatibles se pueden
-reutilizar. El warm-start de DAgger admite únicamente estudiantes v4 compatibles y crea un
+Los checkpoints VLA anteriores requieren una corrida v5 nueva y recapturar ambas vistas con contacto medido. El warm-start de DAgger admite únicamente estudiantes v5 compatibles y crea un
 optimizador nuevo. La reanudación completa necesita los nuevos `last.pt` y sus carpetas locales
 `backbone/`, `processor/` y `dataset.json`.
 

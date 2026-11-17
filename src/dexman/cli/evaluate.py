@@ -19,6 +19,8 @@ def main():
     parser.add_argument("--execute-steps", type=int, default=1)
     parser.add_argument("--min-success-rate", type=float, default=.9)
     parser.add_argument("--require-pass", action="store_true", help="Exit nonzero unless every seed meets the target")
+    from dexman.tasks.manipulation.scenarios import add_scenario_argument, configure_scenario
+    add_scenario_argument(parser)
     add_launcher_args(parser)
     args = parser.parse_args()
     if (min(args.num_envs, args.episodes, args.max_steps, args.execute_steps) < 1
@@ -33,6 +35,7 @@ def main():
     from dexman.evaluation.policies import TeacherPolicy, VisualPolicy
     from dexman.evaluation.rollout import evaluate_rollout
     cfg = CorrectedLiftEnvCfg() if args.policy == "teacher" else JointAngleVisualLiftEnvCfg()
+    configure_scenario(cfg, args.scenario)
     cfg.play_mode()
     cfg.scene.num_envs = args.num_envs
     cfg.seed = args.seeds[0]

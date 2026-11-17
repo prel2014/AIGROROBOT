@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from transformers import CLIPProcessor
 
-from dexman.perception.clip import prepare_inputs
+from dexman.perception.clip import prepare_multiview_inputs
 
 from .contract import POLICY_VERSION, validate_architecture_config, validate_contract
 from .model import ActionChunkPolicy
@@ -16,11 +16,11 @@ class VLAPredictor:
         checkpoint = Path(checkpoint)
         saved = torch.load(checkpoint, map_location="cpu", weights_only=True)
         if not isinstance(saved, dict) or saved.get("policy_version") != POLICY_VERSION:
-            raise ValueError("Expected a VLA v4 spatial Transformer checkpoint; legacy policies require new training")
+            raise ValueError("Expected a VLA v5 spatial Transformer checkpoint; legacy policies require new training")
         config = saved.get("config")
         if (not isinstance(config, dict) or type(config.get("horizon")) is not int
                 or config["horizon"] < 1 or "robot_contract" not in config):
-            raise ValueError("VLA v4 checkpoint is missing its horizon or robot contract")
+            raise ValueError("VLA v5 checkpoint is missing its horizon or robot contract")
         architecture = validate_architecture_config(config.get("architecture"), horizon=config["horizon"])
         self.robot_contract = validate_contract(config["robot_contract"])
         normalization = {}
@@ -29,7 +29,7 @@ class VLAPredictor:
             if (not isinstance(value, torch.Tensor) or value.shape != (60,)
                     or not value.is_floating_point() or not torch.isfinite(value).all()
                     or (key == "state_std" and not (value > 0).all())):
-                raise ValueError(f"VLA v4 checkpoint requires finite {key} [60] and positive state_std")
+                raise ValueError(f"VLA v5 checkpoint requires finite {key} [60] and positive state_std")
             normalization[key] = value
         self.device = device
         processor = checkpoint.parent / "processor"
@@ -42,7 +42,7 @@ class VLAPredictor:
         try:
             self.model.head.load_state_dict(saved["head"], strict=True)
         except (KeyError, RuntimeError, TypeError) as error:
-            raise ValueError("Checkpoint weights differ from the declared VLA v4 architecture; new training is required") from error
+            raise ValueError("Checkpoint weights differ from the declared VLA v5 architecture; new training is required") from error
         self.model.state_mean.copy_(normalization["state_mean"])
         self.model.state_std.copy_(normalization["state_std"])
         self.model.to(device).eval()
@@ -67,7 +67,7 @@ class VLAPredictor:
         memory = np.zeros(memory_shape, dtype=np.float32) if memory is None else np.asarray(memory, dtype=np.float32)
         if memory.shape != memory_shape or not np.isfinite(memory).all():
             raise ValueError(f"Expected finite memory with shape {memory_shape}")
-        inputs = prepare_inputs(self.processor, images, instructions, self.device)
+        inputs = prepare_multiview_inputs(self.processor, images, instructions, self.device)
         state = torch.as_tensor(np.concatenate((qpos, qvel), axis=-1), dtype=torch.float32, device=self.device)
         memory_tensor = torch.as_tensor(memory, device=self.device)
         encoded = self.model.encode(**inputs)

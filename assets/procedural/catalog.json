@@ -1,0 +1,2144 @@
+[
+  {
+    "name": "clear_bench",
+    "label": "cubo rojo",
+    "shape": "box",
+    "dimensions": [
+      0.05,
+      0.05,
+      0.05
+    ],
+    "mass": 0.08,
+    "color": [
+      0.85,
+      0.12,
+      0.08
+    ],
+    "table": [
+      0.35,
+      0.35,
+      0.38
+    ],
+    "theme": "Banco despejado: agarre y sostén",
+    "obstacles": [],
+    "destination": [
+      0.15,
+      0.0
+    ],
+    "instructions": [
+      "Selecciona el cubo rojo, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+      "Lleva el cubo rojo 15 cm hacia delante, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+      "Empuja el cubo rojo 5 cm hacia X positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+    ],
+    "trained": false,
+    "task_plans": [
+      {
+        "kind": "lift",
+        "instruction": "Selecciona el cubo rojo, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.775
+            ]
+          },
+          {
+            "name": "hold",
+            "text": "Mantén el agarre estable durante medio segundo.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.775
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "place",
+        "instruction": "Lleva el cubo rojo 15 cm hacia delante, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.775
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.44121589660644533,
+              0.044751524925231934,
+              0.775
+            ]
+          },
+          {
+            "name": "lower",
+            "text": "Baja el objeto hasta apoyarlo en la mesa.",
+            "target": [
+              0.44121589660644533,
+              0.044751524925231934,
+              0.625
+            ]
+          },
+          {
+            "name": "release",
+            "text": "Abre la mano sin desplazar el objeto.",
+            "target": null
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba que está estable en el destino.",
+            "target": [
+              0.44121589660644533,
+              0.044751524925231934,
+              0.625
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "push",
+        "instruction": "Empuja el cubo rojo 5 cm hacia X positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano sin tocar los demás objetos.",
+            "target": null
+          },
+          {
+            "name": "align_push",
+            "text": "Alinea la mano para empujar sobre la mesa.",
+            "target": null
+          },
+          {
+            "name": "slide",
+            "text": "Empuja hacia el siguiente punto libre sin levantar el objeto.",
+            "target": [
+              0.3412158966064453,
+              0.044751524925231934,
+              0.625
+            ]
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba el destino y que el objeto sigue apoyado.",
+            "target": [
+              0.3412158966064453,
+              0.044751524925231934,
+              0.625
+            ]
+          }
+        ],
+        "route_available": true
+      }
+    ],
+    "plan": [
+      {
+        "name": "select",
+        "text": "Identifica el objeto indicado y no muevas los distractores.",
+        "target": null
+      },
+      {
+        "name": "approach",
+        "text": "Acerca la mano al objeto.",
+        "target": null
+      },
+      {
+        "name": "align",
+        "text": "Alinea el pulgar y los dedos en lados opuestos.",
+        "target": null
+      },
+      {
+        "name": "grasp",
+        "text": "Cierra suavemente y verifica contactos opuestos.",
+        "target": null
+      },
+      {
+        "name": "lift",
+        "text": "Eleva el objeto al menos 15 cm.",
+        "target": [
+          0.2912158966064453,
+          0.044751524925231934,
+          0.775
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.44121589660644533,
+          0.044751524925231934,
+          0.775
+        ]
+      },
+      {
+        "name": "lower",
+        "text": "Baja el objeto hasta apoyarlo en la mesa.",
+        "target": [
+          0.44121589660644533,
+          0.044751524925231934,
+          0.625
+        ]
+      },
+      {
+        "name": "release",
+        "text": "Abre la mano sin desplazar el objeto.",
+        "target": null
+      },
+      {
+        "name": "verify",
+        "text": "Comprueba que está estable en el destino.",
+        "target": [
+          0.44121589660644533,
+          0.044751524925231934,
+          0.625
+        ]
+      }
+    ],
+    "route_available": true,
+    "start_xyz": [
+      0.2912158966064453,
+      0.044751524925231934,
+      0.625
+    ],
+    "destination_xyz": [
+      0.44121589660644533,
+      0.044751524925231934,
+      0.625
+    ],
+    "frame": "robot_base_X_forward_Y_left_Z_up",
+    "usd": "assets/procedural/clear_bench.usda",
+    "planner": "teacher_ground_truth_XY_inflated_boxes",
+    "controller_integrated": false
+  },
+  {
+    "name": "color_sort",
+    "label": "caja azul",
+    "shape": "box",
+    "dimensions": [
+      0.045,
+      0.06,
+      0.055
+    ],
+    "mass": 0.1,
+    "color": [
+      0.08,
+      0.25,
+      0.85
+    ],
+    "table": [
+      0.72,
+      0.69,
+      0.61
+    ],
+    "theme": "Selección por color entre distractores",
+    "obstacles": [
+      [
+        0.14,
+        0.28,
+        0.1,
+        0.07,
+        0.2
+      ]
+    ],
+    "destination": [
+      0.0,
+      0.15
+    ],
+    "instructions": [
+      "Selecciona la caja azul, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+      "Lleva la caja azul 15 cm hacia la izquierda, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+      "Empuja la caja azul 10 cm hacia Y positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+    ],
+    "trained": false,
+    "task_plans": [
+      {
+        "kind": "lift",
+        "instruction": "Selecciona la caja azul, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.7775
+            ]
+          },
+          {
+            "name": "hold",
+            "text": "Mantén el agarre estable durante medio segundo.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.7775
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "place",
+        "instruction": "Lleva la caja azul 15 cm hacia la izquierda, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.7775
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.2912158966064453,
+              0.19475152492523193,
+              0.7775
+            ]
+          },
+          {
+            "name": "lower",
+            "text": "Baja el objeto hasta apoyarlo en la mesa.",
+            "target": [
+              0.2912158966064453,
+              0.19475152492523193,
+              0.6275
+            ]
+          },
+          {
+            "name": "release",
+            "text": "Abre la mano sin desplazar el objeto.",
+            "target": null
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba que está estable en el destino.",
+            "target": [
+              0.2912158966064453,
+              0.19475152492523193,
+              0.6275
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "push",
+        "instruction": "Empuja la caja azul 10 cm hacia Y positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano sin tocar los demás objetos.",
+            "target": null
+          },
+          {
+            "name": "align_push",
+            "text": "Alinea la mano para empujar sobre la mesa.",
+            "target": null
+          },
+          {
+            "name": "slide",
+            "text": "Empuja hacia el siguiente punto libre sin levantar el objeto.",
+            "target": [
+              0.2912158966064453,
+              0.14475152492523194,
+              0.6275
+            ]
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba el destino y que el objeto sigue apoyado.",
+            "target": [
+              0.2912158966064453,
+              0.14475152492523194,
+              0.6275
+            ]
+          }
+        ],
+        "route_available": true
+      }
+    ],
+    "plan": [
+      {
+        "name": "select",
+        "text": "Identifica el objeto indicado y no muevas los distractores.",
+        "target": null
+      },
+      {
+        "name": "approach",
+        "text": "Acerca la mano al objeto.",
+        "target": null
+      },
+      {
+        "name": "align",
+        "text": "Alinea el pulgar y los dedos en lados opuestos.",
+        "target": null
+      },
+      {
+        "name": "grasp",
+        "text": "Cierra suavemente y verifica contactos opuestos.",
+        "target": null
+      },
+      {
+        "name": "lift",
+        "text": "Eleva el objeto al menos 15 cm.",
+        "target": [
+          0.2912158966064453,
+          0.044751524925231934,
+          0.7775
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.2912158966064453,
+          0.19475152492523193,
+          0.7775
+        ]
+      },
+      {
+        "name": "lower",
+        "text": "Baja el objeto hasta apoyarlo en la mesa.",
+        "target": [
+          0.2912158966064453,
+          0.19475152492523193,
+          0.6275
+        ]
+      },
+      {
+        "name": "release",
+        "text": "Abre la mano sin desplazar el objeto.",
+        "target": null
+      },
+      {
+        "name": "verify",
+        "text": "Comprueba que está estable en el destino.",
+        "target": [
+          0.2912158966064453,
+          0.19475152492523193,
+          0.6275
+        ]
+      }
+    ],
+    "route_available": true,
+    "start_xyz": [
+      0.2912158966064453,
+      0.044751524925231934,
+      0.6275
+    ],
+    "destination_xyz": [
+      0.2912158966064453,
+      0.19475152492523193,
+      0.6275
+    ],
+    "frame": "robot_base_X_forward_Y_left_Z_up",
+    "usd": "assets/procedural/color_sort.usda",
+    "planner": "teacher_ground_truth_XY_inflated_boxes",
+    "controller_integrated": false
+  },
+  {
+    "name": "narrow_passage",
+    "label": "cilindro verde",
+    "shape": "cylinder",
+    "dimensions": [
+      0.025,
+      0.065
+    ],
+    "mass": 0.09,
+    "color": [
+      0.12,
+      0.65,
+      0.22
+    ],
+    "table": [
+      0.22,
+      0.25,
+      0.28
+    ],
+    "theme": "Pasillo con dos barreras",
+    "obstacles": [
+      [
+        0.29,
+        0.145,
+        0.11,
+        0.015,
+        0.24
+      ],
+      [
+        0.48,
+        0.28,
+        0.1,
+        0.04,
+        0.18
+      ]
+    ],
+    "destination": [
+      0.0,
+      0.25
+    ],
+    "instructions": [
+      "Selecciona el cilindro verde, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+      "Lleva el cilindro verde 25 cm hacia la izquierda, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+      "Empuja el cilindro verde 15 cm hacia X negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+    ],
+    "trained": false,
+    "task_plans": [
+      {
+        "kind": "lift",
+        "instruction": "Selecciona el cilindro verde, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.7825
+            ]
+          },
+          {
+            "name": "hold",
+            "text": "Mantén el agarre estable durante medio segundo.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.7825
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "place",
+        "instruction": "Lleva el cilindro verde 25 cm hacia la izquierda, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.7825
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.15299999999999997,
+              0.05549999999999998,
+              0.7825
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.15299999999999997,
+              0.2345,
+              0.7825
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.2912158966064453,
+              0.29475152492523193,
+              0.7825
+            ]
+          },
+          {
+            "name": "lower",
+            "text": "Baja el objeto hasta apoyarlo en la mesa.",
+            "target": [
+              0.2912158966064453,
+              0.29475152492523193,
+              0.6325
+            ]
+          },
+          {
+            "name": "release",
+            "text": "Abre la mano sin desplazar el objeto.",
+            "target": null
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba que está estable en el destino.",
+            "target": [
+              0.2912158966064453,
+              0.29475152492523193,
+              0.6325
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "push",
+        "instruction": "Empuja el cilindro verde 15 cm hacia X negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano sin tocar los demás objetos.",
+            "target": null
+          },
+          {
+            "name": "align_push",
+            "text": "Alinea la mano para empujar sobre la mesa.",
+            "target": null
+          },
+          {
+            "name": "slide",
+            "text": "Empuja hacia el siguiente punto libre sin levantar el objeto.",
+            "target": [
+              0.14121589660644532,
+              0.044751524925231934,
+              0.6325
+            ]
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba el destino y que el objeto sigue apoyado.",
+            "target": [
+              0.14121589660644532,
+              0.044751524925231934,
+              0.6325
+            ]
+          }
+        ],
+        "route_available": true
+      }
+    ],
+    "plan": [
+      {
+        "name": "select",
+        "text": "Identifica el objeto indicado y no muevas los distractores.",
+        "target": null
+      },
+      {
+        "name": "approach",
+        "text": "Acerca la mano al objeto.",
+        "target": null
+      },
+      {
+        "name": "align",
+        "text": "Alinea el pulgar y los dedos en lados opuestos.",
+        "target": null
+      },
+      {
+        "name": "grasp",
+        "text": "Cierra suavemente y verifica contactos opuestos.",
+        "target": null
+      },
+      {
+        "name": "lift",
+        "text": "Eleva el objeto al menos 15 cm.",
+        "target": [
+          0.2912158966064453,
+          0.044751524925231934,
+          0.7825
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.15299999999999997,
+          0.05549999999999998,
+          0.7825
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.15299999999999997,
+          0.2345,
+          0.7825
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.2912158966064453,
+          0.29475152492523193,
+          0.7825
+        ]
+      },
+      {
+        "name": "lower",
+        "text": "Baja el objeto hasta apoyarlo en la mesa.",
+        "target": [
+          0.2912158966064453,
+          0.29475152492523193,
+          0.6325
+        ]
+      },
+      {
+        "name": "release",
+        "text": "Abre la mano sin desplazar el objeto.",
+        "target": null
+      },
+      {
+        "name": "verify",
+        "text": "Comprueba que está estable en el destino.",
+        "target": [
+          0.2912158966064453,
+          0.29475152492523193,
+          0.6325
+        ]
+      }
+    ],
+    "route_available": true,
+    "start_xyz": [
+      0.2912158966064453,
+      0.044751524925231934,
+      0.6325
+    ],
+    "destination_xyz": [
+      0.2912158966064453,
+      0.29475152492523193,
+      0.6325
+    ],
+    "frame": "robot_base_X_forward_Y_left_Z_up",
+    "usd": "assets/procedural/narrow_passage.usda",
+    "planner": "teacher_ground_truth_XY_inflated_boxes",
+    "controller_integrated": false
+  },
+  {
+    "name": "rolling_objects",
+    "label": "esfera amarilla",
+    "shape": "sphere",
+    "dimensions": [
+      0.028
+    ],
+    "mass": 0.06,
+    "color": [
+      0.95,
+      0.78,
+      0.05
+    ],
+    "table": [
+      0.6,
+      0.66,
+      0.7
+    ],
+    "theme": "Empuje sobre la mesa sin elevar",
+    "obstacles": [
+      [
+        0.18,
+        -0.16,
+        0.08,
+        0.06,
+        0.13
+      ]
+    ],
+    "destination": [
+      0.2,
+      0.0
+    ],
+    "instructions": [
+      "Selecciona la esfera amarilla, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+      "Lleva la esfera amarilla 20 cm hacia delante, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+      "Empuja la esfera amarilla 8 cm hacia Y negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+    ],
+    "trained": false,
+    "task_plans": [
+      {
+        "kind": "lift",
+        "instruction": "Selecciona la esfera amarilla, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.778
+            ]
+          },
+          {
+            "name": "hold",
+            "text": "Mantén el agarre estable durante medio segundo.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.778
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "place",
+        "instruction": "Lleva la esfera amarilla 20 cm hacia delante, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.778
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.4912158966064453,
+              0.044751524925231934,
+              0.778
+            ]
+          },
+          {
+            "name": "lower",
+            "text": "Baja el objeto hasta apoyarlo en la mesa.",
+            "target": [
+              0.4912158966064453,
+              0.044751524925231934,
+              0.628
+            ]
+          },
+          {
+            "name": "release",
+            "text": "Abre la mano sin desplazar el objeto.",
+            "target": null
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba que está estable en el destino.",
+            "target": [
+              0.4912158966064453,
+              0.044751524925231934,
+              0.628
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "push",
+        "instruction": "Empuja la esfera amarilla 8 cm hacia Y negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano sin tocar los demás objetos.",
+            "target": null
+          },
+          {
+            "name": "align_push",
+            "text": "Alinea la mano para empujar sobre la mesa.",
+            "target": null
+          },
+          {
+            "name": "slide",
+            "text": "Empuja hacia el siguiente punto libre sin levantar el objeto.",
+            "target": [
+              0.2912158966064453,
+              -0.03524847507476807,
+              0.628
+            ]
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba el destino y que el objeto sigue apoyado.",
+            "target": [
+              0.2912158966064453,
+              -0.03524847507476807,
+              0.628
+            ]
+          }
+        ],
+        "route_available": true
+      }
+    ],
+    "plan": [
+      {
+        "name": "select",
+        "text": "Identifica el objeto indicado y no muevas los distractores.",
+        "target": null
+      },
+      {
+        "name": "approach",
+        "text": "Acerca la mano al objeto.",
+        "target": null
+      },
+      {
+        "name": "align",
+        "text": "Alinea el pulgar y los dedos en lados opuestos.",
+        "target": null
+      },
+      {
+        "name": "grasp",
+        "text": "Cierra suavemente y verifica contactos opuestos.",
+        "target": null
+      },
+      {
+        "name": "lift",
+        "text": "Eleva el objeto al menos 15 cm.",
+        "target": [
+          0.2912158966064453,
+          0.044751524925231934,
+          0.778
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.4912158966064453,
+          0.044751524925231934,
+          0.778
+        ]
+      },
+      {
+        "name": "lower",
+        "text": "Baja el objeto hasta apoyarlo en la mesa.",
+        "target": [
+          0.4912158966064453,
+          0.044751524925231934,
+          0.628
+        ]
+      },
+      {
+        "name": "release",
+        "text": "Abre la mano sin desplazar el objeto.",
+        "target": null
+      },
+      {
+        "name": "verify",
+        "text": "Comprueba que está estable en el destino.",
+        "target": [
+          0.4912158966064453,
+          0.044751524925231934,
+          0.628
+        ]
+      }
+    ],
+    "route_available": true,
+    "start_xyz": [
+      0.2912158966064453,
+      0.044751524925231934,
+      0.628
+    ],
+    "destination_xyz": [
+      0.4912158966064453,
+      0.044751524925231934,
+      0.628
+    ],
+    "frame": "robot_base_X_forward_Y_left_Z_up",
+    "usd": "assets/procedural/rolling_objects.usda",
+    "planner": "teacher_ground_truth_XY_inflated_boxes",
+    "controller_integrated": false
+  },
+  {
+    "name": "warehouse",
+    "label": "lata metálica",
+    "shape": "cylinder",
+    "dimensions": [
+      0.028,
+      0.07
+    ],
+    "mass": 0.15,
+    "color": [
+      0.55,
+      0.6,
+      0.64
+    ],
+    "table": [
+      0.3,
+      0.25,
+      0.2
+    ],
+    "theme": "Transporte entre cajas de almacén",
+    "obstacles": [
+      [
+        0.45,
+        0.16,
+        0.07,
+        0.09,
+        0.23
+      ],
+      [
+        0.16,
+        -0.18,
+        0.12,
+        0.1,
+        0.16
+      ]
+    ],
+    "destination": [
+      0.25,
+      -0.12
+    ],
+    "instructions": [
+      "Selecciona la lata metálica, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+      "Lleva la lata metálica 25 cm en X y -12 cm en Y, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+      "Empuja la lata metálica 5 cm hacia X positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+    ],
+    "trained": false,
+    "task_plans": [
+      {
+        "kind": "lift",
+        "instruction": "Selecciona la lata metálica, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.785
+            ]
+          },
+          {
+            "name": "hold",
+            "text": "Mantén el agarre estable durante medio segundo.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.785
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "place",
+        "instruction": "Lleva la lata metálica 25 cm en X y -12 cm en Y, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.785
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.5412158966064453,
+              -0.07524847507476806,
+              0.785
+            ]
+          },
+          {
+            "name": "lower",
+            "text": "Baja el objeto hasta apoyarlo en la mesa.",
+            "target": [
+              0.5412158966064453,
+              -0.07524847507476806,
+              0.635
+            ]
+          },
+          {
+            "name": "release",
+            "text": "Abre la mano sin desplazar el objeto.",
+            "target": null
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba que está estable en el destino.",
+            "target": [
+              0.5412158966064453,
+              -0.07524847507476806,
+              0.635
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "push",
+        "instruction": "Empuja la lata metálica 5 cm hacia X positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "stop",
+            "text": "Detente y solicita otro destino; no fuerces el paso."
+          }
+        ],
+        "route_available": false,
+        "reason": "No safe route: start or goal intersects an inflated obstacle"
+      }
+    ],
+    "plan": [
+      {
+        "name": "select",
+        "text": "Identifica el objeto indicado y no muevas los distractores.",
+        "target": null
+      },
+      {
+        "name": "approach",
+        "text": "Acerca la mano al objeto.",
+        "target": null
+      },
+      {
+        "name": "align",
+        "text": "Alinea el pulgar y los dedos en lados opuestos.",
+        "target": null
+      },
+      {
+        "name": "grasp",
+        "text": "Cierra suavemente y verifica contactos opuestos.",
+        "target": null
+      },
+      {
+        "name": "lift",
+        "text": "Eleva el objeto al menos 15 cm.",
+        "target": [
+          0.2912158966064453,
+          0.044751524925231934,
+          0.785
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.5412158966064453,
+          -0.07524847507476806,
+          0.785
+        ]
+      },
+      {
+        "name": "lower",
+        "text": "Baja el objeto hasta apoyarlo en la mesa.",
+        "target": [
+          0.5412158966064453,
+          -0.07524847507476806,
+          0.635
+        ]
+      },
+      {
+        "name": "release",
+        "text": "Abre la mano sin desplazar el objeto.",
+        "target": null
+      },
+      {
+        "name": "verify",
+        "text": "Comprueba que está estable en el destino.",
+        "target": [
+          0.5412158966064453,
+          -0.07524847507476806,
+          0.635
+        ]
+      }
+    ],
+    "route_available": true,
+    "start_xyz": [
+      0.2912158966064453,
+      0.044751524925231934,
+      0.635
+    ],
+    "destination_xyz": [
+      0.5412158966064453,
+      -0.07524847507476806,
+      0.635
+    ],
+    "frame": "robot_base_X_forward_Y_left_Z_up",
+    "usd": "assets/procedural/warehouse.usda",
+    "planner": "teacher_ground_truth_XY_inflated_boxes",
+    "controller_integrated": false
+  },
+  {
+    "name": "capsule_detour",
+    "label": "cápsula naranja",
+    "shape": "capsule",
+    "dimensions": [
+      0.022,
+      0.035
+    ],
+    "mass": 0.07,
+    "color": [
+      0.95,
+      0.36,
+      0.04
+    ],
+    "table": [
+      0.12,
+      0.2,
+      0.3
+    ],
+    "theme": "Desvío hacia la derecha",
+    "obstacles": [
+      [
+        0.29,
+        -0.065,
+        0.12,
+        0.015,
+        0.24
+      ]
+    ],
+    "destination": [
+      0.0,
+      -0.2
+    ],
+    "instructions": [
+      "Selecciona la cápsula naranja, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+      "Lleva la cápsula naranja 20 cm hacia la derecha, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+      "Empuja la cápsula naranja 10 cm hacia Y positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+    ],
+    "trained": false,
+    "task_plans": [
+      {
+        "kind": "lift",
+        "instruction": "Selecciona la cápsula naranja, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.7895
+            ]
+          },
+          {
+            "name": "hold",
+            "text": "Mantén el agarre estable durante medio segundo.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.7895
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "place",
+        "instruction": "Lleva la cápsula naranja 20 cm hacia la derecha, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.7895
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.432,
+              0.0245,
+              0.7895
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.432,
+              -0.15450000000000003,
+              0.7895
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.2912158966064453,
+              -0.15524847507476808,
+              0.7895
+            ]
+          },
+          {
+            "name": "lower",
+            "text": "Baja el objeto hasta apoyarlo en la mesa.",
+            "target": [
+              0.2912158966064453,
+              -0.15524847507476808,
+              0.6395
+            ]
+          },
+          {
+            "name": "release",
+            "text": "Abre la mano sin desplazar el objeto.",
+            "target": null
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba que está estable en el destino.",
+            "target": [
+              0.2912158966064453,
+              -0.15524847507476808,
+              0.6395
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "push",
+        "instruction": "Empuja la cápsula naranja 10 cm hacia Y positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano sin tocar los demás objetos.",
+            "target": null
+          },
+          {
+            "name": "align_push",
+            "text": "Alinea la mano para empujar sobre la mesa.",
+            "target": null
+          },
+          {
+            "name": "slide",
+            "text": "Empuja hacia el siguiente punto libre sin levantar el objeto.",
+            "target": [
+              0.2912158966064453,
+              0.14475152492523194,
+              0.6395
+            ]
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba el destino y que el objeto sigue apoyado.",
+            "target": [
+              0.2912158966064453,
+              0.14475152492523194,
+              0.6395
+            ]
+          }
+        ],
+        "route_available": true
+      }
+    ],
+    "plan": [
+      {
+        "name": "select",
+        "text": "Identifica el objeto indicado y no muevas los distractores.",
+        "target": null
+      },
+      {
+        "name": "approach",
+        "text": "Acerca la mano al objeto.",
+        "target": null
+      },
+      {
+        "name": "align",
+        "text": "Alinea el pulgar y los dedos en lados opuestos.",
+        "target": null
+      },
+      {
+        "name": "grasp",
+        "text": "Cierra suavemente y verifica contactos opuestos.",
+        "target": null
+      },
+      {
+        "name": "lift",
+        "text": "Eleva el objeto al menos 15 cm.",
+        "target": [
+          0.2912158966064453,
+          0.044751524925231934,
+          0.7895
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.432,
+          0.0245,
+          0.7895
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.432,
+          -0.15450000000000003,
+          0.7895
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.2912158966064453,
+          -0.15524847507476808,
+          0.7895
+        ]
+      },
+      {
+        "name": "lower",
+        "text": "Baja el objeto hasta apoyarlo en la mesa.",
+        "target": [
+          0.2912158966064453,
+          -0.15524847507476808,
+          0.6395
+        ]
+      },
+      {
+        "name": "release",
+        "text": "Abre la mano sin desplazar el objeto.",
+        "target": null
+      },
+      {
+        "name": "verify",
+        "text": "Comprueba que está estable en el destino.",
+        "target": [
+          0.2912158966064453,
+          -0.15524847507476808,
+          0.6395
+        ]
+      }
+    ],
+    "route_available": true,
+    "start_xyz": [
+      0.2912158966064453,
+      0.044751524925231934,
+      0.6395
+    ],
+    "destination_xyz": [
+      0.2912158966064453,
+      -0.15524847507476808,
+      0.6395
+    ],
+    "frame": "robot_base_X_forward_Y_left_Z_up",
+    "usd": "assets/procedural/capsule_detour.usda",
+    "planner": "teacher_ground_truth_XY_inflated_boxes",
+    "controller_integrated": false
+  },
+  {
+    "name": "diagonal_sort",
+    "label": "bloque de madera",
+    "shape": "box",
+    "dimensions": [
+      0.065,
+      0.035,
+      0.04
+    ],
+    "mass": 0.11,
+    "color": [
+      0.58,
+      0.32,
+      0.12
+    ],
+    "table": [
+      0.75,
+      0.75,
+      0.75
+    ],
+    "theme": "Colocación diagonal sin tocar los otros objetos",
+    "obstacles": [
+      [
+        0.43,
+        -0.05,
+        0.04,
+        0.08,
+        0.18
+      ]
+    ],
+    "destination": [
+      0.15,
+      -0.25
+    ],
+    "instructions": [
+      "Selecciona el bloque de madera, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+      "Lleva el bloque de madera 15 cm en X y -25 cm en Y, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+      "Empuja el bloque de madera 15 cm hacia X negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+    ],
+    "trained": false,
+    "task_plans": [
+      {
+        "kind": "lift",
+        "instruction": "Selecciona el bloque de madera, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.77
+            ]
+          },
+          {
+            "name": "hold",
+            "text": "Mantén el agarre estable durante medio segundo.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.77
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "place",
+        "instruction": "Lleva el bloque de madera 15 cm en X y -25 cm en Y, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.77
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.32799999999999996,
+              -0.172,
+              0.77
+            ]
+          },
+          {
+            "name": "transport",
+            "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+            "target": [
+              0.44121589660644533,
+              -0.20524847507476807,
+              0.77
+            ]
+          },
+          {
+            "name": "lower",
+            "text": "Baja el objeto hasta apoyarlo en la mesa.",
+            "target": [
+              0.44121589660644533,
+              -0.20524847507476807,
+              0.62
+            ]
+          },
+          {
+            "name": "release",
+            "text": "Abre la mano sin desplazar el objeto.",
+            "target": null
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba que está estable en el destino.",
+            "target": [
+              0.44121589660644533,
+              -0.20524847507476807,
+              0.62
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "push",
+        "instruction": "Empuja el bloque de madera 15 cm hacia X negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano sin tocar los demás objetos.",
+            "target": null
+          },
+          {
+            "name": "align_push",
+            "text": "Alinea la mano para empujar sobre la mesa.",
+            "target": null
+          },
+          {
+            "name": "slide",
+            "text": "Empuja hacia el siguiente punto libre sin levantar el objeto.",
+            "target": [
+              0.14121589660644532,
+              0.044751524925231934,
+              0.62
+            ]
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba el destino y que el objeto sigue apoyado.",
+            "target": [
+              0.14121589660644532,
+              0.044751524925231934,
+              0.62
+            ]
+          }
+        ],
+        "route_available": true
+      }
+    ],
+    "plan": [
+      {
+        "name": "select",
+        "text": "Identifica el objeto indicado y no muevas los distractores.",
+        "target": null
+      },
+      {
+        "name": "approach",
+        "text": "Acerca la mano al objeto.",
+        "target": null
+      },
+      {
+        "name": "align",
+        "text": "Alinea el pulgar y los dedos en lados opuestos.",
+        "target": null
+      },
+      {
+        "name": "grasp",
+        "text": "Cierra suavemente y verifica contactos opuestos.",
+        "target": null
+      },
+      {
+        "name": "lift",
+        "text": "Eleva el objeto al menos 15 cm.",
+        "target": [
+          0.2912158966064453,
+          0.044751524925231934,
+          0.77
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.32799999999999996,
+          -0.172,
+          0.77
+        ]
+      },
+      {
+        "name": "transport",
+        "text": "Avanza al siguiente punto libre; si ves obstáculos, esquívalos.",
+        "target": [
+          0.44121589660644533,
+          -0.20524847507476807,
+          0.77
+        ]
+      },
+      {
+        "name": "lower",
+        "text": "Baja el objeto hasta apoyarlo en la mesa.",
+        "target": [
+          0.44121589660644533,
+          -0.20524847507476807,
+          0.62
+        ]
+      },
+      {
+        "name": "release",
+        "text": "Abre la mano sin desplazar el objeto.",
+        "target": null
+      },
+      {
+        "name": "verify",
+        "text": "Comprueba que está estable en el destino.",
+        "target": [
+          0.44121589660644533,
+          -0.20524847507476807,
+          0.62
+        ]
+      }
+    ],
+    "route_available": true,
+    "start_xyz": [
+      0.2912158966064453,
+      0.044751524925231934,
+      0.62
+    ],
+    "destination_xyz": [
+      0.44121589660644533,
+      -0.20524847507476807,
+      0.62
+    ],
+    "frame": "robot_base_X_forward_Y_left_Z_up",
+    "usd": "assets/procedural/diagonal_sort.usda",
+    "planner": "teacher_ground_truth_XY_inflated_boxes",
+    "controller_integrated": false
+  },
+  {
+    "name": "blocked_destination",
+    "label": "cubo violeta",
+    "shape": "box",
+    "dimensions": [
+      0.05,
+      0.05,
+      0.05
+    ],
+    "mass": 0.08,
+    "color": [
+      0.55,
+      0.12,
+      0.72
+    ],
+    "table": [
+      0.35,
+      0.43,
+      0.35
+    ],
+    "theme": "Destino ocupado: detenerse y solicitar otro destino",
+    "obstacles": [
+      [
+        0.29,
+        0.245,
+        0.12,
+        0.12,
+        0.22
+      ]
+    ],
+    "destination": [
+      0.0,
+      0.2
+    ],
+    "instructions": [
+      "Selecciona el cubo violeta, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+      "Lleva el cubo violeta 20 cm hacia la izquierda, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+      "Empuja el cubo violeta 8 cm hacia Y negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+    ],
+    "trained": false,
+    "task_plans": [
+      {
+        "kind": "lift",
+        "instruction": "Selecciona el cubo violeta, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado y no muevas los distractores.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano al objeto.",
+            "target": null
+          },
+          {
+            "name": "align",
+            "text": "Alinea el pulgar y los dedos en lados opuestos.",
+            "target": null
+          },
+          {
+            "name": "grasp",
+            "text": "Cierra suavemente y verifica contactos opuestos.",
+            "target": null
+          },
+          {
+            "name": "lift",
+            "text": "Eleva el objeto al menos 15 cm.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.775
+            ]
+          },
+          {
+            "name": "hold",
+            "text": "Mantén el agarre estable durante medio segundo.",
+            "target": [
+              0.2912158966064453,
+              0.044751524925231934,
+              0.775
+            ]
+          }
+        ],
+        "route_available": true
+      },
+      {
+        "kind": "place",
+        "instruction": "Lleva el cubo violeta 20 cm hacia la izquierda, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "stop",
+            "text": "Detente y solicita otro destino; no fuerces el paso."
+          }
+        ],
+        "route_available": false,
+        "reason": "No safe route: start or goal intersects an inflated obstacle"
+      },
+      {
+        "kind": "push",
+        "instruction": "Empuja el cubo violeta 8 cm hacia Y negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos.",
+        "steps": [
+          {
+            "name": "select",
+            "text": "Identifica el objeto indicado.",
+            "target": null
+          },
+          {
+            "name": "approach",
+            "text": "Acerca la mano sin tocar los demás objetos.",
+            "target": null
+          },
+          {
+            "name": "align_push",
+            "text": "Alinea la mano para empujar sobre la mesa.",
+            "target": null
+          },
+          {
+            "name": "slide",
+            "text": "Empuja hacia el siguiente punto libre sin levantar el objeto.",
+            "target": [
+              0.2912158966064453,
+              -0.03524847507476807,
+              0.625
+            ]
+          },
+          {
+            "name": "verify",
+            "text": "Comprueba el destino y que el objeto sigue apoyado.",
+            "target": [
+              0.2912158966064453,
+              -0.03524847507476807,
+              0.625
+            ]
+          }
+        ],
+        "route_available": true
+      }
+    ],
+    "plan": [
+      {
+        "name": "stop",
+        "text": "Detente y solicita otro destino; no fuerces el paso."
+      }
+    ],
+    "route_available": false,
+    "start_xyz": [
+      0.2912158966064453,
+      0.044751524925231934,
+      0.625
+    ],
+    "destination_xyz": [
+      0.2912158966064453,
+      0.24475152492523194,
+      0.625
+    ],
+    "frame": "robot_base_X_forward_Y_left_Z_up",
+    "usd": "assets/procedural/blocked_destination.usda",
+    "planner": "teacher_ground_truth_XY_inflated_boxes",
+    "controller_integrated": false
+  }
+]

@@ -7,12 +7,12 @@ from dexman.paths import JOINT_MANIFEST
 from dexman.robot.control import action_limits
 from dexman.robot.joints import ACTION_NAMES, JOINT_NAMES
 
-POLICY_VERSION = 4
+POLICY_VERSION = 5
 OUTPUT_SPACE = "absolute_joint_position_rad"
 TARGET_SEMANTICS = "desired_joint_position_before_smoothing"
 VLA_TASK = "Dexman-UR10e-Shadow-Lift-VLA-v2"
 TEACHER_TASK = "Dexman-UR10e-Shadow-Lift-RGBD-v1"
-LIFT_OBJECTIVE = {"reward_version": 3, "success_criterion": "minimum_lift_and_hold_v1",
+LIFT_OBJECTIVE = {"reward_version": 4, "success_criterion": "opposed_contact_minimum_lift_and_hold_v2",
                   "minimum_lift_required_m": .15, "success_lift_overshoot_m": .025,
                   "hold_seconds": .5}
 
@@ -33,11 +33,11 @@ def _validate_lift_objective(contract):
 
 
 def default_architecture_config(horizon=8):
-    """Self-contained v4 topology and frozen-encoder feature semantics."""
+    """Self-contained v5 topology and frozen-encoder feature semantics."""
     return {
         "name": "clip_spatial_recurrent_transformer", "version": POLICY_VERSION,
         "width": 256, "depth": 6, "heads": 8, "feedforward_dim": 1024, "dropout": 0.1,
-        "vision_tokens": 50, "embedding_dim": 512, "state_dim": 60, "memory_dim": 256,
+        "vision_tokens": 100, "embedding_dim": 512, "state_dim": 60, "memory_dim": 256,
         "action_dim": 30, "horizon": horizon, "encoder_model": "openai/clip-vit-base-patch32",
         "encoder_features": "clip_vit_cls_patches_post_layernorm_projected_l2_v1",
         "attention": "context_isolated_action_queries_memory_write_v1",
@@ -50,11 +50,11 @@ def validate_architecture_config(config, *, horizon=None):
 
     Width, depth, attention heads, feed-forward width and dropout are explicit
     tuning parameters. Observation/action dimensions and feature semantics are
-    fixed by the v4 interface; they must never be silently inferred from weights.
+    fixed by the v5 interface; they must never be silently inferred from weights.
     """
     expected = default_architecture_config()
     if not isinstance(config, dict) or set(config) != set(expected):
-        raise ValueError("VLA v4 requires a complete config['architecture']; legacy policies require new training")
+        raise ValueError("VLA v5 requires a complete config['architecture']; legacy policies require new training")
     tunable = {"width", "depth", "heads", "feedforward_dim", "dropout", "horizon"}
     for key in set(expected) - tunable:
         if type(config[key]) is not type(expected[key]) or config[key] != expected[key]:
@@ -74,6 +74,12 @@ def validate_architecture_config(config, *, horizon=None):
 def check_environment_contract(contract, cfg):
     """Require identical control semantics before running a student in simulation."""
     validate_contract(contract)
+    for name in ("minimum_contact_force_n", "scenario_name", "asset_shape", "asset_dimensions"):
+        expected_value = getattr(cfg, name)
+        if isinstance(expected_value, tuple):
+            expected_value = list(expected_value)
+        if contract[name] != expected_value:
+            raise ValueError(f"Student scene/contact contract differs: {name}")
     expected = action_limits(json.loads(JOINT_MANIFEST.read_text(encoding="utf-8")),
                              cfg.arm_half_range, cfg.arm_center)
     if (contract["task"] != TEACHER_TASK
@@ -87,14 +93,11 @@ def check_environment_contract(contract, cfg):
             or not np.allclose(contract["arm_center_q"], cfg.arm_center, atol=1e-6, rtol=0)
             or abs(contract["action_smoothing"] - cfg.action_smoothing) > 1e-8):
         raise ValueError("Student checkpoint and environment control contracts differ")
-    from dexman.sensors.view import camera_signature, LEGACY_POSITION, LEGACY_ROTATION_XYZW
+    from dexman.sensors.view import camera_signature
     actual_camera = camera_signature(cfg.scene.camera)
-    expected_camera = contract.get("camera")
-    if expected_camera is None:
-        if (actual_camera["position"] != list(LEGACY_POSITION)
-                or actual_camera["rotation_xyzw"] != list(LEGACY_ROTATION_XYZW)):
-            raise ValueError("Legacy student has no camera contract; use legacy playback or recollect with the MVP view")
-    elif expected_camera != actual_camera:
+    if contract.get("camera_secondary") != camera_signature(cfg.scene.camera_secondary):
+        raise ValueError("Second camera contract differs; collect synchronized dual-view demonstrations")
+    if contract["camera"] != actual_camera:
         raise ValueError("Student checkpoint and environment camera views differ")
 
 
@@ -113,8 +116,20 @@ def validate_contract(contract):
     smoothing = contract.get("action_smoothing")
     if not isinstance(smoothing, (int, float)) or not 0 < smoothing <= 1:
         raise ValueError("action_smoothing must be in (0,1]")
-    if "camera" in contract:
-        camera = contract["camera"]
+    if any(name not in contract for name in ("minimum_contact_force_n", "scenario_name", "asset_shape", "asset_dimensions")):
+        raise ValueError("Missing physical scene/contact contract; recollect demonstrations")
+    force = contract["minimum_contact_force_n"]
+    if type(force) not in (int,float) or not np.isfinite(force) or force <= 0:
+        raise ValueError("Contact threshold must be finite and positive")
+    shape = contract["asset_shape"]
+    dimension_count = {"box":3, "sphere":1, "cylinder":2, "capsule":2}.get(shape)
+    dimensions = np.asarray(contract["asset_dimensions"],dtype=float)
+    if dimension_count is None or dimensions.shape != (dimension_count,) or not np.isfinite(dimensions).all() or (dimensions <= 0).any():
+        raise ValueError("Invalid target collision geometry")
+    for name in ("camera", "camera_secondary"):
+        camera = contract.get(name)
+        if not isinstance(camera, dict):
+            raise ValueError("Two synchronized camera contracts are required")
         position = np.asarray(camera.get("position"), dtype=float)
         rotation = np.asarray(camera.get("rotation_xyzw"), dtype=float)
         if (position.shape != (3,) or rotation.shape != (4,) or not np.isfinite(position).all()
@@ -123,7 +138,7 @@ def validate_contract(contract):
                 or any(not isinstance(camera.get(key), int) or camera[key] < 1 for key in ("width", "height"))
                 or any(not isinstance(camera.get(key), (int, float)) or not np.isfinite(camera[key])
                        or camera[key] <= 0 for key in ("focal_length", "horizontal_aperture"))):
-            raise ValueError("Invalid camera observation contract")
+            raise ValueError(f"Invalid {name} observation contract")
     return contract
 
 
@@ -170,7 +185,11 @@ def contract_from_metadata(metadata):
         "action_encoding": metadata["action_encoding"],
         "action_smoothing": metadata.get("action_smoothing", 0.05),
         **{name: metadata[name] for name in LIFT_OBJECTIVE},
+        **{name: metadata[name] for name in ("minimum_contact_force_n", "scenario_name", "asset_shape", "asset_dimensions")},
     }
     if "camera" in metadata:
         contract["camera"] = metadata["camera"]
+    contract["camera_secondary"] = metadata.get("camera_secondary")
+    if contract["camera_secondary"] is None:
+        raise ValueError("Missing second camera; recollect two-view data")
     return validate_contract(contract)

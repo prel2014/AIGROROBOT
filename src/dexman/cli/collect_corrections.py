@@ -15,6 +15,8 @@ def main():
     parser.add_argument("--num_envs", type=int, default=4)
     parser.add_argument("--beta", type=float, default=.2, help="Probability of executing the teacher action")
     parser.add_argument("--seed", type=int, default=4242)
+    from dexman.tasks.manipulation.scenarios import add_scenario_argument, configure_scenario
+    add_scenario_argument(parser)
     add_launcher_args(parser)
     args = parser.parse_args()
     if min(args.episodes, args.num_envs) < 1 or not 0 <= args.beta <= 1:
@@ -32,6 +34,7 @@ def main():
     from dexman.tasks.lift.config import JointAngleVisualLiftEnvCfg
     from dexman.vla.contract import VLA_TASK, check_environment_contract
     cfg = JointAngleVisualLiftEnvCfg()
+    configure_scenario(cfg, args.scenario)
     cfg.scene.num_envs, cfg.seed = args.num_envs, args.seed
     validate_teacher(teacher_path, cfg)
     seed_everything(args.seed)

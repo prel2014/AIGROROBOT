@@ -31,3 +31,7 @@ https://github.com/ros-industrial/universal_robot y https://github.com/shadow-ro
 Se deben conservar los avisos de los autores y revisar las condiciones del contenido de NVIDIA
 antes de redistribuir los assets. Isaac Lab conserva su LICENSE y avisos en `..\IsaacLab`
 respecto a la raíz del proyecto.
+
+## Escenarios propios
+
+[procedural/](procedural/README.md) incluye ocho USD portables con objetos, obstáculos y distractores creados por este proyecto. [previews/](previews/environments.png) contiene capturas reales y ambas vistas RGB-D, sin entrenamiento.

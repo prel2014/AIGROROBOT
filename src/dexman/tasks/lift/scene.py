@@ -14,7 +14,7 @@ class LiftSceneCfg(InteractiveSceneCfg):
     robot: ArticulationCfg = robot_cfg()
     table = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Table",
-        spawn=CuboidCfg(size=(2.2, 1.4, 0.10), collision_props=PhysxCollisionCfg(),
+        spawn=CuboidCfg(size=(2.2, 1.4, 0.10), collision_props=PhysxCollisionCfg(contact_offset=.001, rest_offset=0.),
                        visual_material=PreviewSurfaceCfg(diffuse_color=(0.35, 0.35, 0.38))),
         init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, 0.55)),
     )
@@ -22,8 +22,8 @@ class LiftSceneCfg(InteractiveSceneCfg):
         prim_path="{ENV_REGEX_NS}/Object",
         spawn=CuboidCfg(size=(0.05, 0.05, 0.05),
             rigid_props=PhysxRigidBodyCfg(max_depenetration_velocity=1.0),
-            mass_props=MassCfg(mass=0.08), collision_props=PhysxCollisionCfg(),
-            physics_material=RigidBodyMaterialCfg(static_friction=1.0, dynamic_friction=0.8),
+            mass_props=MassCfg(mass=0.08), collision_props=PhysxCollisionCfg(contact_offset=.001, rest_offset=0.),
+            physics_material=RigidBodyMaterialCfg(static_friction=.7, dynamic_friction=.5, restitution=0., friction_combine_mode="min"),
             visual_material=PreviewSurfaceCfg(diffuse_color=(0.85, 0.15, 0.08))),
         init_state=RigidObjectCfg.InitialStateCfg(pos=(0.35, 0.0, 0.625)),
     )

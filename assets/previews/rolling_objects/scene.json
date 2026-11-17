@@ -1,0 +1,21 @@
+{
+  "scenario": "rolling_objects",
+  "theme": "Empuje sobre la mesa sin elevar",
+  "orders": [
+    "Selecciona la esfera amarilla, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+    "Lleva la esfera amarilla 20 cm hacia delante, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+    "Empuja la esfera amarilla 8 cm hacia Y negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+  ],
+  "training": false,
+  "policy_loaded": false,
+  "physics_steps": 8,
+  "target_shape": "sphere",
+  "target_dimensions": [
+    0.028
+  ],
+  "minimum_contact_force_n": 0.05,
+  "cameras_for_vla": [
+    "camera",
+    "camera_secondary"
+  ]
+}

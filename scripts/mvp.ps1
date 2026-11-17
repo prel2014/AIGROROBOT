@@ -6,6 +6,7 @@ param(
     [string]$TeacherEvaluation,
     [string]$Manifest,
     [string]$Dataset = 'datasets/demos',
+    [string]$Scenario = 'red_cube',
     [int]$Robots = 4,
     [int]$Iterations = 3000,
     [int]$Episodes = 100,
@@ -43,11 +44,11 @@ try {
                 --bootstrap-updates $bootstrap --bootstrap-batch-size $config.teacher_bootstrap_batch_size `
                 --bootstrap-learning-rate $config.teacher_bootstrap_learning_rate `
                 --start-lift-cm $StartLiftCm --exploration-std-scale $ExplorationStdScale `
-                --seed $config.training_seed --run_timestamp $RunName @resumeArgs @visual
+                --scenario $Scenario --seed $config.training_seed --run_timestamp $RunName @resumeArgs @visual
         }
         'evaluate-teacher' {
             if (-not $Teacher) { throw 'Indica -Teacher con el checkpoint PPO.' }
-            & $runner evaluate --policy teacher --checkpoint $Teacher --num_envs $Robots `
+            & $runner evaluate --scenario $Scenario --policy teacher --checkpoint $Teacher --num_envs $Robots `
                 --episodes $config.episodes_per_seed --seeds @($config.evaluation_seeds) `
                 --min-success-rate $config.min_success_rate --require-pass --output "logs/mvp/$RunName" @visual
         }
@@ -56,13 +57,13 @@ try {
             $gate = Get-Content -Raw -LiteralPath $TeacherEvaluation | ConvertFrom-Json
             $checkpointHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $Teacher).Hash.ToLowerInvariant()
             if (-not $gate.passed -or -not $gate.complete -or $gate.policy -ne 'teacher' -or $gate.target_lift_m -ne $config.target_lift_m -or
-                $gate.success_criterion -ne 'minimum_lift_and_hold_v1' -or $gate.minimum_lift_required_m -lt $config.target_lift_m -or
+                $gate.success_criterion -ne 'opposed_contact_minimum_lift_and_hold_v2' -or $gate.minimum_lift_required_m -lt $config.target_lift_m -or
                 $gate.hold_seconds -lt 0.5 -or
                 $gate.checkpoint_sha256 -ne $checkpointHash -or $gate.min_success_rate -lt $config.min_success_rate -or
                 $gate.episodes_per_seed -lt $config.episodes_per_seed -or (Compare-Object @($gate.seeds) @($config.evaluation_seeds))) {
                 throw 'La evaluacion no cumple el protocolo MVP para este checkpoint.'
             }
-            & $runner collect_demos --checkpoint $Teacher --episodes $Episodes --max-attempts ($Episodes * 10) `
+            & $runner collect_demos --scenario $Scenario --checkpoint $Teacher --episodes $Episodes --max-attempts ($Episodes * 10) `
                 --num_envs $Robots --seed $config.collection_seed --output "datasets/demos/$RunName" @visual
         }
         'split' { & $runner dataset split --dataset $Dataset --seed $config.split_seed --output "datasets/manifests/$RunName.json" }
@@ -80,13 +81,13 @@ try {
         }
         'evaluate-student' {
             if (-not $Student) { throw 'Indica -Student con best.pt.' }
-            & $runner evaluate --policy student --checkpoint $Student --num_envs $Robots `
+            & $runner evaluate --scenario $Scenario --policy student --checkpoint $Student --num_envs $Robots `
                 --episodes $config.episodes_per_seed --seeds @($config.evaluation_seeds) `
                 --min-success-rate $config.min_success_rate --require-pass --output "logs/mvp/$RunName" @visual
         }
         'corrections' {
             if (-not $Teacher -or -not $Student) { throw 'Indica -Teacher y -Student.' }
-            & $runner collect_corrections --teacher $Teacher --student $Student --num_envs $Robots --episodes $Episodes `
+            & $runner collect_corrections --scenario $Scenario --teacher $Teacher --student $Student --num_envs $Robots --episodes $Episodes `
                 --seed $config.correction_seed --output "datasets/corrections/$RunName" @visual
         }
         'add-corrections' {

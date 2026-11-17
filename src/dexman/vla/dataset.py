@@ -69,6 +69,8 @@ class Demonstrations(Dataset):
                 if episode["action"].shape[1] != 26 or episode["qpos"].shape[1] != 30:
                     raise ValueError(f"Robot dimension mismatch: {path}")
                 length = len(episode["action"])
+                if "rgb_secondary" not in episode or episode["rgb_secondary"].shape != episode["rgb"].shape:
+                    raise ValueError("Missing synchronized second RGB view; recollect demonstrations")
                 if not length or any(len(episode[k]) != length for k in ("qpos", "qvel", "rgb")):
                     raise ValueError(f"Empty or misaligned episode: {path}")
                 if episode["qvel"].shape[1] != 30:
@@ -110,6 +112,7 @@ class Demonstrations(Dataset):
             if not np.isfinite(state).all():
                 raise ValueError(f"Non-finite robot state: {path}")
             state = np.pad(state.astype(np.float32), ((0, self.sequence_length - valid), (0, 0)))
-            images = [Image.fromarray(frame) for frame in episode["rgb"][start:stop]]
+            images = [[Image.fromarray(a), Image.fromarray(b)] for a, b in zip(
+                episode["rgb"][start:stop], episode["rgb_secondary"][start:stop], strict=True)]
             return {"image": images, "text": episode.attrs["instruction"], "state": state,
                     "joint_angles": chunks, "mask": mask}

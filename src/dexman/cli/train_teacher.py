@@ -28,6 +28,8 @@ def main():
                         help="Fresh-run initial curriculum height; ignored when resuming saved curriculum")
     parser.add_argument("--exploration-std-scale", type=float, default=1.,
                         help="Fresh-run post-imitation standard-deviation multiplier before closed-loop gates, in (0,1]")
+    from dexman.tasks.manipulation.scenarios import add_scenario_argument, configure_scenario
+    add_scenario_argument(parser)
     add_launcher_args(parser)
     args = parser.parse_args()
     if min(args.num_envs, args.max_iterations, args.save_interval) < 1:
@@ -48,6 +50,7 @@ def main():
     show_camera = "kit" in (args.visualizer or ())
     validate_teacher_runtime()
     cfg = TeacherCameraEnvCfg() if show_camera else CorrectedLiftEnvCfg()
+    configure_scenario(cfg, args.scenario)
     cfg.scene.num_envs, cfg.seed = args.num_envs, args.seed
     if not (args.checkpoint or args.resume):
         cfg.curriculum_initial_level = cfg.curriculum_heights.index(args.start_lift_cm / 100)

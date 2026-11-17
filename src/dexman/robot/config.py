@@ -2,9 +2,10 @@
 from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.assets import ArticulationCfg
 from isaaclab.sim import UsdFileCfg
-from isaaclab_physx.sim.schemas import PhysxArticulationCfg, PhysxRigidBodyCfg
+from isaaclab_physx.sim.schemas import PhysxArticulationCfg, PhysxRigidBodyCfg, PhysxCollisionCfg
 
 from dexman.paths import ROBOT_USD
+from isaaclab_physx.sim.spawners.materials import RigidBodyMaterialCfg
 from .joints import HOME
 
 
@@ -13,6 +14,9 @@ def robot_cfg():
         prim_path="{ENV_REGEX_NS}/Robot",
         spawn=UsdFileCfg(
             usd_path=str(ROBOT_USD),
+            collision_props={"/.*": [PhysxCollisionCfg(contact_offset=.001, rest_offset=0.)]},
+            physics_material=RigidBodyMaterialCfg(static_friction=.8, dynamic_friction=.6,
+                                                  restitution=0., friction_combine_mode="min"),
             rigid_props={"/.*": [PhysxRigidBodyCfg(disable_gravity=False, max_depenetration_velocity=2.0)]},
             articulation_props={"/Arm/root_joint": [PhysxArticulationCfg(
                 enabled_self_collisions=True, solver_position_iteration_count=16,

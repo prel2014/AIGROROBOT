@@ -1,8 +1,9 @@
 """Isaac Sim adapter for task resets, observations and scoring."""
 import torch
 from dexman.tasks.lift.visual_policy_environment import JointAngleLiftEnv
-from dexman.tasks.lift.rewards import FAILURE_PENALTY, cube_clearance
+from dexman.tasks.lift.rewards import FAILURE_PENALTY, object_clearance
 from .catalog import TASKS, resolve_instruction
+from dexman.sensors.grasp import measured_grasp, forbidden_contact
 from .rewards import task_metrics, task_reward
 
 
@@ -45,7 +46,7 @@ class MemoryTaskEnv(JointAngleLiftEnv):
         local = pos - self.scene.env_origins
         task = torch.nn.functional.one_hot(self.task_ids, len(TASKS)).float()
         remaining = (1 - self.episode_length_buf.float() / self.max_episode_length).unsqueeze(-1)
-        # 30 + 30 + 3 + 3 + 3 + 3 + 30 + 3 + 1 + 1 = 107.
+        # q/dq, four XYZ vectors, last command, task one-hot, violation, time left.
         critic = torch.cat((q, qd, local, pos - palm, self.goal - pos,
                             self.object.data.root_lin_vel_w.torch, self.actions, task,
                             self.push_violated.float().unsqueeze(-1), remaining), -1)
@@ -58,12 +59,13 @@ class MemoryTaskEnv(JointAngleLiftEnv):
         rotation = self.object.data.root_quat_w.torch
         velocity = self.object.data.root_lin_vel_w.torch
         self._check_pose(pos, rotation, velocity, palm, tips)
-        clearance = cube_clearance(local[:, 2], rotation, self.cfg.table_height)
+        clearance = object_clearance(local[:, 2], rotation, self.cfg.table_height, self.cfg.asset_shape, self.cfg.asset_dimensions)
         self.task_potential, at_goal, self.push_violated = task_metrics(
             self.task_ids, local, self.goal - origins, palm - origins, tips - origins[:, None],
-            velocity.norm(dim=-1), clearance, self.push_violated)
+            velocity.norm(dim=-1), clearance, self.push_violated,
+            initial_height=self.cfg.object_initial_height, contact_grasp=measured_grasp(self)[0])
         failure = ((local[:, 2] < self.cfg.table_height - .15) | (local[:, :2].abs() > 1.5).any(-1)
-                   | self.push_violated | self.invalid_pose | self.invalid_action)
+                   | self.push_violated | self.invalid_pose | self.invalid_action | forbidden_contact(self))
         self.hold_steps = torch.where(at_goal & ~failure, self.hold_steps + 1, 0)
         success = self.hold_steps >= self.cfg.success_hold_steps
         timeout = (self.episode_length_buf >= self.max_episode_length - 1) & ~(success | failure)

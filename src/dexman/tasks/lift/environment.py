@@ -6,15 +6,16 @@ from isaaclab.envs import DirectRLEnv
 from dexman.paths import JOINT_MANIFEST
 from dexman.robot.control import action_limits, decode, encode, joint_limit_violation
 from dexman.robot.joints import FINGERTIPS, JOINT_NAMES, PALM
+from dexman.sensors.grasp import measured_grasp, forbidden_contact
 from .resets import reset_state
 from .curriculum import LiftCurriculum
-from .rewards import FAILURE_PENALTY, grasp_metrics, lift_reward, lift_potential, progress_reward, cube_clearance
+from .rewards import FAILURE_PENALTY, grasp_metrics, lift_reward, lift_potential, progress_reward, object_clearance
 
 
 class LiftEnv(DirectRLEnv):
     def __init__(self, cfg, render_mode=None, **kwargs):
-        if cfg.reward_version not in (1, 3):
-            raise ValueError("Unsupported lift reward/success version; corrected training requires version 3")
+        if cfg.reward_version not in (1, 4):
+            raise ValueError("Unsupported lift reward/success version; corrected training requires version 4")
         super().__init__(cfg, render_mode, **kwargs)
         self.robot, self.object = self.scene["robot"], self.scene["object"]
         ids, names = self.robot.find_joints(list(JOINT_NAMES), preserve_order=True)
@@ -118,19 +119,24 @@ class LiftEnv(DirectRLEnv):
         pd, fd, grasp = grasp_metrics(pos, palm, tips)
         height = pos[:, 2] - self.scene.env_origins[:, 2]
         distance = (self.goal - pos).norm(dim=-1)
-        if self.cfg.reward_version == 3:
+        if self.cfg.reward_version == 4:
             xy_error = (pos[:, :2] - self.goal[:, :2]).norm(dim=-1)
             target_lift = self.goal[:, 2] - self.scene.env_origins[:, 2] - self.cfg.object_initial_height
             tip_distances = (tips - pos[:, None]).norm(dim=-1)
-            clearance = cube_clearance(height, self.object.data.root_quat_w.torch, self.cfg.table_height)
+            clearance = object_clearance(height, self.object.data.root_quat_w.torch, self.cfg.table_height, self.cfg.asset_shape, self.cfg.asset_dimensions)
             potential, grip, lifted = lift_potential(pd, tip_distances, height,
                 xy_error, target_lift, self.cfg.object_initial_height, clearance)
+            contact_grasp, contacts, forces = measured_grasp(self)
+            potential = potential - 10 * lifted * (1 - contact_grasp.float()) * grip
+            grip = grip * contact_grasp.float()
             previous = torch.where(self.potential_valid, self.previous_potential, potential)
             reward = progress_reward(potential, previous, self.last_success, self.last_failure,
                 actions, previous_actions, xy_error, grip, lifted, dt=self.step_dt)
             self.previous_potential.copy_(torch.where(self.invalid_pose, 0., potential))
             self.potential_valid.fill_(True)
-            self.extras["log"].update({"Metrics/soft_grip": torch.where(self.invalid_pose, 0., grip).mean(),
+            self.extras["log"].update({"Metrics/contact_grasp_fraction": contact_grasp.float().mean(),
+                "Metrics/fingertip_contacts": contacts.float().sum(-1).mean(),
+                "Metrics/soft_grip": torch.where(self.invalid_pose, 0., grip).mean(),
                 "Metrics/lift_cm": (torch.where(self.invalid_pose, self.cfg.object_initial_height, height)
                                     - self.cfg.object_initial_height).mean() * 100})
             # Compare commands actually submitted after smoothing with physical state.
@@ -153,7 +159,8 @@ class LiftEnv(DirectRLEnv):
                 "Metrics/wrj0_effort_estimate_nm": torch.nan_to_num(effort[:, 7]).mean(),
                 "Metrics/thumb_distance_cm": torch.nan_to_num(tip_distances[:, -1]).mean() * 100,
                 "Metrics/palm_distance_cm": torch.nan_to_num(pd).mean() * 100,
-                "Metrics/grasp_fraction": grasp.float().mean(),
+                "Metrics/grasp_fraction": contact_grasp.float().mean(),
+                "Metrics/proximity_grasp_fraction": grasp.float().mean(),
                 "Metrics/clearance_above_5mm_fraction": (clearance > .005).float().mean()})
         else:
             reward = lift_reward(pd, fd, grasp, height, distance, actions, previous_actions,
@@ -176,12 +183,14 @@ class LiftEnv(DirectRLEnv):
     def _get_dones(self):
         pos, palm, tips = self._geometry()
         _, _, grasp = grasp_metrics(pos, palm, tips)
+        if self.cfg.reward_version == 4:
+            grasp, contacts, forces = measured_grasp(self)
         rotation = self.object.data.root_quat_w.torch
         velocity = self.object.data.root_lin_vel_w.torch
         self._check_pose(pos, rotation, velocity, palm, tips)
         stable = velocity.norm(dim=-1) < 0.15
         local = pos - self.scene.env_origins
-        if self.cfg.reward_version == 3:
+        if self.cfg.reward_version == 4:
             stage_height = self.goal[:, 2] - self.scene.env_origins[:, 2] - self.cfg.object_initial_height
             required_height = self.cfg.object_initial_height + stage_height
             # Compare absolute local heights to avoid subtraction roundoff at the upper boundary.
@@ -193,11 +202,12 @@ class LiftEnv(DirectRLEnv):
             at_goal = (self.goal - pos).norm(dim=-1) < .05
         dropped = local[:, 2] < self.cfg.table_height - 0.15
         escaped = (local[:, :2].abs() > 1.5).any(-1)
-        failure = dropped | escaped | self.invalid_action | self.invalid_pose
+        collision = forbidden_contact(self) if self.cfg.reward_version == 4 else torch.zeros_like(dropped)
+        failure = dropped | escaped | self.invalid_action | self.invalid_pose | collision
         holding = grasp & stable & at_goal & ~failure
-        if self.cfg.reward_version == 3:
+        if self.cfg.reward_version == 4:
             local_height = pos[:, 2] - self.scene.env_origins[:, 2]
-            holding &= cube_clearance(local_height, rotation, self.cfg.table_height) > .005
+            holding &= object_clearance(local_height, rotation, self.cfg.table_height, self.cfg.asset_shape, self.cfg.asset_dimensions) > .005
         self.hold_steps = torch.where(holding, self.hold_steps + 1, 0)
         success = self.hold_steps >= self.cfg.success_hold_steps
         timeout = (self.episode_length_buf >= self.max_episode_length - 1) & ~(success | failure)
@@ -205,13 +215,15 @@ class LiftEnv(DirectRLEnv):
         self.episode_max_lift.copy_(torch.maximum(self.episode_max_lift, lift))
         reason = torch.where(success, 1, torch.where(dropped, 2, torch.where(escaped, 3, torch.where(timeout, 4, 0))))
         reason = torch.where(self.invalid_pose, 6, torch.where(self.invalid_action, 5, reason))
+        reason = torch.where(collision, 7, reason)
         self.extras["terminal_reason"] = reason.clone()
         self.extras["episode_max_lift_m"] = self.episode_max_lift.clone()
         self.last_success.copy_(success)
         self.last_failure.copy_(failure)
         self.extras["success"] = success.clone()
-        self.extras["log"] = {"Metrics/success": success.float().mean()}
-        if self.cfg.reward_version == 3:
+        self.extras["log"] = {"Metrics/success": success.float().mean(),
+                              "Metrics/forbidden_contact": collision.float().mean()}
+        if self.cfg.reward_version == 4:
             self.total_episodes.add_((success | failure | timeout).sum())
             self.total_successes.add_(success.sum())
             self.extras["log"].update({
@@ -223,7 +235,7 @@ class LiftEnv(DirectRLEnv):
     def _reset_idx(self, env_ids):
         if env_ids is None:
             env_ids = torch.arange(self.num_envs, device=self.device)
-        if self.cfg.reward_version == 3 and self.cfg.curriculum_enabled:
+        if self.cfg.reward_version == 4 and self.cfg.curriculum_enabled:
             finished = self.episode_length_buf[env_ids] > 0
             self.curriculum.observe(int(finished.sum().item()),
                 int((self.last_success[env_ids] & finished).sum().item()))

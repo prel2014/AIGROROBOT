@@ -16,6 +16,8 @@ def main():
     parser.add_argument("--num_envs", type=int, default=1, help="Robot replicas on this GPU")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--instruction", default=None, help="Text paired with every recorded RGB/state frame")
+    from dexman.tasks.manipulation.scenarios import add_scenario_argument, configure_scenario
+    add_scenario_argument(parser)
     add_launcher_args(parser)
     args = parser.parse_args()
     if args.episodes < 1 or args.max_attempts < args.episodes or args.num_envs < 1:
@@ -23,13 +25,18 @@ def main():
     checkpoint = Path(args.checkpoint).resolve(strict=True)
     from dexman.tasks.lift.config import CorrectedVisualLiftEnvCfg
     cfg = CorrectedVisualLiftEnvCfg()
+    configure_scenario(cfg, args.scenario)
     from dexman.agents.checkpoint import validate_teacher
     validate_teacher(checkpoint, cfg)
     cfg.scene.num_envs = args.num_envs
     cfg.seed = args.seed
     if args.instruction is not None:
-        if not args.instruction.strip():
-            parser.error("instruction must contain text")
+        from dexman.tasks.manipulation.scenarios import SITUATIONS, instructions
+        allowed = [cfg.instruction]
+        if args.scenario != "red_cube":
+            allowed = [instructions(next(s for s in SITUATIONS if s.name == args.scenario))[0]]
+        if args.instruction not in allowed:
+            parser.error("This teacher only labels its trained lift objective. Do not relabel lifts as push/place demonstrations.")
         cfg.instruction = args.instruction
     with launch_simulation(cfg, args):
         import gymnasium as gym

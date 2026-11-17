@@ -1,10 +1,10 @@
 # Contrato del dataset VLA, versión 1.1
 
-La política v4 aprende a predecir 30 ángulos absolutos y actualizar su memoria a partir de tokens espaciales CLIP de RGB, texto y q/dq.
+La política v5 aprende a predecir 30 ángulos absolutos y actualizar su memoria a partir de tokens espaciales CLIP de dos RGB sincronizados, texto y q/dq.
 Las nuevas capturas publican esquema 1.1. También pueden leerse episodios 1.0 del teacher
 corregido v1 si conservan todos los metadatos necesarios para decodificar sus mandos.
-Todos los episodios deben declarar `reward_version=3`,
-`success_criterion=minimum_lift_and_hold_v1`, `minimum_lift_required_m=0.15`,
+Todos los episodios deben declarar `reward_version=4`,
+`success_criterion=opposed_contact_minimum_lift_and_hold_v2`, `minimum_lift_required_m=0.15`,
 `success_lift_overshoot_m=0.025` y `hold_seconds=0.5`. Estos campos se conservan en el
 checkpoint VLA y se comparan con el entorno. Los datos del criterio anterior se recapturan:
 su atributo de éxito no demuestra que alcanzaran los 15 cm mínimos.
@@ -16,6 +16,8 @@ intentos: si el teacher no alcanza el objetivo, el colector falla en vez de grab
 | Campo | Forma por paso | Unidad/contenido |
 |---|---|---|
 | rgb | 224×224×3 | uint8, RGB |
+| rgb_secondary | 224×224×3 | uint8, vista opuesta sincronizada |
+| depth_secondary_m | 224×224×1 | float, profundidad opuesta en m; 0 inválido |
 | depth_m | 224×224×1 | float, distancia al plano de imagen en m; 0 inválido |
 | qpos | 30 | rad, orden `JOINT_NAMES` |
 | qvel | 30 | rad/s, mismo orden |
@@ -29,9 +31,9 @@ intentos: si el teacher no alcanza el objetivo, el colector falla en vez de grab
 
 Los atributos incluyen instrucción, éxito, versión de esquema, orden de juntas/acciones,
 semilla, checkpoint y su SHA-256, intrínsecos, posición mundial y cuaternión ROS de la cámara
-en XYZW. La cámara es fija, por eso su calibración se almacena una vez por episodio.
+en XYZW. Las dos cámaras son fijas: se guardan dos calibraciones por episodio. Los contratos incluyen `camera`, `camera_secondary`, escenario, forma, dimensiones y umbral de contacto. Las capturas de una sola cámara no se reutilizan en v5.
 Las capturas instrumentadas registran el orden de las yemas en `fingertip_contact_names`:
-índice, medio, anular, meñique y pulgar. El campo es opcional para leer capturas anteriores.
+índice, medio, anular, meñique y pulgar. Las capturas nuevas exigen este campo.
 
 Cada fila representa observación(t) y acción(t). Se captura la imagen ANTES de `env.step`:
 Isaac Lab reinicia automáticamente al terminar y la imagen devuelta después podría ser del

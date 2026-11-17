@@ -1,0 +1,22 @@
+{
+  "scenario": "narrow_passage",
+  "theme": "Pasillo con dos barreras",
+  "orders": [
+    "Selecciona el cilindro verde, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+    "Lleva el cilindro verde 25 cm hacia la izquierda, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+    "Empuja el cilindro verde 15 cm hacia X negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+  ],
+  "training": false,
+  "policy_loaded": false,
+  "physics_steps": 8,
+  "target_shape": "cylinder",
+  "target_dimensions": [
+    0.025,
+    0.065
+  ],
+  "minimum_contact_force_n": 0.05,
+  "cameras_for_vla": [
+    "camera",
+    "camera_secondary"
+  ]
+}

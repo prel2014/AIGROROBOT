@@ -1,0 +1,22 @@
+{
+  "scenario": "capsule_detour",
+  "theme": "Desvío hacia la derecha",
+  "orders": [
+    "Selecciona la cápsula naranja, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+    "Lleva la cápsula naranja 20 cm hacia la derecha, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+    "Empuja la cápsula naranja 10 cm hacia Y positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+  ],
+  "training": false,
+  "policy_loaded": false,
+  "physics_steps": 8,
+  "target_shape": "capsule",
+  "target_dimensions": [
+    0.022,
+    0.035
+  ],
+  "minimum_contact_force_n": 0.05,
+  "cameras_for_vla": [
+    "camera",
+    "camera_secondary"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "scenario": "clear_bench",
+  "theme": "Banco despejado: agarre y sostén",
+  "orders": [
+    "Selecciona el cubo rojo, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+    "Lleva el cubo rojo 15 cm hacia delante, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+    "Empuja el cubo rojo 5 cm hacia X positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+  ],
+  "training": false,
+  "policy_loaded": false,
+  "physics_steps": 8,
+  "target_shape": "box",
+  "target_dimensions": [
+    0.05,
+    0.05,
+    0.05
+  ],
+  "minimum_contact_force_n": 0.05,
+  "cameras_for_vla": [
+    "camera",
+    "camera_secondary"
+  ]
+}

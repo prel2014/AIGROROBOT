@@ -5,6 +5,25 @@ import torch
 FAILURE_PENALTY = 10.0
 
 
+def object_clearance(center_height, quaternion_xyzw, table_height, shape, dimensions):
+    """Exact vertical support of each procedural rigid primitive."""
+    x, y, z, w = quaternion_xyzw.unbind(-1)
+    row = torch.stack((2*(x*z-w*y), 2*(y*z+w*x), 1-2*(x*x+y*y)), -1)
+    if shape == "box":
+        support = (row.abs() * row.new_tensor(dimensions).mul(.5)).sum(-1)
+    elif shape == "sphere":
+        support = torch.full_like(center_height, dimensions[0])
+    elif shape == "cylinder":
+        radius, height = dimensions
+        support = radius * (1-row[:, 2].square()).clamp_min(0).sqrt() + height*.5*row[:, 2].abs()
+    elif shape == "capsule":
+        radius, length = dimensions
+        support = radius + length*.5*row[:, 2].abs()
+    else:
+        raise ValueError(f"Unknown collision primitive: {shape}")
+    return center_height - support - table_height
+
+
 def grasp_metrics(object_pos, palm_pos, fingertip_pos):
     palm_distance = (object_pos - palm_pos).norm(dim=-1)
     distances = (fingertip_pos - object_pos[:, None, :]).norm(dim=-1)

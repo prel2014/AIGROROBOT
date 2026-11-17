@@ -4,8 +4,8 @@ import torch
 
 
 def collate(samples, processor):
-    images = [image for sample in samples for image in sample["image"]]
-    text = [sample["text"] for sample in samples for _ in sample["image"]]
+    images = [view for sample in samples for pair in sample["image"] for view in pair]
+    text = [sample["text"] for sample in samples for _ in sample["image"] for _ in range(2)]
     result = dict(processor(images=images, text=text, padding=True, truncation=True, return_tensors="pt"))
     for key in ("state", "joint_angles", "mask"):
         result[key] = torch.from_numpy(np.stack([sample[key] for sample in samples]))
@@ -44,8 +44,8 @@ def epoch(model, loader, device, optimizer=None):
             robots, steps = state.shape[:2]
             # CLIP is frozen. Encode real frames in bounded batches before unrolling the trainable memory.
             encoded_batches = [
-                model.encode(**{key: value[start:start + robots].to(device) for key, value in batch.items()})
-                for start in range(0, len(batch["pixel_values"]), robots)
+                model.encode(**{key: value[start:start + 2*robots].to(device) for key, value in batch.items()})
+                for start in range(0, len(batch["pixel_values"]), 2*robots)
             ]
             features = {}
             for key in ("vision_tokens", "text_embedding"):

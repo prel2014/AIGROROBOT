@@ -1,21 +1,26 @@
 """Pure tensor task metrics and rewards; no simulator dependencies."""
 import torch
+from .catalog import TASKS
 
 
-def task_metrics(task_ids, positions, goals, palms, tips, speeds, clearance, violated, initial_height=.625):
+def task_metrics(task_ids, positions, goals, palms, tips, speeds, clearance, violated, initial_height=.625, contact_grasp=None):
     """Return potential, instantaneous success condition and persistent push violation.
 
-    Fingertip proximity is a grasp proxy, not evidence of measured contact forces.
+    Measured opposed contact is required for lift/transport acceptance.
     Push tasks must remain on the tabletop throughout the episode.
     """
-    lifting = task_ids == 0
+    lifting = torch.tensor([task.kind != "push" for task in TASKS], device=task_ids.device)[task_ids]
     distance = (positions - goals).norm(dim=-1)
     tip_distance = (tips - positions[:, None]).norm(dim=-1)
-    grasp = (tip_distance[:, -1] < .09) & ((tip_distance[:, :-1] < .09).sum(-1) >= 2)
+    if contact_grasp is None:
+        raise ValueError("Measured opposed contact is required for task scoring")
+    grasp = contact_grasp
     violated = violated | (~lifting & ((clearance > .015) | (positions[:, 2] < initial_height - .03)))
     stable = speeds < .10
     supported = (clearance.abs() < .01) & ((positions[:, 2] - initial_height).abs() < .015)
-    success = (distance < .025) & stable & torch.where(lifting, grasp & (clearance > .005), supported)
+    horizontal = (positions[:, :2] - goals[:, :2]).norm(dim=-1) < .025
+    height_ok = (positions[:, 2] >= goals[:, 2]) & (positions[:, 2] <= goals[:, 2] + .025)
+    success = stable & torch.where(lifting, horizontal & height_ok & grasp & (clearance > .005), (distance < .025) & supported)
     success &= ~violated
     approach = 1 - torch.tanh(4 * (positions - palms).norm(dim=-1))
     fingers = 1 - torch.tanh(8 * tip_distance.mean(-1))

@@ -4,7 +4,7 @@ from collections import Counter
 
 import numpy as np
 
-REASONS = {1: "success", 2: "dropped", 3: "escaped", 4: "timeout", 5: "invalid_action", 6: "invalid_pose"}
+REASONS = {1: "success", 2: "dropped", 3: "escaped", 4: "timeout", 5: "invalid_action", 6: "invalid_pose", 7: "forbidden_contact"}
 
 
 def summarize(records, requested, latencies=(), elapsed_s=None):

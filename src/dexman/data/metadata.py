@@ -15,6 +15,9 @@ def teacher_metadata(checkpoint, cfg, sample_kind="teacher_demonstration"):
         "depth_invalid": 0., "seed": cfg.seed, "task": TEACHER_TASK, "sample_kind": sample_kind,
         "arm_half_range_rad": cfg.arm_half_range, "reward_version": cfg.reward_version,
         "success_criterion": cfg.success_criterion, "minimum_lift_required_m": cfg.lift_height,
+        "minimum_contact_force_n": cfg.minimum_contact_force_n,
+        "scenario_name": cfg.scenario_name, "asset_shape": cfg.asset_shape,
+        "asset_dimensions": list(cfg.asset_dimensions),
         "success_lift_overshoot_m": cfg.success_lift_overshoot_m,
         "hold_seconds": cfg.success_hold_steps * cfg.sim.dt * cfg.decimation,
         "action_center_q": list(cfg.action_center), "arm_center_q": list(cfg.arm_center),
@@ -25,5 +28,6 @@ def teacher_metadata(checkpoint, cfg, sample_kind="teacher_demonstration"):
         "robot_sha256": sha256(ROBOT_USD), "joint_manifest_sha256": sha256(JOINT_MANIFEST),
         "control_hz": 1 / (cfg.sim.dt * cfg.decimation), "target_lift_m": cfg.lift_height,
         "camera": camera_signature(cfg.scene.camera),
+        "camera_secondary": camera_signature(cfg.scene.camera_secondary),
         "fingertip_contact_names": list(FINGERTIPS),
         "reset": "calibrated_pregrasp", "independent_finger_supervision": False}

@@ -47,3 +47,6 @@ assets/robots/**/robot_before_drive_fix.usda
 .cache/
 wandb/
 runs/
+
+# Local archives are not source assets
+*.zip

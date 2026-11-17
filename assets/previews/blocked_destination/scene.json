@@ -1,0 +1,23 @@
+{
+  "scenario": "blocked_destination",
+  "theme": "Destino ocupado: detenerse y solicitar otro destino",
+  "orders": [
+    "Selecciona el cubo violeta, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+    "Lleva el cubo violeta 20 cm hacia la izquierda, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+    "Empuja el cubo violeta 8 cm hacia Y negativo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+  ],
+  "training": false,
+  "policy_loaded": false,
+  "physics_steps": 8,
+  "target_shape": "box",
+  "target_dimensions": [
+    0.05,
+    0.05,
+    0.05
+  ],
+  "minimum_contact_force_n": 0.05,
+  "cameras_for_vla": [
+    "camera",
+    "camera_secondary"
+  ]
+}

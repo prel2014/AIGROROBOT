@@ -1,0 +1,22 @@
+{
+  "scenario": "warehouse",
+  "theme": "Transporte entre cajas de almacén",
+  "orders": [
+    "Selecciona la lata metálica, eleva ese objeto 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos.",
+    "Lleva la lata metálica 25 cm en X y -12 cm en Y, baja el objeto y suéltalo sobre la mesa. Si ves obstáculos, esquívalos.",
+    "Empuja la lata metálica 5 cm hacia X positivo sin levantar ese objeto ni mover los demás. Si ves obstáculos, esquívalos."
+  ],
+  "training": false,
+  "policy_loaded": false,
+  "physics_steps": 8,
+  "target_shape": "cylinder",
+  "target_dimensions": [
+    0.028,
+    0.07
+  ],
+  "minimum_contact_force_n": 0.05,
+  "cameras_for_vla": [
+    "camera",
+    "camera_secondary"
+  ]
+}

@@ -16,6 +16,8 @@ def main():
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument("--instruction", default=None)
     parser.add_argument("--output", default="logs/vla_eval.json")
+    from dexman.tasks.manipulation.scenarios import add_scenario_argument, configure_scenario
+    add_scenario_argument(parser)
     add_launcher_args(parser)
     args = parser.parse_args()
     if min(args.num_envs, args.episodes, args.max_steps, args.execute_steps) < 1:
@@ -31,6 +33,7 @@ def main():
     from dexman.vla.contract import VLA_TASK, check_environment_contract
 
     cfg = JointAngleVisualLiftEnvCfg()
+    configure_scenario(cfg, args.scenario)
     cfg.scene.num_envs, cfg.seed = args.num_envs, args.seed
     if args.instruction is not None:
         if not args.instruction.strip():
@@ -39,9 +42,6 @@ def main():
     # Validate checkpoint semantics on CPU before allocating a second GPU simulation.
     policy = VisualPolicy(checkpoint, "cpu", args.num_envs, args.execute_steps)
     contract = policy.predictor.robot_contract
-    if "camera" not in contract:
-        from dexman.sensors.camera import camera_cfg
-        cfg.scene.camera = camera_cfg(legacy=True)
     check_environment_contract(contract, cfg)
     with launch_simulation(cfg, args):
         import gymnasium as gym

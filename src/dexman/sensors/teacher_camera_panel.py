@@ -6,7 +6,7 @@ from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 
 
 class TeacherCameraPanel:
-    def __init__(self, camera, num_envs, instruction):
+    def __init__(self, camera, num_envs, instruction, title="Cámaras RGB-D"):
         import omni.ui as ui
 
         self.camera = camera
@@ -16,7 +16,7 @@ class TeacherCameraPanel:
         self._far = 1.5
         self._last_replica = None
         self._next_update = 0.0
-        self.window = ui.Window("Cámara RGB-D del teacher", width=490, height=368, visible=True)
+        self.window = ui.Window(title, width=490, height=368, visible=True)
         with self.window.frame:
             with ui.VStack(spacing=6):
                 ui.Label(f"Orden de la tarea · {instruction}", word_wrap=True, height=34)
@@ -65,15 +65,18 @@ class TeacherCameraVecEnv(RslRlVecEnvWrapper):
     def __init__(self, env):
         super().__init__(env, clip_actions=1.)
         raw = self.unwrapped
-        self._panel = TeacherCameraPanel(raw.scene["camera"], raw.num_envs, raw.cfg.instruction)
+        self._panel = TeacherCameraPanel(raw.scene["camera"], raw.num_envs, raw.cfg.instruction, "RGB-D · vista frontal")
+        self._secondary_panel = TeacherCameraPanel(raw.scene["camera_secondary"], raw.num_envs, raw.cfg.instruction, "RGB-D · vista opuesta")
 
     def step(self, actions):
         result = super().step(actions)
         self._panel.refresh()
+        self._secondary_panel.refresh()
         return result
 
     def close(self):
         try:
             self._panel.close()
+            self._secondary_panel.close()
         finally:
             super().close()

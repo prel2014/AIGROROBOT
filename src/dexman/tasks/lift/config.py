@@ -29,7 +29,7 @@ class LiftEnvCfg(DirectRLEnvCfg):
     lift_height = 0.15
     success_hold_steps = 15
     action_smoothing = 0.25
-    instruction = "Pick up the red cube and hold it above the table."
+    instruction = "Levanta el cubo rojo al menos 15 cm y sostenlo medio segundo. Si ves obstáculos, esquívalos."
     reward_version = 1
     object_xy_range = 0.06
     arm_half_range = 1.2
@@ -44,7 +44,7 @@ class VisualSceneCfg(LiftSceneCfg):
 
 
 @configclass
-class CorrectedVisualSceneCfg(VisualSceneCfg):
+class ContactSceneCfg(LiftSceneCfg):
     def __post_init__(self):
         super().__post_init__()
         self.robot.spawn.activate_contact_sensors = True
@@ -52,7 +52,15 @@ class CorrectedVisualSceneCfg(VisualSceneCfg):
             setattr(self, fingertip, ContactSensorCfg(
                 prim_path="{ENV_REGEX_NS}/Robot/Hand/" + fingertip,
                 filter_prim_paths_expr=["{ENV_REGEX_NS}/Object"],
+                track_contact_points=True, track_friction_forces=True,
+                update_period=0.0,
             ))
+
+
+@configclass
+class CorrectedVisualSceneCfg(ContactSceneCfg):
+    camera = camera_cfg()
+    camera_secondary = camera_cfg(secondary=True)
 
 
 @configclass
@@ -65,8 +73,13 @@ class VisualLiftEnvCfg(LiftEnvCfg):
 
 @configclass
 class CorrectedLiftEnvCfg(LiftEnvCfg):
-    reward_version = 3
-    success_criterion = "minimum_lift_and_hold_v1"
+    reward_version = 4
+    scene = ContactSceneCfg(num_envs=32, env_spacing=3.5, replicate_physics=True)
+    minimum_contact_force_n = .05
+    asset_shape = "box"
+    asset_dimensions = (.05, .05, .05)
+    scenario_name = "red_cube"
+    success_criterion = "opposed_contact_minimum_lift_and_hold_v2"
     success_lift_overshoot_m = .025
     action_smoothing = 0.05
     object_xy_range = 0.02
@@ -92,16 +105,17 @@ class CorrectedLiftEnvCfg(LiftEnvCfg):
 
 @configclass
 class TeacherCameraEnvCfg(CorrectedLiftEnvCfg):
-    scene = VisualSceneCfg(num_envs=32, env_spacing=3.5, replicate_physics=True)
+    scene = CorrectedVisualSceneCfg(num_envs=32, env_spacing=3.5, replicate_physics=True)
     num_rerenders_on_reset = 1
 
     def __post_init__(self):
         super().__post_init__()
         self.scene.camera_body, self.scene.camera_lens, self.scene.camera_stand = camera_rig_cfg(self.table_height)
+        self.scene.camera_secondary_body, self.scene.camera_secondary_lens, self.scene.camera_secondary_stand = camera_rig_cfg(self.table_height, secondary=True)
 
 
 @configclass
-class CorrectedVisualLiftEnvCfg(CorrectedLiftEnvCfg):
+class CorrectedVisualLiftEnvCfg(TeacherCameraEnvCfg):
     scene = CorrectedVisualSceneCfg(num_envs=1, env_spacing=3.5, replicate_physics=True)
     num_rerenders_on_reset = 1
     # Evaluation and demonstrations always require the final 15 cm objective.

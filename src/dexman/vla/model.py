@@ -78,7 +78,7 @@ class ActionTransformer(nn.Module):
         if (vision_tokens.shape != (batch, self.vision_tokens, self.embedding_dim)
                 or text_embedding.shape != (batch, self.embedding_dim)
                 or state.shape != (batch, 60) or memory.shape != (batch, self.memory_dim)):
-            raise ValueError("Expected vision [B,50,512], text [B,512], state [B,60], memory [B,256]")
+            raise ValueError("Expected vision [B,100,512], text [B,512], state [B,60], memory [B,256]")
         vision = self.image_projection(vision_tokens) + self.visual_positions + self.token_types[0]
         text = self.text_projection(text_embedding) + self.token_types[1]
         proprioception = self.state_projection(state) + self.token_types[2]
@@ -133,7 +133,7 @@ class ActionChunkPolicy(nn.Module):
         if (self.backbone.config.projection_dim != 512 or vision.image_size != 224 or vision.patch_size != 32
                 or vision.hidden_size != 768 or vision.num_hidden_layers != 12 or vision.num_attention_heads != 12
                 or text.hidden_size != 512 or text.num_hidden_layers != 12 or text.num_attention_heads != 8):
-            raise ValueError("VLA v4 requires frozen CLIP ViT-B/32 with 50 projected 512-dimensional vision tokens")
+            raise ValueError("VLA v5 requires frozen CLIP ViT-B/32 with 50 projected 512-dimensional vision tokens")
 
     def train(self, mode=True):
         super().train(mode)
@@ -141,7 +141,12 @@ class ActionChunkPolicy(nn.Module):
         return self
 
     def encode(self, **inputs):
-        return clip_spatial_features(self.backbone, inputs)
+        features = clip_spatial_features(self.backbone, inputs)
+        count = features["vision_tokens"].shape[0]
+        if count % 2:
+            raise ValueError("CLIP input must contain synchronized camera pairs")
+        return {"vision_tokens": features["vision_tokens"].reshape(count//2, 100, 512),
+                "text_embedding": features["text_embedding"].reshape(count//2, 2, 512)[:, 0]}
 
     def forward(self, vision_tokens, text_embedding, state, memory):
         """Return [B,horizon,30] absolute radians and bounded [B,256] next memory."""

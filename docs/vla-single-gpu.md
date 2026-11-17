@@ -1,10 +1,12 @@
+> Estado actual: VLA v5 con dos vistas y criterio de contacto v4; recapturar datos y entrenar desde cero. Ver [README](../README.md) y [escenarios](../assets/procedural/README.md).
+
 # Transformer con memoria, varios robots en una GPU
 
 Este escenario usa réplicas de simulación (`num_envs`) en un único proceso y una única GPU.
 Cada réplica tiene UR10e, Shadow Hand, mesa, cubo con posición aleatoria y cámara RGB-D.
 Los robots comparten la política; no se entrena una red independiente por robot.
 
-**VLA v4.** Recibe tokens espaciales de CLIP para RGB, embedding de texto, estado articular y memoria.
+**VLA v5.** Recibe tokens espaciales de CLIP para RGB, embedding de texto, estado articular y memoria.
 Devuelve objetivos para las 30 juntas, incluidas las falanges, y memoria actualizada.
 
 El teacher del lanzador usa la tarea corregida **v1** y el directorio PPO
@@ -27,15 +29,14 @@ nueva y exigen empezar sin `-Resume` ni `-Checkpoint`. La corrida activa no camb
 
 ## Modelo
 
-- CLIP ViT-B/32 congelado produce 50 tokens visuales (49 parches + CLS) de 512 valores y un embedding de texto de 512.
+- CLIP ViT-B/32 congelado produce 100 tokens visuales (49 parches + CLS por cámara) de 512 valores y un embedding de texto de 512.
 - El Transformer proyecta cada modalidad al ancho 256 y concatena visión, texto, estado y memoria sobre el eje de tokens.
 - Usa seis bloques de atención de ocho cabezas; recibe 60 valores articulares (q/dq) normalizados con train y memoria de 256 valores.
 - Devuelve 8 × 30 ángulos en radianes y el siguiente embedding de memoria. El entrenamiento por imitación usa secuencias contiguas y máscaras al final del episodio.
 
 `teacher` entrena PPO con actor y crítico Transformer de estado; `train` entrena el VLA por
 imitación. `evaluate` usa `Dexman-UR10e-Shadow-Lift-VLA-v2`, que recibe 30 ángulos. Los checkpoints
-v4 guardan contrato, arquitectura, pesos, optimizador y época. Para cambiar desde un estudiante
-v3, vuelve a entrenar con las demostraciones HDF5 compatibles.
+v5 guardan contrato, arquitectura, pesos, optimizador y época. Para cambiar desde un estudiante anterior, recaptura demostraciones sincronizadas de ambas cámaras y vuelve a entrenar.
 
 Es un baseline apropiado para probar el flujo con una tarea acotada. CLIP no aporta por sí solo precisión de agarre;
 hay que medir éxito en el simulador. Una instrucción y un cubo no permiten demostrar comprensión de lenguaje,

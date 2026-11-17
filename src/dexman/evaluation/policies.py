@@ -23,7 +23,8 @@ class VisualPolicy:
         self.controller = ChunkController(self.predictor, num_envs, execute_steps)
 
     def act(self, raw, observations):
-        images = raw.scene["camera"].data.output["rgb"].torch[..., :3].to(torch.uint8).cpu().numpy()
+        images = torch.stack([raw.scene[name].data.output["rgb"].torch[..., :3]
+                              for name in ("camera", "camera_secondary")], dim=1).to(torch.uint8).cpu().numpy()
         qpos = raw.robot.data.joint_pos.torch[:, raw.joint_ids].cpu().numpy()
         qvel = raw.robot.data.joint_vel.torch[:, raw.joint_ids].cpu().numpy()
         targets = self.controller.act(images, [raw.cfg.instruction] * raw.num_envs, qpos, qvel)

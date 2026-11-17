@@ -111,6 +111,9 @@ def teacher_contract(cfg):
             "physics_dt": cfg.sim.dt, "decimation": cfg.decimation, "reward_version": cfg.reward_version,
             "episode_length_s": cfg.episode_length_s, "success_hold_steps": cfg.success_hold_steps,
             "success_criterion": cfg.success_criterion,
+            "minimum_contact_force_n": cfg.minimum_contact_force_n,
+            "asset_shape": cfg.asset_shape, "asset_dimensions": list(cfg.asset_dimensions),
+            "scenario_name": cfg.scenario_name,
             "success_lift_overshoot_m": cfg.success_lift_overshoot_m,
             "object_xy_range": cfg.object_xy_range, "gravity_compensation": cfg.gravity_compensation,
             "robot_sha256": sha256(ROBOT_USD), "joints_sha256": sha256(JOINT_MANIFEST)}

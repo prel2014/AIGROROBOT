@@ -6,7 +6,11 @@ from dexman.robot.joints import FINGERTIPS
 
 def calibration(env, index=0):
     camera = env.scene["camera"]
-    return {"camera_intrinsics": camera.data.intrinsic_matrices.torch[index].cpu().numpy(),
+    secondary = env.scene["camera_secondary"]
+    return {"camera_secondary_intrinsics": secondary.data.intrinsic_matrices.torch[index].cpu().numpy(),
+            "camera_secondary_position_world": secondary.data.pos_w.torch[index].cpu().numpy(),
+            "camera_secondary_quaternion_ros_xyzw": secondary.data.quat_w_ros.torch[index].cpu().numpy(),
+            "camera_intrinsics": camera.data.intrinsic_matrices.torch[index].cpu().numpy(),
             "camera_position_world": camera.data.pos_w.torch[index].cpu().numpy(),
             "camera_quaternion_ros_xyzw": camera.data.quat_w_ros.torch[index].cpu().numpy()}
 
@@ -20,6 +24,10 @@ def observation_frame(env, index=0):
         "qpos": env.robot.data.joint_pos.torch[index, env.joint_ids].cpu().numpy().copy(),
         "qvel": env.robot.data.joint_vel.torch[index, env.joint_ids].cpu().numpy().copy(),
     }
+    secondary = env.scene["camera_secondary"].data.output
+    frame["rgb_secondary"] = secondary["rgb"].torch[index, ..., :3].to(torch.uint8).cpu().numpy().copy()
+    frame["depth_secondary_m"] = torch.nan_to_num(secondary["distance_to_image_plane"].torch[index],
+        nan=0., posinf=0., neginf=0.).cpu().numpy()
     sensors = getattr(env.scene, "sensors", {})
     if FINGERTIPS[0] in sensors:
         forces = torch.stack([

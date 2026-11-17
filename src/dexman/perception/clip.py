@@ -51,3 +51,13 @@ def prepare_inputs(processor, images, instructions, device):
     inputs = processor(images=list(images), text=list(instructions), padding=True,
                        truncation=True, return_tensors="pt")
     return {key: value.to(device) for key, value in inputs.items()}
+
+
+def prepare_multiview_inputs(processor, images, instructions, device):
+    """Two ordered RGB views per robot; duplicate text only for frozen CLIP encoding."""
+    if len(images) != len(instructions) or not len(images):
+        raise ValueError("Expected paired RGB views and one instruction per robot")
+    if any(len(pair) != 2 for pair in images):
+        raise ValueError("Exactly two RGB views per robot are required")
+    return prepare_inputs(processor, [view for pair in images for view in pair],
+                          [text for text in instructions for _ in range(2)], device)
