@@ -14,7 +14,7 @@
 | `lighting`, `obstacles` | `[2]`, `[11,5]` | Intensidad y temperatura de color. Posición, radio y presencia de cada obstáculo |
 | `next_contact`, `next_target_pose` | `[2,5]`, `[7]` | Contactos de yemas y pose local de la fruta después del comando |
 
-RGB-D, estado y fase corresponden al instante previo al comando. `reward` y `done` se refieren a la transición ejecutada. La orden, el resultado y la calibración se guardan como atributos por episodio. Los archivos `.partial` identifican capturas interrumpidas.
+RGB-D, estado y fase corresponden al instante previo al comando. `reward` y `done` se refieren a la transición ejecutada. El atributo `instruction` guarda la orden global en español. `subtasks_by_phase` contiene el texto de cada subtarea por ID de fase. Las capturas anteriores conservan `phase` y se pueden leer con el catálogo del cultivo. Los archivos `.partial` identifican capturas interrumpidas.
 
 ## Elevación de un brazo
 

@@ -10,7 +10,7 @@ from isaaclab_physx.physics import PhysxCfg
 from dexman.robot.joints import JOINT_NAMES
 from .interface import ACTION_DIM, ARM_KEYS, EYE_KEYS, JOINTS_PER_ARM
 from .randomization import EpisodeDynamics, apply_variations, sample_episode, write_lighting, write_obstacles
-from .scene import AgriculturalSceneCfg, CROPS, NS, fixed_box, populate_crop
+from .scene import AgriculturalSceneCfg, CROPS, NS, eye, fixed_box, populate_crop
 
 if TYPE_CHECKING:
     import torch
@@ -26,9 +26,10 @@ CONTROL_DECIMATION = 4
 class AgriculturalBatchCfg:
     sim: SimulationCfg
     scenes: SimpleNamespace
+    monitor: SimpleNamespace | None = None
 
 
-def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, contacts=False):
+def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, contacts=False, monitor=False):
     if type(num_envs) is not int or num_envs < len(CROPS):
         raise ValueError(f"Parallel agriculture requires at least {len(CROPS)} replicas")
     base, remaining = divmod(num_envs, len(CROPS))
@@ -54,10 +55,16 @@ def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, contacts=False):
         if index:
             scene.sunlight = scene.fill = None
         scenes[crop] = scene
+    monitor_eyes = None
+    if monitor:
+        monitor_eyes = SimpleNamespace(
+            left=eye(1).replace(prim_path="/World/AgricultureMonitor/LeftEye", width=224, height=224, update_period=0.),
+            right=eye(-1).replace(prim_path="/World/AgricultureMonitor/RightEye", width=224, height=224, update_period=0.),
+        )
     return AgriculturalBatchCfg(
         sim=SimulationCfg(dt=1 / 120, render_interval=CONTROL_DECIMATION, physics=PhysxCfg()),
         # The Isaac Lab launcher discovers camera configurations through object attributes.
-        scenes=SimpleNamespace(**scenes))
+        scenes=SimpleNamespace(**scenes), monitor=monitor_eyes)
 
 
 @dataclass
@@ -102,6 +109,11 @@ class AgriculturalBatch:
         filter_collisions(first_scene.stage, first_scene.physics_scene_path, "/World/AgricultureCollisions",
                           [path for group in self.groups for path in group.scene.env_prim_paths])
         self.num_envs = start
+        self.monitor_eyes = ()
+        if cfg.monitor is not None:
+            from isaaclab.sensors import Camera
+
+            self.monitor_eyes = (Camera(cfg.monitor.left), Camera(cfg.monitor.right))
         self.control_tick = 0
         self.episode_ids = [-1] * self.num_envs
         self.dynamics = [None] * self.num_envs

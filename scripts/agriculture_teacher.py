@@ -1,5 +1,6 @@
 """Train or validate the agricultural bimanual Transformer teacher with RSL-RL PPO."""
 import argparse
+from contextlib import ExitStack
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -37,8 +38,9 @@ def main():
         checkpoint = resolve_checkpoint(args.resume, RUNS, "model_*.pt") if args.resume else None
     except (ValueError, OSError) as error:
         parser.error(str(error))
-    cfg = make_batch_config(args.num_envs, contacts=True)
-    with launch_simulation(cfg, args):
+    show_window = "kit" in (args.visualizer or ())
+    cfg = make_batch_config(args.num_envs, contacts=True, monitor=show_window)
+    with launch_simulation(cfg, args), ExitStack() as ui_lifetime:
         import torch
         from isaaclab.sim import SimulationContext
         from dexman.agents.agriculture import AgriculturalRunner, contract, ppo_config, read_checkpoint
@@ -50,7 +52,14 @@ def main():
         saved = read_checkpoint(checkpoint) if checkpoint else None
         sim = SimulationContext(cfg.sim)
         sim.set_camera_view((23., -25., 36.), (15., 14., 0.))
-        env = AgriculturalPPOEnv(sim, cfg, seed=args.seed, render="kit" in (args.visualizer or ()))
+        env = AgriculturalPPOEnv(sim, cfg, seed=args.seed, render=show_window)
+        if show_window:
+            from dexman.sensors.teacher_camera_panel import AgriculturalCameraPanel
+
+            panel = AgriculturalCameraPanel(env.batch)
+            ui_lifetime.callback(panel.close)
+            env.on_step = panel.refresh
+            panel.refresh()
         agent = ppo_config(args.save_interval)
         if not args.validate:
             output.mkdir(parents=True, exist_ok=False)

@@ -138,8 +138,19 @@ class BimanualActionPolicy(nn.Module):
         return self.head(vision_tokens, text_embedding, depth, state, memory)
 
     @torch.inference_mode()
-    def predict(self, processor, rgb, depth, instructions, state, memory):
-        """Apply the policy to synchronized outputs of AgriculturalBatch.rgbd()."""
+    def predict(self, processor, rgb, depth, instructions, state, memory, *, subtasks=None):
+        """Apply the policy to both eyes with an optional active subtask per replica."""
+        if subtasks is not None:
+            if isinstance(subtasks, str) or len(subtasks) != len(instructions):
+                raise ValueError("Expected one active subtask per global instruction")
+            prompts = []
+            for instruction, subtask in zip(instructions, subtasks, strict=True):
+                if any(not isinstance(text, str) or not text.strip() for text in (instruction, subtask)):
+                    raise ValueError("Global instructions and active subtasks must be non-empty text")
+                instruction, subtask = instruction.strip(), subtask.strip()
+                separator = " " if instruction.endswith((".", "!", "?")) else ". "
+                prompts.append(f"{instruction}{separator}Ahora {subtask[0].lower()}{subtask[1:]}")
+            instructions = prompts
         parameter = self.head.rgb_projection.weight
         rgb = rgb.detach().cpu().numpy() if isinstance(rgb, torch.Tensor) else rgb
         inputs = prepare_multiview_inputs(processor, rgb, instructions, parameter.device)

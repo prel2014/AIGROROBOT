@@ -5,6 +5,24 @@ import numpy as np
 from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
 
 
+def _upload(provider, image):
+    height, width = image.shape[:2]
+    rgba = np.full((height, width, 4), 255, dtype=np.uint8)
+    rgba[..., :3] = image[..., None] if image.ndim == 2 else image
+    provider.set_bytes_data(rgba.ravel().data, [width, height])
+
+
+def _refresh_rgbd(camera, replica, rgb_provider, depth_provider, near, far):
+    outputs = camera.data.output
+    rgb = outputs["rgb"].torch[replica, ..., :3].detach().cpu().numpy()
+    depth = outputs["distance_to_image_plane"].torch[replica].squeeze(-1).detach().cpu().numpy()
+    valid = np.isfinite(depth) & (depth > 0)
+    gray = np.zeros(depth.shape, dtype=np.uint8)
+    gray[valid] = (255 * np.clip((far - depth[valid]) / (far - near), 0, 1)).astype(np.uint8)
+    _upload(rgb_provider, rgb)
+    _upload(depth_provider, gray)
+
+
 class TeacherCameraPanel:
     def __init__(self, camera, num_envs, instruction, title="Cámaras RGB-D"):
         import omni.ui as ui
@@ -32,13 +50,6 @@ class TeacherCameraPanel:
                         ui.ImageWithProvider(self._depth, width=224, height=224)
                 ui.Label("Blanco cerca · Negro lejos o sin lectura", height=20)
 
-    @staticmethod
-    def _upload(provider, image):
-        height, width = image.shape[:2]
-        rgba = np.full((height, width, 4), 255, dtype=np.uint8)
-        rgba[..., :3] = image[..., None] if image.ndim == 2 else image
-        provider.set_bytes_data(rgba.ravel().data, [width, height])
-
     def refresh(self):
         if not self.window.visible:
             return
@@ -46,15 +57,67 @@ class TeacherCameraPanel:
         now = monotonic()
         if replica == self._last_replica and now < self._next_update:
             return
-        outputs = self.camera.data.output
-        rgb = outputs["rgb"].torch[replica, ..., :3].detach().cpu().numpy()
-        depth = outputs["distance_to_image_plane"].torch[replica].squeeze(-1).detach().cpu().numpy()
-        valid = np.isfinite(depth) & (depth > 0)
-        gray = np.zeros(depth.shape, dtype=np.uint8)
-        gray[valid] = (255 * np.clip((self._far - depth[valid]) / (self._far - self._near), 0, 1)).astype(np.uint8)
-        self._upload(self._rgb, rgb)
-        self._upload(self._depth, gray)
+        _refresh_rgbd(self.camera, replica, self._rgb, self._depth, self._near, self._far)
         self._last_replica, self._next_update = replica, now + 0.1
+
+    def close(self):
+        self.window.destroy()
+
+
+class AgriculturalCameraPanel:
+    """Use the monitor cameras at the selected replica's calibrated torso eye poses."""
+
+    def __init__(self, batch):
+        import omni.ui as ui
+        import torch
+
+        self._sim = batch.sim
+        self.cameras = batch.monitor_eyes
+        self._origins = torch.cat([group.origins for group in batch.groups])
+        self._offsets = tuple(self._origins.new_tensor(camera.cfg.offset.pos) for camera in self.cameras)
+        self._providers = tuple((ui.ByteImageProvider(), ui.ByteImageProvider()) for _ in self.cameras)
+        self._last_replica = None
+        self._last_physics_step = self._sim.get_physics_step_count()
+        self._next_update = 0.
+        crop_names = {"citrus": "Cítricos", "banana": "Plátano", "vineyard": "Uvas", "berries": "Arándanos"}
+        labels = [f"Robot {index:02d} · {crop_names[group.crop]}" for group in batch.groups
+                  for index in range(group.start, group.stop)]
+
+        self.window = ui.Window("Ojos RGB-D · Teacher agrícola", width=490, height=565, visible=True)
+        with self.window.frame:
+            with ui.VStack(spacing=6):
+                with ui.HStack(height=26, spacing=6):
+                    ui.Label("Robot", width=60)
+                    self._selector = ui.ComboBox(0, *labels)
+                with ui.HStack(spacing=10):
+                    for side, providers in zip(("Izquierdo", "Derecho"), self._providers, strict=True):
+                        with ui.VStack(width=224, spacing=4):
+                            for title, provider in zip(("RGB", "Profundidad"), providers, strict=True):
+                                ui.Label(f"{side} · {title}", height=18)
+                                ui.ImageWithProvider(provider, width=224, height=224)
+                ui.Label("Profundidad 0,055–2,5 m · Blanco cerca · Negro lejos o sin lectura", height=20)
+
+    def refresh(self):
+        from isaaclab.sensors import Camera
+
+        if not self.window.visible:
+            return
+        replica = self._selector.model.get_item_value_model().as_int
+        now = monotonic()
+        if replica == self._last_replica and now < self._next_update:
+            return
+        if replica != self._last_replica:
+            origin = self._origins[replica:replica + 1]
+            for camera, offset in zip(self.cameras, self._offsets, strict=True):
+                # Replica roots differ only by translation; all torsos are fixed.
+                camera.set_world_poses(positions=origin + offset)
+            # Submit the new poses before reading the RTX annotators.
+            self._sim.render()
+        step = self._sim.get_physics_step_count()
+        Camera.update_batch(self.cameras, (step - self._last_physics_step) * self._sim.get_physics_dt())
+        for camera, (rgb, depth) in zip(self.cameras, self._providers, strict=True):
+            _refresh_rgbd(camera, 0, rgb, depth, .055, 2.5)
+        self._last_replica, self._last_physics_step, self._next_update = replica, step, now + .1
 
     def close(self):
         self.window.destroy()

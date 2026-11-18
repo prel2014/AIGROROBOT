@@ -28,6 +28,6 @@ $teacher = 'logs/rsl_rl/agriculture_bimanual/agro_teacher01'
 .\scripts\run.ps1 agriculture_collect --headless --num_envs 64 --checkpoint $teacher --episodes 100 --max-attempts 640 --output datasets/agriculture/agro_demos01
 ```
 
-Para abrir el entrenamiento en una ventana, sustituye `--headless` por `--viz kit`. Para continuar, añade `--resume $teacher` y usa otro `--run-name`. La captura usa una carpeta de salida nueva y conserva episodios exitosos por defecto. Añade `--keep-failures` para guardar también los fallidos.
+Para entrenar en ventana, sustituye `--headless` por `--viz kit`. El panel **Ojos RGB-D · Teacher agrícola** permite elegir un robot y ver el RGB y la profundidad de sus dos ojos. Para continuar, añade `--resume $teacher` y usa otro `--run-name`. La captura usa una carpeta de salida nueva y conserva episodios exitosos por defecto. Añade `--keep-failures` para guardar también los fallidos.
 
 El modelo VLA bimanual está implementado. Su cargador de demostraciones y el entrenamiento del estudiante siguen pendientes. [Formato HDF5](docs/dataset.md) · [USD y capturas](assets/agriculture/README.md) · [Flujo de un brazo](docs/mvp.md)

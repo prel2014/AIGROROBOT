@@ -13,7 +13,7 @@ Cada orden añade «Si ves obstáculos, esquívalos». El simulador comprueba co
 
 ## Formato de demostraciones
 
-La adquisición escribe un HDF5 por episodio y guarda el checkpoint en `dataset.json`. `summary.json` cuenta intentos y éxitos por cultivo. [Campos y unidades](dataset.md#agricultura-bimanual)
+La captura guarda la orden global y la subtarea en español según la fase de cada muestra. La API del VLA acepta el paso activo mediante `subtasks` y lo combina con la orden global antes de CLIP. [Campos y unidades](dataset.md#agricultura-bimanual)
 
 ## Pendiente
 

@@ -8,7 +8,7 @@ import torch
 
 from dexman.experiments import write_json
 from dexman.tasks.agriculture.interface import EYE_KEYS, JOINT_ORDER
-from dexman.tasks.agriculture.objectives import PHASE_TEXT
+from dexman.tasks.agriculture.objectives import PHASE_TEXT, SUBTASKS_BY_CROP
 from dexman.tasks.agriculture.randomization import OBSTACLE_RADIUS
 from .writer import EpisodeWriter
 
@@ -29,7 +29,8 @@ def collect_demonstrations(env, actor, output, metadata, *, episodes, max_attemp
     output.mkdir(parents=True, exist_ok=False)
     metadata = {**metadata, "schema": "dexman.agriculture.demo.v1", "joint_order": list(JOINT_ORDER),
                 "state_layout": "q_left,q_right,dq_left,dq_right", "eye_order": list(EYE_KEYS),
-                "phase_text": list(PHASE_TEXT), "obstacle_order": list(OBSTACLE_RADIUS),
+                "instruction_language": "es", "phase_text": list(PHASE_TEXT),
+                "obstacle_order": list(OBSTACLE_RADIUS),
                 "sample_hz": round(1 / env.dt), "depth_unit": "m",
                 "lighting_fields": ["intensity", "color_temperature_k"],
                 "attempt_limit": max_attempts, "requested_episodes": episodes, "keep_failures": keep_failures}
@@ -50,6 +51,7 @@ def collect_demonstrations(env, actor, output, metadata, *, episodes, max_attemp
         calibration = _calibration(group, index - group.start)
         episode_id = env.batch.episode_ids[index]
         calibration.update(crop=group.crop, replica_id=index, episode_id=episode_id,
+                           subtasks_by_phase=dumps(SUBTASKS_BY_CROP[group.crop], ensure_ascii=False),
                            initial_layout=dumps(asdict(env.batch.dynamics[index].initial)))
         writers[index].start(env.instructions[index], calibration)
         active.add(index)

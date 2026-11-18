@@ -20,6 +20,7 @@ class AgriculturalPPOEnv(VecEnv):
         self.batch.initialize()
         self.device, self.num_envs, self.num_actions = sim.device, self.batch.num_envs, ACTION_DIM
         self.capture, self.render = capture, capture or render
+        self.on_step = None
         self.dt = sim.get_physics_dt() * CONTROL_DECIMATION
         self.max_episode_length = round(EPISODE_SECONDS / self.dt)
         self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
@@ -261,4 +262,6 @@ class AgriculturalPPOEnv(VecEnv):
             self._update_observations()
         else:
             self._update_observations(measurements, angular_state)
+        if self.on_step is not None:
+            self.on_step()
         return self.observation, rewards, done.long(), extras

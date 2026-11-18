@@ -36,3 +36,28 @@ OBJECTIVES = {
     "berries": Objective("Recoge el arándano más cercano al torso con pulgar e índice sin desplazar los demás.", .03,
                          precision=True),
 }
+
+# The text labels describe physical phases without changing the PPO checkpoint contract.
+SUBTASKS_BY_CROP = {
+    "citrus": {
+        REACH: "Agarra la naranja más cercana.",
+        LIFT: "Levanta la naranja 15 cm.",
+        PLACE: "Deposita la naranja en la bandeja izquierda.",
+        SETTLE: "Mantén la naranja estable en la bandeja.",
+    },
+    "banana": {
+        REACH: "Agarra el plátano con la derecha.",
+        LIFT: "Levanta el plátano 10 cm.",
+        TRANSFER: "Sujétalo con la izquierda y luego suelta con la derecha.",
+        PLACE: "Deposita el plátano en la bandeja izquierda.",
+        SETTLE: "Mantén el plátano estable en la bandeja.",
+    },
+    "vineyard": {
+        REACH: "Agarra el racimo evitando la espaldera.",
+        LIFT: "Levanta el racimo 15 cm y sostenlo medio segundo.",
+    },
+    "berries": {
+        REACH: "Pinza el arándano con pulgar e índice.",
+        LIFT: "Levanta el arándano 3 cm y sostenlo sin mover los demás.",
+    },
+}
