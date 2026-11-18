@@ -4,8 +4,9 @@ import torch
 from dexman.robot.joints import FINGERTIPS
 
 
-def opposed_contact_grasp(forces, points, object_pos, minimum_force=.05):
-    """Require thumb + two fingers, including an opposing normal/contact pair.
+def opposed_contact_grasp(forces, points, object_pos, minimum_force=.05, *,
+                          minimum_separation=.015, required_fingers=2):
+    """Require a thumb and the specified number of fingers with an opposing pair.
 
     Forces act on the fingers; filter index zero must be the target object.
     Opposing contacts are a necessary check, not a proof of full force closure.
@@ -18,9 +19,9 @@ def opposed_contact_grasp(forces, points, object_pos, minimum_force=.05):
     radial = radial / radial.norm(dim=-1, keepdim=True).clamp_min(1e-8)
     normal_opposed = (normals[:, :-1] * normals[:, -1:]).sum(-1) < -.5
     position_opposed = (radial[:, :-1] * radial[:, -1:]).sum(-1) < -.25
-    separated = (points[:, :-1] - points[:, -1:]).norm(dim=-1) >= .015
+    separated = (points[:, :-1] - points[:, -1:]).norm(dim=-1) >= minimum_separation
     pair = active[:, :-1] & normal_opposed & position_opposed & separated
-    valid = active[:, -1] & (active[:, :-1].sum(-1) >= 2) & pair.any(-1)
+    valid = active[:, -1] & (active[:, :-1].sum(-1) >= required_fingers) & pair.any(-1)
     return valid, active, magnitude
 
 

@@ -48,15 +48,64 @@ def teacher_architecture():
             "actor": teacher_model_config(True), "critic": teacher_model_config(False)}
 
 
-class StateTransformerModel(nn.Module):
+class StatelessTeacherModel(nn.Module):
+    """RSL-RL interface shared by the privileged Transformer policies."""
+
+    is_recurrent = False
+
+    def forward(self, obs, masks=None, hidden_state=None, stochastic_output=False):
+        if hidden_state is not None:
+            raise ValueError("State-only teacher does not accept recurrent hidden state")
+        obs = unpad_trajectories(obs, masks) if masks is not None else obs
+        output = self.output_head(self.get_latent(obs)).flatten(1)
+        if self.distribution is not None and stochastic_output:
+            self.distribution.update(output)
+            return self.distribution.sample()
+        return output
+
+    def update_normalization(self, obs):
+        if self.obs_normalization and self.update_observation_normalization:
+            self.obs_normalizer.update(obs["policy"])
+
+    def reset(self, dones=None, hidden_state=None):
+        """No temporal state to reset."""
+
+    def get_hidden_state(self):
+        return None
+
+    def detach_hidden_state(self, dones=None):
+        """No temporal state to detach."""
+
+    @property
+    def output_mean(self):
+        return self.distribution.mean
+
+    @property
+    def output_std(self):
+        return self.distribution.std
+
+    @property
+    def output_entropy(self):
+        return self.distribution.entropy
+
+    @property
+    def output_distribution_params(self):
+        return self.distribution.params
+
+    def get_output_log_prob(self, outputs):
+        return self.distribution.log_prob(outputs)
+
+    def get_kl_divergence(self, old_params, new_params):
+        return self.distribution.kl_divergence(old_params, new_params)
+
+
+class StateTransformerModel(StatelessTeacherModel):
     """One-step, state-only Transformer actor or critic; no temporal hidden state.
 
     Thirty tokens pair q/dq by physical joint identity. Three tokens encode geometry,
     twenty-six encode filtered joint targets, and a learned readout token predicts the output.
     RSL-RL owns PPO, the Gaussian distribution and empirical observation statistics.
     """
-
-    is_recurrent = False
 
     def __init__(self, obs, obs_groups, obs_set, output_dim, model_dim=128, num_heads=4,
                  num_layers=3, feedforward_dim=512, obs_normalization=True, distribution_cfg=None,
@@ -118,52 +167,6 @@ class StateTransformerModel(nn.Module):
         for block in self.blocks:
             tokens = block(tokens)
         return self.output_norm(tokens[:, 0])
-
-    def forward(self, obs, masks=None, hidden_state=None, stochastic_output=False):
-        if hidden_state is not None:
-            raise ValueError("State-only teacher does not accept recurrent hidden state")
-        obs = unpad_trajectories(obs, masks) if masks is not None else obs
-        output = self.output_head(self.get_latent(obs))
-        if self.distribution is not None and stochastic_output:
-            self.distribution.update(output)
-            return self.distribution.sample()
-        return output
-
-    def update_normalization(self, obs):
-        if self.obs_normalization and self.update_observation_normalization:
-            self.obs_normalizer.update(obs["policy"])
-
-    def reset(self, dones=None, hidden_state=None):
-        """No temporal state to reset; environments remain independent."""
-
-    def get_hidden_state(self):
-        return None
-
-    def detach_hidden_state(self, dones=None):
-        """No temporal state to detach."""
-
-    @property
-    def output_mean(self):
-        return self.distribution.mean
-
-    @property
-    def output_std(self):
-        return self.distribution.std
-
-    @property
-    def output_entropy(self):
-        return self.distribution.entropy
-
-    @property
-    def output_distribution_params(self):
-        return self.distribution.params
-
-    def get_output_log_prob(self, outputs):
-        return self.distribution.log_prob(outputs)
-
-    def get_kl_divergence(self, old_params, new_params):
-        return self.distribution.kl_divergence(old_params, new_params)
-
 
 def build_teacher_model(obs_set, device="cpu"):
     config = teacher_model_config(obs_set == "actor")

@@ -36,10 +36,12 @@ class EpisodeWriter:
             dataset.resize(dataset.shape[0] + 1, axis=0)
             dataset[-1] = value
 
-    def finish(self, success):
+    def finish(self, success, attributes=None):
         if self.file is None:
             raise RuntimeError("There is no active episode to finish")
         self.file.attrs["success"] = bool(success)
+        if attributes:
+            self.file.attrs.update(attributes)
         self.file.close()
         self.file = None
         if success or not self.success_only:
@@ -47,8 +49,10 @@ class EpisodeWriter:
         else:
             self.path.unlink()
 
-    def abort(self):
+    def abort(self, *, discard=False):
         if self.file is not None:
             self.file.close()
             self.file = None
-            # Preserve .partial to make interrupted capture identifiable.
+            if discard:
+                self.path.unlink()
+            # Preserve accidental interruptions as .partial.

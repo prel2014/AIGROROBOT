@@ -1,0 +1,18 @@
+#usda 1.0
+(
+    defaultPrim = "Blueberries"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Blueberries"
+{
+    float xformOp:rotateX = 90
+    uniform token[] xformOpOrder = ["xformOp:rotateX"]
+
+    def Xform "Geometry" (
+        prepend references = @./blueberries.usdc@
+    )
+    {
+    }
+}

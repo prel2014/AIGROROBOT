@@ -1,0 +1,127 @@
+#usda 1.0
+(
+    defaultPrim = "Torso"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Torso"
+{
+    def "Materials"
+    {
+        def Material "Shell"
+        {
+            token outputs:surface.connect = </Torso/Materials/Shell/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.62, 0.69, 0.67)
+                float inputs:metallic = 0.28
+                float inputs:roughness = 0.35
+                token outputs:surface
+            }
+        }
+
+        def Material "Frame"
+        {
+            token outputs:surface.connect = </Torso/Materials/Frame/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.075, 0.11, 0.13)
+                float inputs:metallic = 0.52
+                float inputs:roughness = 0.42
+                token outputs:surface
+            }
+        }
+
+        def Material "Accent"
+        {
+            token outputs:surface.connect = </Torso/Materials/Accent/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.06, 0.28, 0.25)
+                float inputs:metallic = 0.18
+                float inputs:roughness = 0.32
+                token outputs:surface
+            }
+        }
+    }
+
+    def Mesh "Foundation" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [8, 8, 4, 4, 4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 9, 8, 1, 2, 10, 9, 2, 3, 11, 10, 3, 4, 12, 11, 4, 5, 13, 12, 5, 6, 14, 13, 6, 7, 15, 14, 7, 0, 8, 15]
+        rel material:binding = </Torso/Materials/Frame>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.96, -0.56, 0), (-0.58, -0.56, 0), (-0.48, -0.46, 0), (-0.48, 0.46, 0), (-0.58, 0.56, 0), (-0.96, 0.56, 0), (-1.06, 0.46, 0), (-1.06, -0.46, 0), (-0.96, -0.56, 0.11), (-0.58, -0.56, 0.11), (-0.48, -0.46, 0.11), (-0.48, 0.46, 0.11), (-0.58, 0.56, 0.11), (-0.96, 0.56, 0.11), (-1.06, 0.46, 0.11), (-1.06, -0.46, 0.11)]
+        uniform token subdivisionScheme = "none"
+    }
+
+    def Mesh "Pedestal" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [8, 8, 4, 4, 4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 9, 8, 1, 2, 10, 9, 2, 3, 11, 10, 3, 4, 12, 11, 4, 5, 13, 12, 5, 6, 14, 13, 6, 7, 15, 14, 7, 0, 8, 15]
+        rel material:binding = </Torso/Materials/Frame>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.885, -0.205, 0.095), (-0.655, -0.205, 0.095), (-0.6, -0.15, 0.095), (-0.6, 0.15, 0.095), (-0.655, 0.205, 0.095), (-0.885, 0.205, 0.095), (-0.94, 0.15, 0.095), (-0.94, -0.15, 0.095), (-0.885, -0.205, 1.005), (-0.655, -0.205, 1.005), (-0.6, -0.15, 1.005), (-0.6, 0.15, 1.005), (-0.655, 0.205, 1.005), (-0.885, 0.205, 1.005), (-0.94, 0.15, 1.005), (-0.94, -0.15, 1.005)]
+        uniform token subdivisionScheme = "none"
+    }
+
+    def Mesh "Chest" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [8, 8, 4, 4, 4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 9, 8, 1, 2, 10, 9, 2, 3, 11, 10, 3, 4, 12, 11, 4, 5, 13, 12, 5, 6, 14, 13, 6, 7, 15, 14, 7, 0, 8, 15]
+        rel material:binding = </Torso/Materials/Shell>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.9, -0.25, 0.87), (-0.64, -0.25, 0.87), (-0.575, -0.185, 0.87), (-0.575, 0.185, 0.87), (-0.64, 0.25, 0.87), (-0.9, 0.25, 0.87), (-0.965, 0.185, 0.87), (-0.965, -0.185, 0.87), (-0.9, -0.25, 1.41), (-0.64, -0.25, 1.41), (-0.575, -0.185, 1.41), (-0.575, 0.185, 1.41), (-0.64, 0.25, 1.41), (-0.9, 0.25, 1.41), (-0.965, 0.185, 1.41), (-0.965, -0.185, 1.41)]
+        uniform token subdivisionScheme = "none"
+    }
+
+    def Mesh "LeftShoulder" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [8, 8, 4, 4, 4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 9, 8, 1, 2, 10, 9, 2, 3, 11, 10, 3, 4, 12, 11, 4, 5, 13, 12, 5, 6, 14, 13, 6, 7, 15, 14, 7, 0, 8, 15]
+        rel material:binding = </Torso/Materials/Frame>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.88, 0.21, 0.99), (-0.66, 0.21, 0.99), (-0.62, 0.25, 0.99), (-0.62, 0.69, 0.99), (-0.66, 0.73, 0.99), (-0.88, 0.73, 0.99), (-0.92, 0.69, 0.99), (-0.92, 0.25, 0.99), (-0.88, 0.21, 1.08), (-0.66, 0.21, 1.08), (-0.62, 0.25, 1.08), (-0.62, 0.69, 1.08), (-0.66, 0.73, 1.08), (-0.88, 0.73, 1.08), (-0.92, 0.69, 1.08), (-0.92, 0.25, 1.08)]
+        uniform token subdivisionScheme = "none"
+    }
+
+    def Mesh "RightShoulder" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [8, 8, 4, 4, 4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 9, 8, 1, 2, 10, 9, 2, 3, 11, 10, 3, 4, 12, 11, 4, 5, 13, 12, 5, 6, 14, 13, 6, 7, 15, 14, 7, 0, 8, 15]
+        rel material:binding = </Torso/Materials/Frame>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.88, -0.73, 0.99), (-0.66, -0.73, 0.99), (-0.62, -0.69, 0.99), (-0.62, -0.25, 0.99), (-0.66, -0.21, 0.99), (-0.88, -0.21, 0.99), (-0.92, -0.25, 0.99), (-0.92, -0.69, 0.99), (-0.88, -0.73, 1.08), (-0.66, -0.73, 1.08), (-0.62, -0.69, 1.08), (-0.62, -0.25, 1.08), (-0.66, -0.21, 1.08), (-0.88, -0.21, 1.08), (-0.92, -0.25, 1.08), (-0.92, -0.69, 1.08)]
+        uniform token subdivisionScheme = "none"
+    }
+
+    def Mesh "SensorBar" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [8, 8, 4, 4, 4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 9, 8, 1, 2, 10, 9, 2, 3, 11, 10, 3, 4, 12, 11, 4, 5, 13, 12, 5, 6, 14, 13, 6, 7, 15, 14, 7, 0, 8, 15]
+        rel material:binding = </Torso/Materials/Accent>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.7, -0.195, 1.4), (-0.56, -0.195, 1.4), (-0.525, -0.16, 1.4), (-0.525, 0.16, 1.4), (-0.56, 0.195, 1.4), (-0.7, 0.195, 1.4), (-0.735, 0.16, 1.4), (-0.735, -0.16, 1.4), (-0.7, -0.195, 1.56), (-0.56, -0.195, 1.56), (-0.525, -0.16, 1.56), (-0.525, 0.16, 1.56), (-0.56, 0.195, 1.56), (-0.7, 0.195, 1.56), (-0.735, 0.16, 1.56), (-0.735, -0.16, 1.56)]
+        uniform token subdivisionScheme = "none"
+    }
+}
+

@@ -1,0 +1,217 @@
+{
+  "scenario": "banana",
+  "instruction": "Recoge el plátano con la derecha, pásalo a la izquierda y déjalo en la bandeja.",
+  "plant": "banana_plant",
+  "arms": {
+    "left_arm": {
+      "joints": 30,
+      "palm_world_m": [
+        0.028205011039972305,
+        0.36699602007865906,
+        1.2149335145950317
+      ],
+      "max_tracking_error_rad": 0.004493418615311384,
+      "max_error_joint": "robot0_WRJ0"
+    },
+    "right_arm": {
+      "joints": 30,
+      "palm_world_m": [
+        0.025520971044898033,
+        -0.35625508427619934,
+        1.2149208784103394
+      ],
+      "max_tracking_error_rad": 0.008946961723268032,
+      "max_error_joint": "robot0_WRJ1"
+    }
+  },
+  "joint_order": [
+    "left_arm/shoulder_pan_joint",
+    "left_arm/shoulder_lift_joint",
+    "left_arm/elbow_joint",
+    "left_arm/wrist_1_joint",
+    "left_arm/wrist_2_joint",
+    "left_arm/wrist_3_joint",
+    "left_arm/robot0_WRJ1",
+    "left_arm/robot0_WRJ0",
+    "left_arm/robot0_FFJ3",
+    "left_arm/robot0_FFJ2",
+    "left_arm/robot0_MFJ3",
+    "left_arm/robot0_MFJ2",
+    "left_arm/robot0_RFJ3",
+    "left_arm/robot0_RFJ2",
+    "left_arm/robot0_LFJ4",
+    "left_arm/robot0_LFJ3",
+    "left_arm/robot0_LFJ2",
+    "left_arm/robot0_THJ4",
+    "left_arm/robot0_THJ3",
+    "left_arm/robot0_THJ2",
+    "left_arm/robot0_THJ1",
+    "left_arm/robot0_THJ0",
+    "left_arm/robot0_FFJ1",
+    "left_arm/robot0_FFJ0",
+    "left_arm/robot0_MFJ1",
+    "left_arm/robot0_MFJ0",
+    "left_arm/robot0_RFJ1",
+    "left_arm/robot0_RFJ0",
+    "left_arm/robot0_LFJ1",
+    "left_arm/robot0_LFJ0",
+    "right_arm/shoulder_pan_joint",
+    "right_arm/shoulder_lift_joint",
+    "right_arm/elbow_joint",
+    "right_arm/wrist_1_joint",
+    "right_arm/wrist_2_joint",
+    "right_arm/wrist_3_joint",
+    "right_arm/robot0_WRJ1",
+    "right_arm/robot0_WRJ0",
+    "right_arm/robot0_FFJ3",
+    "right_arm/robot0_FFJ2",
+    "right_arm/robot0_MFJ3",
+    "right_arm/robot0_MFJ2",
+    "right_arm/robot0_RFJ3",
+    "right_arm/robot0_RFJ2",
+    "right_arm/robot0_LFJ4",
+    "right_arm/robot0_LFJ3",
+    "right_arm/robot0_LFJ2",
+    "right_arm/robot0_THJ4",
+    "right_arm/robot0_THJ3",
+    "right_arm/robot0_THJ2",
+    "right_arm/robot0_THJ1",
+    "right_arm/robot0_THJ0",
+    "right_arm/robot0_FFJ1",
+    "right_arm/robot0_FFJ0",
+    "right_arm/robot0_MFJ1",
+    "right_arm/robot0_MFJ0",
+    "right_arm/robot0_RFJ1",
+    "right_arm/robot0_RFJ0",
+    "right_arm/robot0_LFJ1",
+    "right_arm/robot0_LFJ0"
+  ],
+  "views": {
+    "overview": {
+      "shape": [
+        800,
+        1200,
+        3
+      ],
+      "valid_depth_pixels": 596248,
+      "position_world_m": [
+        2.880000114440918,
+        -4.099999904632568,
+        2.8399999141693115
+      ],
+      "orientation_ros_xyzw": [
+        -0.7689917087554932,
+        -0.19918373227119446,
+        0.15231111645698547,
+        0.5880297422409058
+      ],
+      "intrinsics": [
+        [
+          1088.0457763671875,
+          0.0,
+          600.0
+        ],
+        [
+          0.0,
+          1088.0457763671875,
+          400.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "left_eye": {
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "valid_depth_pixels": 225023,
+      "position_world_m": [
+        -0.4869999885559082,
+        0.12800000607967377,
+        1.4800000190734863
+      ],
+      "orientation_ros_xyzw": [
+        -0.541885256767273,
+        0.6107765436172485,
+        -0.4318637251853943,
+        0.38315272331237793
+      ],
+      "intrinsics": [
+        [
+          458.1245422363281,
+          0.0,
+          320.0
+        ],
+        [
+          0.0,
+          458.1245422363281,
+          240.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "right_eye": {
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "valid_depth_pixels": 224320,
+      "position_world_m": [
+        -0.4869999885559082,
+        -0.12800000607967377,
+        1.4800000190734863
+      ],
+      "orientation_ros_xyzw": [
+        -0.610776424407959,
+        0.5418853759765625,
+        -0.38315272331237793,
+        0.4318638741970062
+      ],
+      "intrinsics": [
+        [
+          458.1245422363281,
+          0.0,
+          320.0
+        ],
+        [
+          0.0,
+          458.1245422363281,
+          240.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    }
+  },
+  "fruit_positions_m": {
+    "fruit_0": [
+      0.2999998927116394,
+      -0.11499988287687302,
+      0.9000147581100464
+    ],
+    "fruit_1": [
+      0.5600000023841858,
+      0.1299998015165329,
+      0.9000149369239807
+    ]
+  },
+  "eye_order": [
+    "left_eye",
+    "right_eye"
+  ],
+  "physics_steps": 48,
+  "training": false
+}

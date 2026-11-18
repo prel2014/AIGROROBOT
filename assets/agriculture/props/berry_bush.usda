@@ -1,0 +1,16 @@
+#usda 1.0
+(
+    defaultPrim = "Model"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Model"
+{
+    def Xform "Visual" (
+        prepend references = @../models/berry_bush/visual.usda@
+    )
+    {
+    }
+}
+

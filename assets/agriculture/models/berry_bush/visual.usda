@@ -1,0 +1,18 @@
+#usda 1.0
+(
+    defaultPrim = "BerryBush"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "BerryBush"
+{
+    float xformOp:rotateX = 90
+    uniform token[] xformOpOrder = ["xformOp:rotateX"]
+
+    def Xform "Geometry" (
+        prepend references = @./berry-bush.usdc@
+    )
+    {
+    }
+}

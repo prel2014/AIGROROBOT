@@ -1,0 +1,376 @@
+#usda 1.0
+(
+    defaultPrim = "Obstacle"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Obstacle"
+{
+    def "Materials"
+    {
+        def Material "Body"
+        {
+            token outputs:surface.connect = </Obstacle/Materials/Body/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.056, 0.19, 0.157)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.49
+                token outputs:surface
+            }
+        }
+
+        def Material "Handle"
+        {
+            token outputs:surface.connect = </Obstacle/Materials/Handle/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.37, 0.41, 0.42)
+                float inputs:metallic = 0.6
+                float inputs:roughness = 0.33
+                token outputs:surface
+            }
+        }
+    }
+
+    def Mesh "BucketShell" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 24, 24]
+        int[] faceVertexIndices = [0, 1, 25, 24, 1, 2, 26, 25, 2, 3, 27, 26, 3, 4, 28, 27, 4, 5, 29, 28, 5, 6, 30, 29, 6, 7, 31, 30, 7, 8, 32, 31, 8, 9, 33, 32, 9, 10, 34, 33, 10, 11, 35, 34, 11, 12, 36, 35, 12, 13, 37, 36, 13, 14, 38, 37, 14, 15, 39, 38, 15, 16, 40, 39, 16, 17, 41, 40, 17, 18, 42, 41, 18, 19, 43, 42, 19, 20, 44, 43, 20, 21, 45, 44, 21, 22, 46, 45, 22, 23, 47, 46, 23, 0, 24, 47, 24, 25, 49, 48, 25, 26, 50, 49, 26, 27, 51, 50, 27, 28, 52, 51, 28, 29, 53, 52, 29, 30, 54, 53, 30, 31, 55, 54, 31, 32, 56, 55, 32, 33, 57, 56, 33, 34, 58, 57, 34, 35, 59, 58, 35, 36, 60, 59, 36, 37, 61, 60, 37, 38, 62, 61, 38, 39, 63, 62, 39, 40, 64, 63, 40, 41, 65, 64, 41, 42, 66, 65, 42, 43, 67, 66, 43, 44, 68, 67, 44, 45, 69, 68, 45, 46, 70, 69, 46, 47, 71, 70, 47, 24, 48, 71, 48, 49, 73, 72, 49, 50, 74, 73, 50, 51, 75, 74, 51, 52, 76, 75, 52, 53, 77, 76, 53, 54, 78, 77, 54, 55, 79, 78, 55, 56, 80, 79, 56, 57, 81, 80, 57, 58, 82, 81, 58, 59, 83, 82, 59, 60, 84, 83, 60, 61, 85, 84, 61, 62, 86, 85, 62, 63, 87, 86, 63, 64, 88, 87, 64, 65, 89, 88, 65, 66, 90, 89, 66, 67, 91, 90, 67, 68, 92, 91, 68, 69, 93, 92, 69, 70, 94, 93, 70, 71, 95, 94, 71, 48, 72, 95, 72, 73, 97, 96, 73, 74, 98, 97, 74, 75, 99, 98, 75, 76, 100, 99, 76, 77, 101, 100, 77, 78, 102, 101, 78, 79, 103, 102, 79, 80, 104, 103, 80, 81, 105, 104, 81, 82, 106, 105, 82, 83, 107, 106, 83, 84, 108, 107, 84, 85, 109, 108, 85, 86, 110, 109, 86, 87, 111, 110, 87, 88, 112, 111, 88, 89, 113, 112, 89, 90, 114, 113, 90, 91, 115, 114, 91, 92, 116, 115, 92, 93, 117, 116, 93, 94, 118, 117, 94, 95, 119, 118, 95, 72, 96, 119, 96, 97, 121, 120, 97, 98, 122, 121, 98, 99, 123, 122, 99, 100, 124, 123, 100, 101, 125, 124, 101, 102, 126, 125, 102, 103, 127, 126, 103, 104, 128, 127, 104, 105, 129, 128, 105, 106, 130, 129, 106, 107, 131, 130, 107, 108, 132, 131, 108, 109, 133, 132, 109, 110, 134, 133, 110, 111, 135, 134, 111, 112, 136, 135, 112, 113, 137, 136, 113, 114, 138, 137, 114, 115, 139, 138, 115, 116, 140, 139, 116, 117, 141, 140, 117, 118, 142, 141, 118, 119, 143, 142, 119, 96, 120, 143, 120, 121, 145, 144, 121, 122, 146, 145, 122, 123, 147, 146, 123, 124, 148, 147, 124, 125, 149, 148, 125, 126, 150, 149, 126, 127, 151, 150, 127, 128, 152, 151, 128, 129, 153, 152, 129, 130, 154, 153, 130, 131, 155, 154, 131, 132, 156, 155, 132, 133, 157, 156, 133, 134, 158, 157, 134, 135, 159, 158, 135, 136, 160, 159, 136, 137, 161, 160, 137, 138, 162, 161, 138, 139, 163, 162, 139, 140, 164, 163, 140, 141, 165, 164, 141, 142, 166, 165, 142, 143, 167, 166, 143, 120, 144, 167, 144, 145, 169, 168, 145, 146, 170, 169, 146, 147, 171, 170, 147, 148, 172, 171, 148, 149, 173, 172, 149, 150, 174, 173, 150, 151, 175, 174, 151, 152, 176, 175, 152, 153, 177, 176, 153, 154, 178, 177, 154, 155, 179, 178, 155, 156, 180, 179, 156, 157, 181, 180, 157, 158, 182, 181, 158, 159, 183, 182, 159, 160, 184, 183, 160, 161, 185, 184, 161, 162, 186, 185, 162, 163, 187, 186, 163, 164, 188, 187, 164, 165, 189, 188, 165, 166, 190, 189, 166, 167, 191, 190, 167, 144, 168, 191, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191]
+        rel material:binding = </Obstacle/Materials/Body>
+        point3f[] points = [(0.077, 0, 0), (0.074376285, 0.019929066, 0), (0.066683955, 0.0385, 0), (0.054447223, 0.054447223, 0), (0.0385, 0.066683955, 0), (0.019929066, 0.074376285, 0), (4.71489e-18, 0.077, 0), (-0.019929066, 0.074376285, 0), (-0.0385, 0.066683955, 0), (-0.054447223, 0.054447223, 0), (-0.066683955, 0.0385, 0), (-0.074376285, 0.019929066, 0), (-0.077, 9.42978e-18, 0), (-0.074376285, -0.019929066, 0), (-0.066683955, -0.0385, 0), (-0.054447223, -0.054447223, 0), (-0.0385, -0.066683955, 0), (-0.019929066, -0.074376285, 0), (-1.4144671e-17, -0.077, 0), (0.019929066, -0.074376285, 0), (0.0385, -0.066683955, 0), (0.054447223, -0.054447223, 0), (0.066683955, -0.0385, 0), (0.074376285, -0.019929066, 0), (0.081, 0, 0.011), (0.07823999, 0.020964343, 0.011), (0.07014806, 0.0405, 0.011), (0.05727565, 0.05727565, 0.011), (0.0405, 0.07014806, 0.011), (0.020964343, 0.07823999, 0.011), (4.9598196e-18, 0.081, 0.011), (-0.020964343, 0.07823999, 0.011), (-0.0405, 0.07014806, 0.011), (-0.05727565, 0.05727565, 0.011), (-0.07014806, 0.0405, 0.011), (-0.07823999, 0.020964343, 0.011), (-0.081, 9.919639e-18, 0.011), (-0.07823999, -0.020964343, 0.011), (-0.07014806, -0.0405, 0.011), (-0.05727565, -0.05727565, 0.011), (-0.0405, -0.07014806, 0.011), (-0.020964343, -0.07823999, 0.011), (-1.4879459e-17, -0.081, 0.011), (0.020964343, -0.07823999, 0.011), (0.0405, -0.07014806, 0.011), (0.05727565, -0.05727565, 0.011), (0.07014806, -0.0405, 0.011), (0.07823999, -0.020964343, 0.011), (0.108, 0, 0.186), (0.10431999, 0.027952457, 0.186), (0.093530744, 0.054, 0.186), (0.076367535, 0.076367535, 0.186), (0.054, 0.093530744, 0.186), (0.027952457, 0.10431999, 0.186), (6.6130927e-18, 0.108, 0.186), (-0.027952457, 0.10431999, 0.186), (-0.054, 0.093530744, 0.186), (-0.076367535, 0.076367535, 0.186), (-0.093530744, 0.054, 0.186), (-0.10431999, 0.027952457, 0.186), (-0.108, 1.3226185e-17, 0.186), (-0.10431999, -0.027952457, 0.186), (-0.093530744, -0.054, 0.186), (-0.076367535, -0.076367535, 0.186), (-0.054, -0.093530744, 0.186), (-0.027952457, -0.10431999, 0.186), (-1.9839278e-17, -0.108, 0.186), (0.027952457, -0.10431999, 0.186), (0.054, -0.093530744, 0.186), (0.076367535, -0.076367535, 0.186), (0.093530744, -0.054, 0.186), (0.10431999, -0.027952457, 0.186), (0.115, 0, 0.19), (0.11108147, 0.02976419, 0.19), (0.099592924, 0.0575, 0.19), (0.08131728, 0.08131728, 0.19), (0.0575, 0.099592924, 0.19), (0.02976419, 0.11108147, 0.19), (7.041719e-18, 0.115, 0.19), (-0.02976419, 0.11108147, 0.19), (-0.0575, 0.099592924, 0.19), (-0.08131728, 0.08131728, 0.19), (-0.099592924, 0.0575, 0.19), (-0.11108147, 0.02976419, 0.19), (-0.115, 1.4083438e-17, 0.19), (-0.11108147, -0.02976419, 0.19), (-0.099592924, -0.0575, 0.19), (-0.08131728, -0.08131728, 0.19), (-0.0575, -0.099592924, 0.19), (-0.02976419, -0.11108147, 0.19), (-2.1125157e-17, -0.115, 0.19), (0.02976419, -0.11108147, 0.19), (0.0575, -0.099592924, 0.19), (0.08131728, -0.08131728, 0.19), (0.099592924, -0.0575, 0.19), (0.11108147, -0.02976419, 0.19), (0.115, 0, 0.205), (0.11108147, 0.02976419, 0.205), (0.099592924, 0.0575, 0.205), (0.08131728, 0.08131728, 0.205), (0.0575, 0.099592924, 0.205), (0.02976419, 0.11108147, 0.205), (7.041719e-18, 0.115, 0.205), (-0.02976419, 0.11108147, 0.205), (-0.0575, 0.099592924, 0.205), (-0.08131728, 0.08131728, 0.205), (-0.099592924, 0.0575, 0.205), (-0.11108147, 0.02976419, 0.205), (-0.115, 1.4083438e-17, 0.205), (-0.11108147, -0.02976419, 0.205), (-0.099592924, -0.0575, 0.205), (-0.08131728, -0.08131728, 0.205), (-0.0575, -0.099592924, 0.205), (-0.02976419, -0.11108147, 0.205), (-2.1125157e-17, -0.115, 0.205), (0.02976419, -0.11108147, 0.205), (0.0575, -0.099592924, 0.205), (0.08131728, -0.08131728, 0.205), (0.099592924, -0.0575, 0.205), (0.11108147, -0.02976419, 0.205), (0.104, 0, 0.205), (0.10045628, 0.02691718, 0.205), (0.09006664, 0.052, 0.205), (0.07353911, 0.07353911, 0.205), (0.052, 0.09006664, 0.205), (0.02691718, 0.10045628, 0.205), (6.3681633e-18, 0.104, 0.205), (-0.02691718, 0.10045628, 0.205), (-0.052, 0.09006664, 0.205), (-0.07353911, 0.07353911, 0.205), (-0.09006664, 0.052, 0.205), (-0.10045628, 0.02691718, 0.205), (-0.104, 1.27363265e-17, 0.205), (-0.10045628, -0.02691718, 0.205), (-0.09006664, -0.052, 0.205), (-0.07353911, -0.07353911, 0.205), (-0.052, -0.09006664, 0.205), (-0.02691718, -0.10045628, 0.205), (-1.910449e-17, -0.104, 0.205), (0.02691718, -0.10045628, 0.205), (0.052, -0.09006664, 0.205), (0.07353911, -0.07353911, 0.205), (0.09006664, -0.052, 0.205), (0.10045628, -0.02691718, 0.205), (0.103, 0, 0.192), (0.09949036, 0.026658362, 0.192), (0.089200616, 0.0515, 0.192), (0.072831996, 0.072831996, 0.192), (0.0515, 0.089200616, 0.192), (0.026658362, 0.09949036, 0.192), (6.306931e-18, 0.103, 0.192), (-0.026658362, 0.09949036, 0.192), (-0.0515, 0.089200616, 0.192), (-0.072831996, 0.072831996, 0.192), (-0.089200616, 0.0515, 0.192), (-0.09949036, 0.026658362, 0.192), (-0.103, 1.2613862e-17, 0.192), (-0.09949036, -0.026658362, 0.192), (-0.089200616, -0.0515, 0.192), (-0.072831996, -0.072831996, 0.192), (-0.0515, -0.089200616, 0.192), (-0.026658362, -0.09949036, 0.192), (-1.8920794e-17, -0.103, 0.192), (0.026658362, -0.09949036, 0.192), (0.0515, -0.089200616, 0.192), (0.072831996, -0.072831996, 0.192), (0.089200616, -0.0515, 0.192), (0.09949036, -0.026658362, 0.192), (0.073, 0, 0.014), (0.070512585, 0.01889379, 0.014), (0.06321985, 0.0365, 0.014), (0.051618796, 0.051618796, 0.014), (0.0365, 0.06321985, 0.014), (0.01889379, 0.070512585, 0.014), (4.4699608e-18, 0.073, 0.014), (-0.01889379, 0.070512585, 0.014), (-0.0365, 0.06321985, 0.014), (-0.051618796, 0.051618796, 0.014), (-0.06321985, 0.0365, 0.014), (-0.070512585, 0.01889379, 0.014), (-0.073, 8.9399216e-18, 0.014), (-0.070512585, -0.01889379, 0.014), (-0.06321985, -0.0365, 0.014), (-0.051618796, -0.051618796, 0.014), (-0.0365, -0.06321985, 0.014), (-0.01889379, -0.070512585, 0.014), (-1.3409882e-17, -0.073, 0.014), (0.01889379, -0.070512585, 0.014), (0.0365, -0.06321985, 0.014), (0.051618796, -0.051618796, 0.014), (0.06321985, -0.0365, 0.014), (0.070512585, -0.01889379, 0.014)]
+        uniform token subdivisionScheme = "none"
+    }
+
+    def Mesh "CollisionWall0" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.07299635, -0.0007299878, 0.01), (0.08099595, -0.0008099865, 0.01), (0.06973956, 0.041199446, 0.01), (0.0628517, 0.037130363, 0.01), (0.1019949, -0.001019983, 0.205), (0.1139943, -0.001139981, 0.205), (0.09815197, 0.057984404, 0.205), (0.08782018, 0.05188078, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall1" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.06358169, 0.03586599, 0.01), (0.07054954, 0.039796505, 0.01), (0.039796505, 0.07054954, 0.01), (0.03586599, 0.06358169, 0.01), (0.088840164, 0.050114118, 0.205), (0.09929195, 0.056009896, 0.205), (0.056009896, 0.09929195, 0.205), (0.050114118, 0.088840164, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall2" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.037130363, 0.0628517, 0.01), (0.041199446, 0.06973956, 0.01), (-0.0008099865, 0.08099595, 0.01), (-0.0007299878, 0.07299635, 0.01), (0.05188078, 0.08782018, 0.205), (0.057984404, 0.09815197, 0.205), (-0.001139981, 0.1139943, 0.205), (-0.001019983, 0.1019949, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall3" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.0007299878, 0.07299635, 0.01), (0.0008099865, 0.08099595, 0.01), (-0.041199446, 0.06973956, 0.01), (-0.037130363, 0.0628517, 0.01), (0.001019983, 0.1019949, 0.205), (0.001139981, 0.1139943, 0.205), (-0.057984404, 0.09815197, 0.205), (-0.05188078, 0.08782018, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall4" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.03586599, 0.06358169, 0.01), (-0.039796505, 0.07054954, 0.01), (-0.07054954, 0.039796505, 0.01), (-0.06358169, 0.03586599, 0.01), (-0.050114118, 0.088840164, 0.205), (-0.056009896, 0.09929195, 0.205), (-0.09929195, 0.056009896, 0.205), (-0.088840164, 0.050114118, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall5" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.0628517, 0.037130363, 0.01), (-0.06973956, 0.041199446, 0.01), (-0.08099595, -0.0008099865, 0.01), (-0.07299635, -0.0007299878, 0.01), (-0.08782018, 0.05188078, 0.205), (-0.09815197, 0.057984404, 0.205), (-0.1139943, -0.001139981, 0.205), (-0.1019949, -0.001019983, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall6" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.07299635, 0.0007299878, 0.01), (-0.08099595, 0.0008099865, 0.01), (-0.06973956, -0.041199446, 0.01), (-0.0628517, -0.037130363, 0.01), (-0.1019949, 0.001019983, 0.205), (-0.1139943, 0.001139981, 0.205), (-0.09815197, -0.057984404, 0.205), (-0.08782018, -0.05188078, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall7" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.06358169, -0.03586599, 0.01), (-0.07054954, -0.039796505, 0.01), (-0.039796505, -0.07054954, 0.01), (-0.03586599, -0.06358169, 0.01), (-0.088840164, -0.050114118, 0.205), (-0.09929195, -0.056009896, 0.205), (-0.056009896, -0.09929195, 0.205), (-0.050114118, -0.088840164, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall8" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.037130363, -0.0628517, 0.01), (-0.041199446, -0.06973956, 0.01), (0.0008099865, -0.08099595, 0.01), (0.0007299878, -0.07299635, 0.01), (-0.05188078, -0.08782018, 0.205), (-0.057984404, -0.09815197, 0.205), (0.001139981, -0.1139943, 0.205), (0.001019983, -0.1019949, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall9" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.0007299878, -0.07299635, 0.01), (-0.0008099865, -0.08099595, 0.01), (0.041199446, -0.06973956, 0.01), (0.037130363, -0.0628517, 0.01), (-0.001019983, -0.1019949, 0.205), (-0.001139981, -0.1139943, 0.205), (0.057984404, -0.09815197, 0.205), (0.05188078, -0.08782018, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall10" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.03586599, -0.06358169, 0.01), (0.039796505, -0.07054954, 0.01), (0.07054954, -0.039796505, 0.01), (0.06358169, -0.03586599, 0.01), (0.050114118, -0.088840164, 0.205), (0.056009896, -0.09929195, 0.205), (0.09929195, -0.056009896, 0.205), (0.088840164, -0.050114118, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Mesh "CollisionWall11" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 3, 2, 1, 0, 4, 5, 6, 7]
+        rel material:binding = </Obstacle/Materials/Body>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.0628517, -0.037130363, 0.01), (0.06973956, -0.041199446, 0.01), (0.08099595, 0.0008099865, 0.01), (0.07299635, 0.0007299878, 0.01), (0.08782018, -0.05188078, 0.205), (0.09815197, -0.057984404, 0.205), (0.1139943, 0.001139981, 0.205), (0.1019949, 0.001019983, 0.205)]
+        uniform token subdivisionScheme = "none"
+        token visibility = "invisible"
+    }
+
+    def Cylinder "CollisionFloor" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        double height = 0.014
+        rel material:binding = </Obstacle/Materials/Body>
+        double radius = 0.079
+        token visibility = "invisible"
+        double3 xformOp:translate = (0, 0, 0.007)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Capsule "Handle0" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.029265254451538422
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.997626441720654, 0, -0.06885842562669178, 0)
+        double3 xformOp:translate = (0.11598962375105502, 0, 0.19449386652574116)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle1" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.02947245154979081
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.9789090764575771, 0, -0.20429640238871954, 0)
+        double3 xformOp:translate = (0.10808512257433692, 0, 0.22249386652574116)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle2" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.02982792227996215
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.9427776100666762, 0, -0.33342222175039027, 0)
+        double3 xformOp:translate = (0.09281479891328819, 0, 0.24759797974644665)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle3" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.030233185608242102
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.8912688021712952, 0, -0.4534753822162178, 0)
+        double3 xformOp:translate = (0.07121930009000631, 0, 0.2680954023583752)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle4" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.030579814571169577
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.8264048542397195, 0, -0.5630763863713589, 0)
+        double3 xformOp:translate = (0.04477032366104873, 0, 0.2825892688841164)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle5" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.030778163386540647
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.7496645902012342, 0, -0.6618179524600519, 0)
+        double3 xformOp:translate = (0.015270323661048727, 0, 0.2900918462721878)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle6" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.030778163386540647
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.6618179524600518, -0, -0.7496645902012343, 0)
+        double3 xformOp:translate = (-0.015270323661048713, 0, 0.2900918462721878)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle7" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.030579814571169532
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.5630763863713595, -0, -0.8264048542397194, 0)
+        double3 xformOp:translate = (-0.0447703236610487, 0, 0.2825892688841164)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle8" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.03023318560824216
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.45347538221621736, -0, -0.8912688021712953, 0)
+        double3 xformOp:translate = (-0.07121930009000628, 0, 0.26809540235837526)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle9" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.029827922279962157
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.3334222217503903, -0, -0.942777610066676, 0)
+        double3 xformOp:translate = (-0.09281479891328817, 0, 0.24759797974644665)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle10" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.029472451549790776
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.2042964023887196, -0, -0.9789090764575772, 0)
+        double3 xformOp:translate = (-0.1080851225743369, 0, 0.22249386652574116)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Handle11" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.029265254451538453
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.0036
+        quatd xformOp:orient = (0.06885842562669217, -0, -0.997626441720654, 0)
+        double3 xformOp:translate = (-0.11598962375105501, 0, 0.1944938665257412)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+}
+

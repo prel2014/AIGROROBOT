@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('scene_gallery','preview','train_rl','play','collect_demos','train_vla','play_vla','infer_vla','memory_rl','evaluate','dataset','collect_corrections','doctor')]
+    [ValidateSet('agriculture_teacher','agriculture_collect','agriculture_batch','agriculture_preview','scene_gallery','preview','train_rl','play','collect_demos','train_vla','play_vla','infer_vla','memory_rl','evaluate','dataset','collect_corrections','doctor')]
     [string]$Command
 )
 $ErrorActionPreference = 'Stop'
@@ -7,7 +7,7 @@ if (-not $Command) { throw 'Indica un comando; consulta README.md o scripts/mvp.
 $ExtraArgs = $args
 # Isaac Lab 3 selects headless simulation with --viz none. Keep the public
 # --headless option for this project's launchers; offline training owns its flag.
-if ($Command -in @('scene_gallery','preview','train_rl','play','collect_demos','play_vla','memory_rl','evaluate','collect_corrections') -and
+if ($Command -in @('agriculture_teacher','agriculture_collect','agriculture_batch','agriculture_preview','scene_gallery','preview','train_rl','play','collect_demos','play_vla','memory_rl','evaluate','collect_corrections') -and
     $ExtraArgs -contains '--headless') {
     if (@($ExtraArgs | Where-Object { $_ -match '^--(viz|visualizer)(=|$)' }).Count) {
         throw 'Usa --headless o --viz; no combines las dos opciones.'

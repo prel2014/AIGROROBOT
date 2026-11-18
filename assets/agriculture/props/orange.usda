@@ -1,0 +1,54 @@
+#usda 1.0
+(
+    defaultPrim = "Fruit"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Fruit"
+{
+    def Xform "Placement"
+    {
+        double3 xformOp:translate = (-0, 6.938893903907228e-18, 8.64374292488107e-18)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def Xform "Model" (
+            prepend references = @../models/orange/visual.usda@
+        )
+        {
+            over "Geometry"
+            {
+                over "Orange_seated_green_calyx"
+                {
+                    over "Orange_seated_green_calyx" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Short_clipped_orange_stalk"
+                {
+                    over "Short_clipped_orange_stalk" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Slightly_oblate_orange_rind"
+                {
+                    over "Slightly_oblate_orange_rind" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+    }
+}
+

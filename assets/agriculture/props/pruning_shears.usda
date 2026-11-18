@@ -1,0 +1,142 @@
+#usda 1.0
+(
+    defaultPrim = "Obstacle"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Obstacle"
+{
+    def "Materials"
+    {
+        def Material "Steel"
+        {
+            token outputs:surface.connect = </Obstacle/Materials/Steel/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.43, 0.49, 0.5)
+                float inputs:metallic = 0.67
+                float inputs:roughness = 0.34
+                token outputs:surface
+            }
+        }
+
+        def Material "Grip"
+        {
+            token outputs:surface.connect = </Obstacle/Materials/Grip/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.69, 0.105, 0.035)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.56
+                token outputs:surface
+            }
+        }
+
+        def Material "Frame"
+        {
+            token outputs:surface.connect = </Obstacle/Materials/Frame/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.073, 0.087, 0.096)
+                float inputs:metallic = 0.28
+                float inputs:roughness = 0.49
+                token outputs:surface
+            }
+        }
+    }
+
+    def Capsule "Grip0" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.06746851117373201
+        rel material:binding = </Obstacle/Materials/Grip>
+        double radius = 0.011
+        quatd xformOp:orient = (0.7071067811865476, -0.1467276328526115, 0.6917159834480257, 0)
+        double3 xformOp:translate = (-0.06, -0.026000000000000002, 0.012)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Lever0" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.062177166226839255
+        rel material:binding = </Obstacle/Materials/Frame>
+        double radius = 0.0075
+        quatd xformOp:orient = (0.7127703257551756, -0.135385051592081, 0.6882073455930782, 0)
+        double3 xformOp:translate = (-0.014499999999999999, -0.015, 0.010499999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Grip2" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.06746851117373201
+        rel material:binding = </Obstacle/Materials/Grip>
+        double radius = 0.011
+        quatd xformOp:orient = (0.7071067811865476, 0.1467276328526115, 0.6917159834480257, -0)
+        double3 xformOp:translate = (-0.06, 0.026000000000000002, 0.012)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Lever2" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.062177166226839255
+        rel material:binding = </Obstacle/Materials/Frame>
+        double radius = 0.0075
+        quatd xformOp:orient = (0.7127703257551756, 0.135385051592081, 0.6882073455930782, -0)
+        double3 xformOp:translate = (-0.014499999999999999, 0.015, 0.010499999999999999)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Mesh "Blade" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4, 4, 7, 7]
+        int[] faceVertexIndices = [0, 1, 8, 7, 1, 2, 9, 8, 2, 3, 10, 9, 3, 4, 11, 10, 4, 5, 12, 11, 5, 6, 13, 12, 6, 0, 7, 13, 6, 5, 4, 3, 2, 1, 0, 7, 8, 9, 10, 11, 12, 13]
+        rel material:binding = </Obstacle/Materials/Steel>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.004, -0.012, 0.01), (0.046, -0.014, 0.01), (0.074, -0.009, 0.01), (0.099, 0.007, 0.01), (0.081, 0.011, 0.01), (0.045, 0.008, 0.01), (0.02, 0.014, 0.01), (0.004, -0.012, 0.017), (0.046, -0.014, 0.017), (0.074, -0.009, 0.017), (0.099, 0.007, 0.017), (0.081, 0.011, 0.017), (0.045, 0.008, 0.017), (0.02, 0.014, 0.017)]
+        uniform token subdivisionScheme = "none"
+    }
+
+    def Mesh "Hook" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4, 4, 7, 7]
+        int[] faceVertexIndices = [0, 1, 8, 7, 1, 2, 9, 8, 2, 3, 10, 9, 3, 4, 11, 10, 4, 5, 12, 11, 5, 6, 13, 12, 6, 0, 7, 13, 6, 5, 4, 3, 2, 1, 0, 7, 8, 9, 10, 11, 12, 13]
+        rel material:binding = </Obstacle/Materials/Frame>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(0.008, 0.003, 0.005), (0.055, 0.003, 0.005), (0.083, 0.013, 0.005), (0.089, 0.022, 0.005), (0.067, 0.022, 0.005), (0.049, 0.014, 0.005), (0.006, 0.019, 0.005), (0.008, 0.003, 0.011), (0.055, 0.003, 0.011), (0.083, 0.013, 0.011), (0.089, 0.022, 0.011), (0.067, 0.022, 0.011), (0.049, 0.014, 0.011), (0.006, 0.019, 0.011)]
+        uniform token subdivisionScheme = "none"
+    }
+
+    def Cylinder "Pivot" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        double height = 0.01
+        rel material:binding = </Obstacle/Materials/Steel>
+        double radius = 0.0095
+        double3 xformOp:translate = (0.013, 0.003, 0.016)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+}
+

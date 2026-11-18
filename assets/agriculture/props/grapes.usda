@@ -1,0 +1,514 @@
+#usda 1.0
+(
+    defaultPrim = "Fruit"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Fruit"
+{
+    def Xform "Placement"
+    {
+        double3 xformOp:translate = (-0, 1.3877787807814457e-17, 8.200602418401712e-18)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def Xform "Model" (
+            prepend references = @../models/grapes/visual.usda@
+        )
+        {
+            over "Geometry"
+            {
+                over "Attached_berry_pedicel_00"
+                {
+                    over "Attached_berry_pedicel_00" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_01"
+                {
+                    over "Attached_berry_pedicel_01" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_02"
+                {
+                    over "Attached_berry_pedicel_02" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_03"
+                {
+                    over "Attached_berry_pedicel_03" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_04"
+                {
+                    over "Attached_berry_pedicel_04" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_05"
+                {
+                    over "Attached_berry_pedicel_05" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_06"
+                {
+                    over "Attached_berry_pedicel_06" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_07"
+                {
+                    over "Attached_berry_pedicel_07" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_08"
+                {
+                    over "Attached_berry_pedicel_08" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_09"
+                {
+                    over "Attached_berry_pedicel_09" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_10"
+                {
+                    over "Attached_berry_pedicel_10" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_11"
+                {
+                    over "Attached_berry_pedicel_11" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_12"
+                {
+                    over "Attached_berry_pedicel_12" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_13"
+                {
+                    over "Attached_berry_pedicel_13" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_14"
+                {
+                    over "Attached_berry_pedicel_14" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_15"
+                {
+                    over "Attached_berry_pedicel_15" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_16"
+                {
+                    over "Attached_berry_pedicel_16" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_17"
+                {
+                    over "Attached_berry_pedicel_17" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_18"
+                {
+                    over "Attached_berry_pedicel_18" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_19"
+                {
+                    over "Attached_berry_pedicel_19" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_20"
+                {
+                    over "Attached_berry_pedicel_20" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_21"
+                {
+                    over "Attached_berry_pedicel_21" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_22"
+                {
+                    over "Attached_berry_pedicel_22" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Attached_berry_pedicel_23"
+                {
+                    over "Attached_berry_pedicel_23" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Continuous_grape_rachis"
+                {
+                    over "Continuous_grape_rachis" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_00"
+                {
+                    over "Grape_berry_00" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_01"
+                {
+                    over "Grape_berry_01" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_02"
+                {
+                    over "Grape_berry_02" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_03"
+                {
+                    over "Grape_berry_03" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_04"
+                {
+                    over "Grape_berry_04" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_05"
+                {
+                    over "Grape_berry_05" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_06"
+                {
+                    over "Grape_berry_06" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_07"
+                {
+                    over "Grape_berry_07" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_08"
+                {
+                    over "Grape_berry_08" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_09"
+                {
+                    over "Grape_berry_09" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_10"
+                {
+                    over "Grape_berry_10" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_11"
+                {
+                    over "Grape_berry_11" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_12"
+                {
+                    over "Grape_berry_12" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_13"
+                {
+                    over "Grape_berry_13" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_14"
+                {
+                    over "Grape_berry_14" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_15"
+                {
+                    over "Grape_berry_15" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_16"
+                {
+                    over "Grape_berry_16" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_17"
+                {
+                    over "Grape_berry_17" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_18"
+                {
+                    over "Grape_berry_18" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_19"
+                {
+                    over "Grape_berry_19" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_20"
+                {
+                    over "Grape_berry_20" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_21"
+                {
+                    over "Grape_berry_21" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_22"
+                {
+                    over "Grape_berry_22" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+
+                over "Grape_berry_23"
+                {
+                    over "Grape_berry_23" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                    )
+                    {
+                        uniform token physics:approximation = "convexHull"
+                    }
+                }
+            }
+        }
+    }
+}
+

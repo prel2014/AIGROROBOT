@@ -1,0 +1,158 @@
+#usda 1.0
+(
+    defaultPrim = "Obstacle"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Obstacle"
+{
+    def "Materials"
+    {
+        def Material "Tines"
+        {
+            token outputs:surface.connect = </Obstacle/Materials/Tines/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.19, 0.21, 0.21)
+                float inputs:metallic = 0.6
+                float inputs:roughness = 0.46
+                token outputs:surface
+            }
+        }
+
+        def Material "Handle"
+        {
+            token outputs:surface.connect = </Obstacle/Materials/Handle/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.17, 0.3, 0.14)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.6
+                token outputs:surface
+            }
+        }
+    }
+
+    def Capsule "Grip" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.073
+        rel material:binding = </Obstacle/Materials/Handle>
+        double radius = 0.015
+        quatd xformOp:orient = (0.7071067811865476, 0, 0.7071067811865476, 0)
+        double3 xformOp:translate = (-0.0685, 0, 0.018)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Shank" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.06627216610312356
+        rel material:binding = </Obstacle/Materials/Tines>
+        double radius = 0.006
+        quatd xformOp:orient = (0.7384225572267273, 0, 0.6743382882342813, 0)
+        double3 xformOp:translate = (-0.003999999999999998, 0, 0.019)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Crossbar" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.078
+        rel material:binding = </Obstacle/Materials/Tines>
+        double radius = 0.006
+        quatd xformOp:orient = (0.7071067811865476, -0.7071067811865476, 0, 0)
+        double3 xformOp:translate = (0.015, 0, 0.021)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Stem0" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.06100819617067859
+        rel material:binding = </Obstacle/Materials/Tines>
+        double radius = 0.0042
+        quatd xformOp:orient = (0.7128784048627442, 0, 0.7012876584400651, 0)
+        double3 xformOp:translate = (0.045500000000000006, -0.038, 0.0215)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Hook0" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.030232432915661942
+        rel material:binding = </Obstacle/Materials/Tines>
+        double radius = 0.0042
+        quatd xformOp:orient = (0.46780871015443964, -0, 0.8838297407892763, 0)
+        double3 xformOp:translate = (0.08850000000000001, -0.038, 0.0135)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Stem1" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.07800640999302558
+        rel material:binding = </Obstacle/Materials/Tines>
+        double radius = 0.0042
+        quatd xformOp:orient = (0.7116247112506233, 0, 0.7025597984068453, 0)
+        double3 xformOp:translate = (0.054, 0, 0.0215)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Hook1" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.030232432915661942
+        rel material:binding = </Obstacle/Materials/Tines>
+        double radius = 0.0042
+        quatd xformOp:orient = (0.46780871015443964, -0, 0.8838297407892763, 0)
+        double3 xformOp:translate = (0.1055, 0, 0.0135)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Stem2" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.06100819617067859
+        rel material:binding = </Obstacle/Materials/Tines>
+        double radius = 0.0042
+        quatd xformOp:orient = (0.7128784048627442, 0, 0.7012876584400651, 0)
+        double3 xformOp:translate = (0.045500000000000006, 0.038, 0.0215)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Hook2" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.030232432915661942
+        rel material:binding = </Obstacle/Materials/Tines>
+        double radius = 0.0042
+        quatd xformOp:orient = (0.46780871015443964, -0, 0.8838297407892763, 0)
+        double3 xformOp:translate = (0.08850000000000001, 0.038, 0.0135)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+}
+

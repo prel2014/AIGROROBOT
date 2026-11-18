@@ -2,20 +2,39 @@
 
 UR10e + Shadow Hand en Isaac Sim 6.2.0 e Isaac Lab 3, instalados al mismo nivel que este repo.
 
-## Objetivos
+La simulación agrícola monta dos UR10e con manos articuladas y dos ojos RGB-D en un torso fijo. El teacher PPO usa 64 réplicas por defecto, 16 por cultivo, con luz y obstáculos dinámicos. Practica agarre, elevación, traspaso y colocación de fruta suelta con contactos medidos. El VLA bimanual produce 8 pasos de 60 ángulos y actualiza una memoria de 256 valores. [USD y capturas](assets/agriculture/README.md) · [Plan agrícola](docs/plan-agricola.md)
+
+## Teacher y captura agrícolas
+
+Desde la raíz del repo en PowerShell:
+
+```powershell
+# Validar el teacher y el reinicio indexado sin entrenar
+.\scripts\run.ps1 agriculture_teacher --headless --num_envs 64 --validate
+
+# Entrenar desde cero
+.\scripts\run.ps1 agriculture_teacher --headless --num_envs 64 --max_iterations 3000 --run-name agro_teacher01
+
+# Adquirir demostraciones desde el último checkpoint de esa corrida
+.\scripts\run.ps1 agriculture_collect --headless --num_envs 64 --checkpoint logs/rsl_rl/agriculture_bimanual/agro_teacher01 --episodes 100 --max-attempts 640 --output datasets/agriculture/agro_demos01
+```
+
+Para abrir el teacher en una ventana, reemplaza `--headless` por `--viz kit`. Para reanudar, añade `--resume logs/rsl_rl/agriculture_bimanual/agro_teacher01` y elige un nuevo `--run-name`. La captura guarda éxitos por defecto y deja un resumen por cultivo. Añade `--keep-failures` para inspeccionar intentos fallidos. [Formato de captura](docs/plan-agricola.md#formato-de-demostraciones)
+
+## Objetivos del entorno de un brazo
 
 - Levantar el objeto al menos 15 cm y sostenerlo 0,5 s con contactos medidos opuestos. Penalizar caídas, poses inválidas y contacto de yemas/objeto con obstáculos o distractores.
 - Teacher PPO con Transformer de estado. Estudiante VLA v5: dos RGB → CLIP congelado → Transformer propio, junto con texto, q/dq y memoria. Salida: 8 × 30 ángulos y memoria de 256 valores.
 - Preparar selección, empuje, transporte y colocación en ocho situaciones. Las [24 órdenes y subtareas](docs/robot-orders.md) están catalogadas; su ejecución jerárquica todavía no está conectada al controlador ni entrenada.
 
-## Procedimiento
+## Procedimiento del entorno de un brazo
 
 1. Configura dependencias con `scripts/setup.ps1`; usa el Python de Isaac Sim, sin conda/venv. Versiones en [runtime.lock.json](configs/runtime.lock.json).
 2. Revisa los [escenarios](assets/procedural/catalog.json) y las [capturas reales](assets/previews/environments.png). Los USD propios se incluyen en `assets/procedural/`; los assets originales del robot se descargan con setup.
 3. Antes de entrenar, valida de nuevo el preagarre para cada geometría. Los checkpoints y datos anteriores no acreditan el nuevo criterio de contacto y las dos vistas: requieren nuevas corridas y demostraciones.
 4. Entrena y evalúa el teacher de elevación; exige 90 % de éxito por semilla. Captura demostraciones aprobadas, divide por episodio, entrena y evalúa el VLA. Empuje/colocación requieren sus propios controladores de demostración; no se obtienen cambiando el texto de una elevación.
 
-## Comandos
+## Comandos del entorno de un brazo
 
 Desde la raíz del repo, en PowerShell. Los comandos de entrenamiento quedan disponibles para cuando se autorice iniciarlo.
 

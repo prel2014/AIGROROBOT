@@ -18,12 +18,18 @@ def main():
     packages = ["numpy", "torch", "gymnasium"]
     if not offline:
         packages += ["isaaclab", "isaaclab_rl", "isaaclab_physx", "isaaclab_ov", "isaaclab_newton"]
-    if args.command in {"scene_gallery", "train_vla", "infer_vla", "play_vla", "collect_demos", "collect_corrections", "dataset"}:
+    if args.command in {"agriculture_preview", "scene_gallery", "train_vla", "infer_vla", "play_vla", "collect_demos", "collect_corrections", "dataset"}:
         packages += ["h5py", "PIL"]
     if args.command in {"train_vla", "infer_vla", "play_vla", "memory_rl", "collect_corrections"}:
         packages += ["transformers"]
     if args.command == "memory_rl":
         packages += ["rsl_rl", "tensordict", "PIL"]
+    if args.command in {"agriculture_teacher", "agriculture_collect"}:
+        packages += ["rsl_rl", "tensordict"]
+    if args.command == "agriculture_teacher":
+        packages += ["tensorboard"]
+    if args.command == "agriculture_collect":
+        packages += ["h5py"]
     if args.live_plot:
         packages += ["matplotlib"]
     missing = [name for name in packages if importlib.util.find_spec(name) is None]

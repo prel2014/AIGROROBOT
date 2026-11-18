@@ -1,0 +1,37 @@
+#usda 1.0
+(
+    defaultPrim = "Fruit"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Fruit"
+{
+    def Xform "Placement"
+    {
+        double3 xformOp:translate = (-0.0003019552532350653, -0.0010689469054341316, 0.00006199999916134965)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def Xform "Model" (
+            prepend references = @../models/blueberry/visual.usda@
+        )
+        {
+            over "Geometry"
+            {
+                over "fr_gourmetBlueberry_obj_cleaner_materialmerger_gles"
+                {
+                    over "Object_2"
+                    {
+                        over "Object_0" (
+                            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                        )
+                        {
+                            uniform token physics:approximation = "convexHull"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

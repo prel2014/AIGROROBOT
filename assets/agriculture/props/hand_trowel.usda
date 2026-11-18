@@ -1,0 +1,79 @@
+#usda 1.0
+(
+    defaultPrim = "Obstacle"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Obstacle"
+{
+    def "Materials"
+    {
+        def Material "Scoop"
+        {
+            token outputs:surface.connect = </Obstacle/Materials/Scoop/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.38, 0.43, 0.44)
+                float inputs:metallic = 0.66
+                float inputs:roughness = 0.35
+                token outputs:surface
+            }
+        }
+
+        def Material "WoodGrip"
+        {
+            token outputs:surface.connect = </Obstacle/Materials/WoodGrip/Surface.outputs:surface>
+
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.39, 0.23, 0.091)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.62
+                token outputs:surface
+            }
+        }
+    }
+
+    def Capsule "Handle" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.06500769185258004
+        rel material:binding = </Obstacle/Materials/WoodGrip>
+        double radius = 0.015
+        quatd xformOp:orient = (0.7125246645005364, 0, 0.7016470640417432, 0)
+        double3 xformOp:translate = (-0.0755, 0, 0.0185)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Capsule "Shank" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI"]
+    )
+    {
+        uniform token axis = "Z"
+        double height = 0.06300793600809346
+        rel material:binding = </Obstacle/Materials/Scoop>
+        double radius = 0.006
+        quatd xformOp:orient = (0.7126959438030792, 0, 0.7014730869296684, 0)
+        double3 xformOp:translate = (-0.009500000000000001, 0, 0.0135)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+    }
+
+    def Mesh "Scoop" (
+        prepend apiSchemas = ["MaterialBindingAPI", "PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+    )
+    {
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4, 4, 4, 4, 9, 9]
+        int[] faceVertexIndices = [0, 1, 10, 9, 1, 2, 11, 10, 2, 3, 12, 11, 3, 4, 13, 12, 4, 5, 14, 13, 5, 6, 15, 14, 6, 7, 16, 15, 7, 8, 17, 16, 8, 0, 9, 17, 8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+        rel material:binding = </Obstacle/Materials/Scoop>
+        uniform token physics:approximation = "convexHull"
+        point3f[] points = [(-0.006, -0.014, 0.00832), (0.035, -0.042, 0.01896), (0.084, -0.037, 0.01706), (0.114, -0.019, 0.01022), (0.133, 0, 0.003), (0.115, 0.02, 0.0106), (0.084, 0.037, 0.01706), (0.035, 0.041, 0.01858), (-0.006, 0.014, 0.00832), (-0.006, -0.014, 0.01132), (0.035, -0.042, 0.02196), (0.084, -0.037, 0.02006), (0.114, -0.019, 0.01322), (0.133, 0, 0.006), (0.115, 0.02, 0.0136), (0.084, 0.037, 0.02006), (0.035, 0.041, 0.02158), (-0.006, 0.014, 0.01132)]
+        uniform token subdivisionScheme = "none"
+    }
+}
+
