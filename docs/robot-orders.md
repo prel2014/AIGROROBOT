@@ -1,7 +1,6 @@
 # Órdenes y subtareas
 
-24 órdenes propuestas; ninguna ha sido entrenada con estos escenarios.
-X: delante del robot; Y: izquierda; Z: arriba. Las rutas usan geometría conocida del simulador.
+Catálogo de 24 órdenes propuestas para el entorno de un brazo. La ejecución de las subtareas sigue pendiente. En el marco del robot, X apunta hacia delante, Y hacia la izquierda y Z hacia arriba.
 
 ## Banco despejado: agarre y sostén
 
