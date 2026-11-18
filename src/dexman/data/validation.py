@@ -9,6 +9,7 @@ import torch
 from dexman.experiments import sha256
 from dexman.robot.control import decode
 from dexman.robot.joints import FINGERTIPS
+from dexman.vla.bimanual_contract import DEMO_SCHEMA
 from dexman.vla.contract import contract_from_metadata
 
 
@@ -16,6 +17,10 @@ def inspect_episode(path):
     path = Path(path)
     with h5py.File(path, "r") as episode:
         metadata = json.loads(episode.attrs["metadata"])
+        if metadata.get("schema") == DEMO_SCHEMA:
+            from dexman.vla.bimanual_data import inspect_bimanual_episode
+
+            return inspect_bimanual_episode(path, episode, metadata)
         contract = contract_from_metadata(metadata)
         length = len(episode["action"])
         if not length or episode["action"].shape != (length, 26):

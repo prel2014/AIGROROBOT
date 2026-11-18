@@ -4,7 +4,23 @@ El torso monta dos módulos UR10e con manos articuladas y dos cámaras RGB-D. Lo
 
 ## Inspección
 
-Desde la raíz del repositorio. Cambia `citrus` por `banana`, `vineyard` o `berries` para elegir otro cultivo.
+Ejecuta los comandos desde la raíz del repositorio. Las recetas usan fruta suelta sobre una mesa de trabajo. Las plantas aportan contexto al cultivo.
+
+| Receta | Geometría física y objetivo |
+| --- | --- |
+| `berry-pinch` | Arándano objetivo sobre una columna de 35 mm y bayas vecinas sueltas. Practicar una pinza con espacio bajo la fruta y comprobar que el entorno se mantenga estable. |
+| `orange-packing` | Naranja sobre una cuna de 35 mm con borde bajo y bandeja izquierda de recepción. Separar la recogida, el transporte y el asentamiento. |
+| `banana-handover` | Plátano sobre una cuna de dos apoyos a la derecha y bandeja a la izquierda. Aislar el agarre derecho, la entrega entre manos y el depósito. |
+| `grape-occlusion` | Racimo sobre la mesa, cubo con colisión en el campo visual y tijeras sobre la encimera. Inspeccionar la vista parcial y el paso libre alrededor de los útiles. |
+
+```powershell
+.\scripts\run.ps1 agriculture_preview --layout berry-pinch --viz kit --live --output logs/agriculture_preview
+.\scripts\run.ps1 agriculture_preview --layout grape-occlusion --headless --output logs/agriculture_preview
+```
+
+Sustituye el valor de `--layout` por cualquier receta de la tabla. En las recetas, `--randomize` cambia luz y color de mesa con la semilla y conserva las posiciones de los útiles. Las capturas se guardan en la carpeta de la receta e incluyen un `scene.json` con el objetivo y la geometría seleccionada.
+
+Para abrir la escena base de un cultivo, usa `--scenario` con `citrus`, `banana`, `vineyard` o `berries`.
 
 ```powershell
 .\scripts\run.ps1 agriculture_preview --scenario citrus --viz kit --live --output logs/agriculture_preview

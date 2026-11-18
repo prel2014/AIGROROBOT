@@ -3,9 +3,6 @@ from dataclasses import dataclass
 import heapq
 import math
 
-OBSTACLE_INSTRUCTION = "Si ves obstáculos, esquívalos."
-
-
 def intersects_segment(a, b, rectangle):
     """Closed segment against an axis-aligned rectangle (including its boundary)."""
     lo, hi = 0., 1.
@@ -98,37 +95,3 @@ def push_plan(start, goal, obstacles=(), clearance=.08):
             Subtask("slide","Empuja hacia el siguiente punto libre sin levantar el objeto.",(x,y,start[2]))
             for x,y in route[1:]] + [
             Subtask("verify","Comprueba el destino y que el objeto sigue apoyado.",tuple(goal))]
-
-
-class SubtaskProgress:
-    """Advance only on measured completion; calling update is not an actuation command."""
-    def __init__(self, plan, stable_steps=15):
-        self.plan, self.index, self.count, self.stable_steps = plan, 0, 0, stable_steps
-
-    def update(self, *, selected=False, near=False, aligned=False, opposed_contact=False, position=None,
-               speed=math.inf, supported=False, released=False, collision=False):
-        if collision:
-            raise RuntimeError("Obstacle contact: stop and replan")
-        if self.index == len(self.plan):
-            return True
-        step = self.plan[self.index]
-        target_reached = position is not None and step.target is not None and math.dist(position,step.target) <= .015
-        minimum_height = target_reached and position[2] >= step.target[2] if target_reached else False
-        complete = {"select":selected, "approach":near, "align":aligned, "align_push":aligned and supported,
-                    "grasp":opposed_contact, "lift":minimum_height and opposed_contact,
-                    "hold":minimum_height and opposed_contact and speed < .15,
-                    "transport":target_reached and opposed_contact,
-                    "lower":target_reached and supported,
-                    "slide":target_reached and supported,
-                    "release":released and supported,
-                    "verify":target_reached and supported and released and speed < .05}[step.name]
-        self.count = self.count+1 if complete else 0
-        required = self.stable_steps if step.name in ("grasp","hold","verify") else 1
-        if self.count >= required:
-            self.index += 1
-            self.count = 0
-        return self.index == len(self.plan)
-
-    def instruction(self, global_instruction):
-        step = self.plan[min(self.index,len(self.plan)-1)]
-        return f"Objetivo: {global_instruction} Paso actual: {step.text}"

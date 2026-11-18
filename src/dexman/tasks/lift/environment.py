@@ -126,7 +126,7 @@ class LiftEnv(DirectRLEnv):
             clearance = object_clearance(height, self.object.data.root_quat_w.torch, self.cfg.table_height, self.cfg.asset_shape, self.cfg.asset_dimensions)
             potential, grip, lifted = lift_potential(pd, tip_distances, height,
                 xy_error, target_lift, self.cfg.object_initial_height, clearance)
-            contact_grasp, contacts, forces = measured_grasp(self)
+            contact_grasp, contacts, _ = measured_grasp(self)
             potential = potential - 10 * lifted * (1 - contact_grasp.float()) * grip
             grip = grip * contact_grasp.float()
             previous = torch.where(self.potential_valid, self.previous_potential, potential)
@@ -182,9 +182,10 @@ class LiftEnv(DirectRLEnv):
 
     def _get_dones(self):
         pos, palm, tips = self._geometry()
-        _, _, grasp = grasp_metrics(pos, palm, tips)
         if self.cfg.reward_version == 4:
-            grasp, contacts, forces = measured_grasp(self)
+            grasp, _, _ = measured_grasp(self)
+        else:
+            _, _, grasp = grasp_metrics(pos, palm, tips)
         rotation = self.object.data.root_quat_w.torch
         velocity = self.object.data.root_lin_vel_w.torch
         self._check_pose(pos, rotation, velocity, palm, tips)

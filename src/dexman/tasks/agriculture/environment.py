@@ -1,16 +1,23 @@
 """RSL-RL VecEnv over the four agricultural crop groups in one PhysX context."""
+import numpy as np
 import torch
 from rsl_rl.env import VecEnv
 from tensordict import TensorDict
 from torch.nn.functional import one_hot
 
 from dexman.robot.joints import FINGERTIPS, PALM
-from dexman.sensors.grasp import opposed_contact_grasp
-from .batch import AgriculturalBatch, CONTROL_DECIMATION
+from .actuation import JointCommandController, NOMINAL_RESPONSE_TIME_S
+from .batch import AgriculturalBatch
+from .contact_quality import contact_slip_speed, grasp_progress_masks, measure_contact_quality
+from .fruit_clearance import fruit_clearance_points, lowest_collider_height
+from .grasp_curriculum import GRASP_ACTION_DIM, GRASP_EPISODE_SECONDS, GraspMotion
+from .impact_sensors import forbidden_impact
 from .interface import ACTION_DIM, ARM_KEYS, JOINTS_PER_ARM
 from .objectives import (EPISODE_SECONDS, LIFT, MAX_DISTRACTORS, OBJECTIVES, OBS_DIM, PHASE_TEXT,
-                         PLACE, REACH, SETTLE, TRANSFER, TRAY_CENTER)
+                         PLACE, TRANSFER)
 from .randomization import GROUND_Z, OBSTACLE_RADIUS, TABLE_Z
+from .scene import CROPS
+from .task_rules import AgriculturalTaskRules
 
 
 class AgriculturalPPOEnv(VecEnv):
@@ -18,18 +25,18 @@ class AgriculturalPPOEnv(VecEnv):
         self.cfg = cfg
         self.batch = AgriculturalBatch(sim, cfg, seed=seed)
         self.batch.initialize()
-        self.device, self.num_envs, self.num_actions = sim.device, self.batch.num_envs, ACTION_DIM
+        self.device, self.num_envs = sim.device, self.batch.num_envs
+        self.num_actions = GRASP_ACTION_DIM if cfg.grasp else ACTION_DIM
         self.capture, self.render = capture, capture or render
         self.on_step = None
-        self.dt = sim.get_physics_dt() * CONTROL_DECIMATION
-        self.max_episode_length = round(EPISODE_SECONDS / self.dt)
+        self.on_rollout_step = None
+        self.dt = self.batch.control_dt
+        self.max_episode_length = round((GRASP_EPISODE_SECONDS if cfg.grasp else EPISODE_SECONDS) / self.dt)
         self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
-        self.phase = torch.zeros_like(self.episode_length_buf)
-        self.hold = torch.zeros_like(self.phase)
-        self.overlap_steps = torch.zeros_like(self.phase)
-        self.handover_seen = torch.zeros_like(self.phase, dtype=torch.bool)
 
         self.fruits, self.body_ids, starting_poses, velocity_limits = [], [], [], []
+        self.fruit_collider_points = {crop: torch.tensor(fruit_clearance_points(spec.fruit), device=self.device)
+                                      for crop, spec in CROPS.items()}
         crops = []
         for group in self.batch.groups:
             scene = group.scene
@@ -50,8 +57,10 @@ class AgriculturalPPOEnv(VecEnv):
         self.handover = torch.tensor([spec.handover for spec in specs], device=self.device)
         self.precision = torch.tensor([spec.precision for spec in specs], device=self.device)
         self.instructions = tuple(spec.instruction + " Si ves obstáculos, esquívalos." for spec in specs)
-        self.starting_distractors = torch.cat(starting_poses)
-        self.tray = self.lift_height.new_tensor(TRAY_CENTER)
+        self.rules = AgriculturalTaskRules(self.lift_height, self.deposit, self.handover, self.precision,
+                                           torch.cat(starting_poses), self.batch.joint_limits, self.dt,
+                                           reward_lift=cfg.grasp is not None)
+        self.tray = self.rules.tray
         self.home = self.batch.angular_state()[:, :ACTION_DIM].clone()
         physical_low, physical_high = self.batch.joint_limits.unbind(-1)
         # Explore around the calibrated starting posture. Fingers retain their physical range.
@@ -59,13 +68,19 @@ class AgriculturalPPOEnv(VecEnv):
         self.low = torch.maximum(physical_low, self.home - span)
         self.high = torch.minimum(physical_high, self.home + span)
         self.home = self.home.clamp(self.low, self.high)
-        self.targets = self.home.clone()
-        self.step_limit = torch.cat(velocity_limits).clamp_max(4.) * self.dt
-        self.previous_potential = torch.zeros_like(self.lift_height)
-        self.potential_valid = torch.zeros_like(self.deposit)
+        self.controller = JointCommandController(
+            self.home, self.low, self.high, torch.cat(velocity_limits).clamp_max(4.),
+            dt=self.dt, max_delay_steps=1, seed=seed)
+        self.targets = self.controller.targets
+        self.grasp_motion = GraspMotion(cfg.grasp, self.home, self.dt) if cfg.grasp else None
+        self._configure_controller(range(self.num_envs))
         self._update_observations()
         if capture:
             self.batch.sim.render()
+
+    @property
+    def phase(self):
+        return self.rules.phase
 
     def _pad_distractors(self, positions, count):
         padding = [torch.zeros((count, 3), device=self.device)] * (MAX_DISTRACTORS - len(positions))
@@ -73,38 +88,53 @@ class AgriculturalPPOEnv(VecEnv):
 
     def _measure(self):
         poses, velocities, others, palms, tips, active, grasp, collisions = ([] for _ in range(8))
+        centers, opposition, normal_force, slip_speed, clearance = [], [], [], [], []
         for group, produce, body_ids in zip(self.batch.groups, self.fruits, self.body_ids, strict=True):
             scene, origin = group.scene, group.origins
             target = produce[0]
             pos = target.data.root_pos_w.torch
+            center = target.data.root_com_pos_w.torch
+            min_z = lowest_collider_height(target.data.root_link_pos_w.torch, target.data.root_link_quat_w.torch,
+                                           self.fruit_collider_points[group.crop])
+            clearance.append(min_z - origin[:, 2] - self.batch.pickup_surface_z)
+            centers.append(center - origin)
+            com_velocity = target.data.root_com_vel_w.torch
             poses.append(torch.cat((pos - origin, target.data.root_quat_w.torch), dim=-1))
             velocities.append(target.data.root_vel_w.torch)
             others.append(self._pad_distractors(
                 [fruit.data.root_pos_w.torch - origin for fruit in produce[1:]], scene.num_envs))
-            links, contacts, gripped = [], [], []
+            links, contacts, gripped, opposed, normals, slips = ([] for _ in range(6))
             forbidden = scene["fruit_obstacle_contact"].data.normal_force_matrix_w.torch[:, 0].norm(dim=-1)
-            max_collision = forbidden.amax(-1)
+            impact = forbidden_impact(scene)
+            max_collision = torch.maximum(forbidden.amax(-1), torch.maximum(impact.environment_n, impact.inter_arm_n))
             for side, ids in zip(ARM_KEYS, body_ids, strict=True):
-                links.append(scene[side].data.body_pos_w.torch[:, ids] - origin[:, None, :])
+                arm_data = scene[side].data
+                links.append(arm_data.body_pos_w.torch[:, ids] - origin[:, None, :])
                 sensors = [scene[f"{side}_{tip}"].data for tip in FINGERTIPS]
                 forces = torch.stack([sensor.normal_force_matrix_w.torch[:, 0] for sensor in sensors], dim=1)
                 points = torch.stack([sensor.contact_pos_w.torch[:, 0, 0] for sensor in sensors], dim=1)
                 max_collision = torch.maximum(max_collision, forces[:, :, 1:].norm(dim=-1).amax((1, 2)))
-                if OBJECTIVES[group.crop].precision:
-                    held, _, _ = opposed_contact_grasp(forces[:, [0, 4], 0], points[:, [0, 4]], pos, .003,
-                                                        minimum_separation=.003, required_fingers=1)
-                    touching = forces[:, :, 0].norm(dim=-1) >= .003
-                else:
-                    held, touching, _ = opposed_contact_grasp(forces[:, :, 0], points, pos, .04)
-                contacts.append(touching)
-                gripped.append(held)
+                precision = OBJECTIVES[group.crop].precision
+                quality = measure_contact_quality(forces[:, :, 0], points, center, precision=precision)
+                contacts.append(quality.touching)
+                gripped.append(quality.held)
+                opposed.append(quality.opposed)
+                normals.append(quality.normal_force_n)
+                slips.append(contact_slip_speed(points, forces[:, :, 0], arm_data.body_com_pos_w.torch[:, ids[1:]],
+                                                arm_data.body_com_vel_w.torch[:, ids[1:]], center, com_velocity,
+                                                minimum_force=.003 if precision else .04))
             links = torch.stack(links, dim=1)
             palms.append(links[:, :, 0])
             tips.append(links[:, :, 1:])
             active.append(torch.stack(contacts, dim=1))
             grasp.append(torch.stack(gripped, dim=1))
             collisions.append(max_collision)
-        return tuple(torch.cat(field) for field in (poses, velocities, others, palms, tips, active, grasp, collisions))
+            opposition.append(torch.stack(opposed, dim=1))
+            normal_force.append(torch.stack(normals, dim=1))
+            slip_speed.append(torch.stack(slips, dim=1))
+        return tuple(torch.cat(field) for field in (
+            poses, velocities, others, palms, tips, active, grasp, collisions,
+            centers, opposition, normal_force, slip_speed, clearance))
 
     def _obstacles(self):
         rows = []
@@ -124,21 +154,25 @@ class AgriculturalPPOEnv(VecEnv):
     def _update_observations(self, measurement=None, angular_state=None):
         if measurement is None:
             measurement = self._measure()
-        pose, velocity, others, palm, tip, contacts, held, _ = measurement
+        pose, velocity, others, palm, tip, contacts, held, _, center, *_ = measurement
         pos = pose[:, :3]
         self.angular_state = self.batch.angular_state() if angular_state is None else angular_state
         q, dq = self.angular_state.split(ACTION_DIM, dim=-1)
         half = (self.high - self.low).clamp_min(.01) * .5
-        joint_features = torch.stack(((q - self.home) / half, torch.asinh(dq), (self.targets - self.home) / half),
+        pending = self.controller.pending_targets[:, 0]
+        joint_features = torch.stack(((q - self.home) / half, torch.asinh(dq),
+                                      (self.targets - self.home) / half, (pending - self.home) / half),
                                      dim=-1).flatten(1)
-        arm_features = torch.cat((palm - pos[:, None], (tip - pos[:, None, None]).flatten(2),
+        arm_features = torch.cat((palm - center[:, None], (tip - center[:, None, None]).flatten(2),
                                   contacts, held.unsqueeze(-1)), dim=-1)
-        lift_goal = torch.stack((pos[:, 0], pos[:, 1], TABLE_Z + .006 + self.lift_height), dim=-1)
+        lift_goal = pos + torch.stack((torch.zeros_like(self.lift_height), torch.zeros_like(self.lift_height),
+                                      self.lift_height - measurement[-1]), dim=-1)
         goal = torch.where((self.phase >= PLACE)[:, None], self.tray, lift_goal)
         task_features = torch.cat((pose, velocity, goal - pos, others.flatten(1),
                                    self.crop_encoding, one_hot(self.phase, len(PHASE_TEXT)),
-                                   (self.hold / 15.)[:, None], (self.episode_length_buf / self.max_episode_length)[:, None],
-                                   self.handover_seen[:, None]), dim=-1)
+                                   (self.rules.hold / 15.)[:, None], (self.episode_length_buf / self.max_episode_length)[:, None],
+                                   self.rules.handover_seen[:, None], self.controller.delay_steps[:, None],
+                                   self.controller.response_time_s[:, :1] / NOMINAL_RESPONSE_TIME_S), dim=-1)
         self.obstacle_features = self._obstacles()
         policy = torch.cat((joint_features, arm_features.flatten(1), task_features,
                             self.obstacle_features.flatten(1)), dim=-1)
@@ -150,112 +184,76 @@ class AgriculturalPPOEnv(VecEnv):
     def get_observations(self):
         return self.observation
 
+    def _configure_controller(self, replica_ids):
+        strength = self.batch.physics_variation
+        if not strength:
+            return
+        ids = list(replica_ids)
+        response, delay = [], []
+        for index in ids:
+            rng = np.random.default_rng(np.random.SeedSequence(
+                [self.batch.seed, index, self.batch.episode_ids[index], 3]))
+            response.append(NOMINAL_RESPONSE_TIME_S * (1. + strength * np.clip(rng.normal(0., .08), -.2, .2)))
+            delay.append(int(np.clip(round(strength * rng.normal(.4, .35)), 0, 1)))
+        self.controller.configure(ids, delay_steps=delay, response_time_s=self.home.new_tensor(response)[:, None],
+                                  action_noise_std=.015 * strength)
+
     def _reset(self, ids):
         self.batch.reset(ids)
         self.episode_length_buf[ids] = 0
-        self.phase[ids] = REACH
-        self.hold[ids] = 0
-        self.overlap_steps[ids] = 0
-        self.handover_seen[ids] = False
-        self.potential_valid[ids] = False
-        self.targets[ids] = self.home[ids]
+        self.rules.reset(ids)
+        self._configure_controller(ids.tolist())
+        self.controller.reset(ids)
+        if self.grasp_motion is not None:
+            self.grasp_motion.reset(ids)
         if self.capture:
             self.batch.sim.render()
 
-    def _score(self, measurements, angular_state, actions, invalid, movement):
-        pose, velocity, others, palm, tips, contacts, held, collision = measurements
-        pos = pose[:, :3]
-        left, right = held.unbind(-1)
-        grasp = torch.where(self.handover, right, held.any(-1))
-        lift = pos[:, 2] - (TABLE_Z + .006)
-        displacement = (others - self.starting_distractors).norm(dim=-1).amax(-1)
-        delta = (pos - self.tray).abs()
-        in_tray = (delta[:, 0] < .095) & (delta[:, 1] < .076) & (delta[:, 2] < .018)
-        quiet = velocity[:, :3].norm(dim=-1) < .065
-        released = ~contacts.any((1, 2))
-        impeded = collision > 1.0
-        outside = (pos[:, 0] < -.26) | (pos[:, 0] > .94) | (pos[:, 1].abs() > .72)
-        dropped = (pos[:, 2] < TABLE_Z - .065) | (outside & (pos[:, 2] < TABLE_Z + .012))
-        displaced_off_table = ((others[..., 0] < -.26) | (others[..., 0] > .94)
-                               | (others[..., 1].abs() > .72)) & (others[..., 2] < TABLE_Z + .012)
-        distractor_dropped = (others[..., 2] < TABLE_Z - .065) | displaced_off_table
-        dropped |= (distractor_dropped & (self.starting_distractors[..., 2] > 0.)).any(-1)
-        q, dq = angular_state.split(ACTION_DIM, dim=-1)
-        low, high = self.batch.joint_limits.unbind(-1)
-        impossible = ((q < low - .05) | (q > high + .05) | ~torch.isfinite(q) | ~torch.isfinite(dq)).any(-1)
-        invalid |= impossible | ~torch.isfinite(pose).all(-1) | ~torch.isfinite(velocity).all(-1)
-        fail = dropped | invalid | (self.precision & (displacement > .018))
-
-        # Dense approach/transport shaping is bounded. Milestones require real contact.
-        palm_distance = (palm - pos[:, None]).norm(dim=-1)
-        tip_distance = (tips - pos[:, None, None]).norm(dim=-1)
-        approach = (.55 * (1. - torch.tanh(palm_distance / .25))
-                    + .45 * (1. - torch.tanh(tip_distance.amin(-1) / .09)))
-        potential = torch.where(self.handover, approach[:, 1], approach.amax(-1))
-        potential = torch.where(self.phase == LIFT, .6 * grasp + .4 * (lift / self.lift_height).clamp(0., 1.), potential)
-        potential = torch.where(self.phase == TRANSFER, approach[:, 0] + .35 * left, potential)
-        potential = torch.where(self.phase >= PLACE, 1. - torch.tanh(delta.norm(dim=-1) / .23), potential)
-        progress = torch.where(self.potential_valid, potential - self.previous_potential, 0.)
-
-        overlapped = (self.phase == TRANSFER) & left & right & (lift > .04)
-        self.overlap_steps.copy_(torch.where(overlapped & ~impeded & ~fail, self.overlap_steps + 1, 0))
-        self.handover_seen |= self.overlap_steps >= 2
-        transfer_done = (self.phase == TRANSFER) & self.handover_seen & left & ~contacts[:, 1].any(-1) & (lift > .04)
-        criteria = ((self.phase == REACH) & grasp
-                    | (self.phase == LIFT) & grasp & (lift >= self.lift_height)
-                    | transfer_done
-                    | (self.phase == PLACE) & in_tray & quiet & released
-                    | (self.phase == SETTLE) & in_tray & quiet & released)
-        self.hold.copy_(torch.where(criteria & ~impeded & ~fail, self.hold + 1, 0))
-        direct_success = (self.phase == LIFT) & ~self.deposit
-        cutoff = torch.where(direct_success, 15, torch.where(self.phase == SETTLE, 9, 3))
-        reached = (self.hold >= cutoff) & ~fail
-        success = reached & (direct_success | (self.phase == SETTLE))
-        advance = reached & ~success
-        following = torch.where((self.phase == LIFT) & ~self.handover, PLACE, self.phase + 1)
-        self.phase.copy_(torch.where(advance, following, self.phase))
-        self.hold.masked_fill_(advance, 0)
-        self.previous_potential.copy_(torch.nan_to_num(potential))
-        self.potential_valid.copy_(~advance & ~fail)
-
-        reward = (2. * progress.clamp(-.4, .4) + .018 * potential - .01
-                  + 2. * advance + 18. * success - 8. * fail - .4 * impeded
-                  - .025 * actions.square().mean(-1) - .04 * movement.abs().mean(-1)
-                  - .20 * displacement.clamp_max(.1))
-        return torch.nan_to_num(reward, nan=-8.), success, fail, dropped, impeded, lift
-
     def step(self, actions):
-        if actions.shape != self.targets.shape:
-            raise ValueError(f"Expected bimanual actions {tuple(self.targets.shape)}")
-        invalid = ~torch.isfinite(actions).all(-1)
-        actions = torch.where(invalid[:, None], 0., actions).clamp(-1., 1.)
-        bound = torch.where(actions >= 0., self.high - self.home, self.home - self.low)
-        desired = self.home + bound * actions
-        movement = (.35 * (desired - self.targets)).clamp(-self.step_limit, self.step_limit)
-        movement = torch.where(invalid[:, None], 0., movement)
-        command = self.targets + movement
-        self.targets.copy_(command)
-        self.batch.step(command, render=self.render)
+        if self.grasp_motion is None:
+            command = self.controller.step(actions)
+            scored_actions, invalid = command.actions, command.invalid
+        else:
+            desired, scored_actions, invalid = self.grasp_motion.target(actions, self.phase == LIFT)
+            delta = desired - self.home
+            scale = torch.where(delta >= 0., self.high - self.home, self.home - self.low).clamp_min(1.e-6)
+            command = self.controller.step(torch.where(invalid[:, None], torch.nan, delta / scale))
+        self.batch.step(command.joint_command, render=self.render)
         self.episode_length_buf += 1
         measurements = self._measure()
         angular_state = self.batch.angular_state()
-        rewards, success, fail, dropped, impeded, lift = self._score(
-            measurements, angular_state, actions, invalid, movement)
+        rewards, success, fail, dropped, impeded, lift = self.rules.score(
+            measurements, angular_state, scored_actions, invalid, command.movement)
         timeout = (self.episode_length_buf >= self.max_episode_length) & ~(success | fail)
         done = success | fail | timeout
         log = {"Metrics/fruit_lift_cm": 100. * torch.nan_to_num(lift).mean(),
-               "Metrics/obstacle_contact_fraction": impeded.float().mean(),
+               "Metrics/joint_tracking_error_rad": (angular_state[:, :ACTION_DIM] - command.joint_command).abs().mean(),
+               "Metrics/forbidden_contact_fraction": impeded.float().mean(),
                "Metrics/drop_fraction": dropped.float().mean()}
+        center, opposed, normal_force, slip_speed = measurements[8:12]
+        near = (measurements[4] - center[:, None, None]).norm(dim=-1).amin(-1) < .07
+        allowed = torch.stack((~self.handover | (self.phase >= TRANSFER), torch.ones_like(self.handover)), dim=-1)
+        grasp_states = grasp_progress_masks(near, measurements[5], opposed, measurements[6], eligible_hands=allowed)
         if done.any():
-            log["Metrics/success_rate"] = success.float().sum() / done.sum()
-        for index, crop in enumerate(OBJECTIVES):
-            selected = self.crop_ids == index
+            log["Metrics/success_rate"] = success[done].float()
+        for group in self.batch.groups:
+            crop = group.crop
+            selected = slice(group.start, group.stop)
             log[f"Progress/{crop}_phase"] = self.phase[selected].float().mean()
-            if (done & selected).any():
-                log[f"Success/{crop}"] = (success & selected).sum() / (done & selected).sum()
+            log[f"Grasp/{crop}/lift_cm"] = 100. * torch.nan_to_num(lift[selected]).amax()
+            log[f"Grasp/{crop}/peak_force_n"] = normal_force[selected].amax()
+            valid_slip = torch.isfinite(slip_speed[selected])
+            log[f"Grasp/{crop}/slip_m_s"] = torch.where(valid_slip, slip_speed[selected], 0.).sum() / valid_slip.sum().clamp_min(1)
+            for name, mask in grasp_states.items():
+                log[f"Grasp/{crop}/{name}"] = mask[selected].float().mean()
+            if done[selected].any():
+                log[f"Success/{crop}"] = success[selected][done[selected]].float()
         extras = {"time_outs": timeout, "log": log, "success": success, "dropped": dropped,
-                  "invalid_pose": invalid, "obstacle_contact": impeded, "joint_command": command,
-                  "target_pose": measurements[0], "fingertip_contacts": measurements[5]}
+                  "invalid_pose": invalid, "obstacle_contact": impeded, "joint_command": command.joint_command,
+                  "target_pose": measurements[0], "fingertip_contacts": measurements[5],
+                  "phase_at_step": self.phase.clone()}
+        if self.on_rollout_step is not None:
+            self.on_rollout_step()
         ids = done.nonzero(as_tuple=True)[0]
         if ids.numel():
             self._reset(ids)

@@ -50,3 +50,7 @@ runs/
 
 # Local archives are not source assets
 *.zip
+
+# Local copies of third-party reference material
+/docs/papers/*.pdf
+/docs/papers/isaac-lab-3.0-*.md

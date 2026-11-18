@@ -3,8 +3,6 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from dexman.perception.clip import clip_spatial_features, load_frozen_clip
-
 from .contract import default_architecture_config, validate_architecture_config
 
 
@@ -104,6 +102,8 @@ class ActionChunkPolicy(nn.Module):
 
     def __init__(self, model_name="openai/clip-vit-base-patch32", horizon=8, *, joint_limits,
                  local_only=False, architecture_config=None):
+        from dexman.perception.clip import load_frozen_clip
+
         super().__init__()
         if type(horizon) is not int or horizon < 1:
             raise ValueError("horizon must be a positive integer")
@@ -141,6 +141,8 @@ class ActionChunkPolicy(nn.Module):
         return self
 
     def encode(self, **inputs):
+        from dexman.perception.clip import clip_spatial_features
+
         features = clip_spatial_features(self.backbone, inputs)
         count = features["vision_tokens"].shape[0]
         if count % 2:

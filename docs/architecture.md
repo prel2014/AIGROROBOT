@@ -2,12 +2,71 @@
 
 ## Agricultura bimanual
 
+### Teacher PPO
+
+```mermaid
+flowchart LR
+    A[Estado angular y metas pendientes] --> T[Transformer de estado]
+    B[Fruta, contactos, fase y obstáculos] --> T
+    T --> C[Crítico con valor por réplica]
+    T --> D[Actor del currículo con cierre y elevación]
+    T --> E[Actor de tarea completa con 60 mandos]
+    D --> F[Adaptador de trayectoria calibrada]
+    F --> G[Control articular a 30 Hz]
+    E --> G
+    G --> H[PhysX a 120 Hz]
+    H --> B
+```
+
+El actor y el crítico reciben 382 valores. Cada red tiene tres bloques Transformer de 128 canales y cuatro cabezas. El currículo carga un ensayo físico aprobado. La acción nula mantiene el objetivo y el contacto medido habilita la elevación. El teacher de tarea completa usa 30 mandos por brazo.
+
+### Estudiante VLA
+
+```mermaid
+flowchart LR
+    eyes["Dos ojos RGB-D"] --> clip["CLIP visual"]
+    eyes --> depth["Profundidad y máscara"]
+    instruction["Orden y subtarea en español"] --> text["Multilingual E5"]
+    joints["Ángulos y velocidades medidos"] --> proprio["Propiocepción por brazo"]
+    clip --> fusion["Secuencia de tokens a ancho 256"]
+    depth --> fusion
+    text --> fusion
+    proprio --> fusion
+    previous["Memoria anterior 256"] --> fusion
+    fusion --> transformer["Seis bloques Transformer"]
+    transformer --> angles["Ocho pasos de 60 ángulos"]
+    transformer --> nextMemory["Siguiente memoria 256"]
+    nextMemory -.->|"Siguiente observación"| previous
+    angles --> sim["Controlador y PhysX"]
+    sim -.->|"Nuevas imágenes"| eyes
+    sim -.->|"Nuevo estado medido"| joints
+```
+
 | Modelo | Entradas | Salidas |
 | --- | --- | --- |
-| Teacher PPO | 320 valores de articulaciones, contactos, fruta, fase y obstáculos. | 60 mandos normalizados, 30 por brazo. El crítico estima un valor por réplica. |
-| VLA | Tokens CLIP ViT-B/32 de las dos vistas RGB, profundidad, texto, `q[60] + dq[60]` y memoria de 256 valores. | Ocho pasos de 60 ángulos absolutos en radianes y la siguiente memoria de 256 valores. |
+| Visión RGB | Dos imágenes de 224 × 224. | CLIP visual congelado. 100 tokens de 512 en total. |
+| Profundidad | Dos mapas en metros con máscara de validez. | 98 tokens con distancia y proporción válida. |
+| Lenguaje | Orden global y subtarea activa en español. | Multilingual E5 congelado. Un token de 384. |
+| Propiocepción | `q[60]` y `dq[60]`. | Dos tokens de 60, uno por brazo. |
+| Memoria | Estado anterior de 256 valores. | Un token de contexto. Se reinicia al comienzo del episodio. |
+| Fusión | 202 tokens de contexto, 16 consultas de acción y una de memoria. | Seis bloques Transformer con 256 canales y ocho cabezas. |
+| Salida | Consultas procesadas. | Ocho pasos de 60 ángulos absolutos en radianes y memoria actualizada de 256 valores. |
 
-El teacher usa tres bloques Transformer. El VLA usa seis, con ancho 256 y ocho cabezas de atención. El orden de ojos y brazos es izquierda, derecha. La física corre a 120 Hz y el control a 30 Hz. [Tareas y comandos](plan-agricola.md)
+Los tokens de las modalidades se proyectan a 256 canales y se concatenan en el eje de secuencia. El orden de las cámaras y los brazos es izquierda, derecha. El controlador aplica los límites articulares y permite volver a observar antes de ejecutar el resto del bloque. [Referencias de aprendizaje](referencias-aprendizaje.md)
+
+## Patrón de software
+
+Usamos **arquitectura hexagonal**, también llamada puertos y adaptadores. La regla queda en `AGENTS.md`. [Artículo original de Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture)
+
+| Pieza | Responsabilidad |
+| --- | --- |
+| Núcleo | Define tareas, fases, éxito físico, unidades y límites. |
+| Puertos | Especifican observaciones, acciones, etiquetas, memoria y episodios. |
+| Adaptadores de entrada | Los comandos de entrenamiento y evaluación seleccionan escenario, algoritmo y perfil. |
+| Adaptadores de salida | Isaac Sim aplica comandos y entrega sensores. HDF5 guarda episodios. FFmpeg genera videos. CLIP y E5 producen tokens. |
+| Comprobación | Contratos con datos sintéticos y ejecución en PhysX para verificar contacto y movimiento. |
+
+En el teacher, `task_rules.py` aplica la recompensa y las transiciones a tensores. `environment.py` conecta esas reglas con los sensores y el controlador de Isaac Lab. En el estudiante, `bimanual_contract.py` comprueba el formato y el adaptador de percepción conecta CLIP y E5 al Transformer. Las entradas CLI componen estas piezas.
 
 ## Elevación de un brazo
 

@@ -46,6 +46,15 @@ CROPS = {
         "Recoge un arándano con pulgar e índice sin desplazar los demás."),
 }
 FRUIT_MASS_KG = {"orange": .16, "banana": .12, "grapes": .20, "blueberry": .002}
+PICKUP_SUPPORT_HEIGHT = .035
+PICKUP_SUPPORTS = {
+    "citrus": ((0., 0., .056, .056),),
+    "banana": ((-.022, -.052, .042, .024), (-.038, .027, .042, .024)),
+    "vineyard": ((.048, -.027, .080, .060),),
+    "berries": ((0., 0., .010, .010),),
+}
+SUPPORTED_GRAPE_ROOT = (.252, -.092, .96849)
+SUPPORTED_GRAPE_ROTATION = (.27575, .78403, -.06454, .55236)
 
 
 def yaw(angle):
@@ -136,20 +145,26 @@ class AgriculturalPreviewCfg:
     sim = SimulationCfg(dt=1 / 120, render_interval=4, physics=PhysxCfg())
 
 
-def make_preview(scenario, *, randomize=False):
+def make_preview(scenario, *, randomize=False, layout=None):
     cfg = AgriculturalPreviewCfg()
     scene = cfg.scene
-    populate_crop(scene, scenario, randomize=randomize)
-    if scenario == "banana":
+    if layout is not None and layout.crop != scenario:
+        raise ValueError("The preview layout must match the selected crop")
+    populate_crop(scene, scenario, randomize=randomize or bool(layout and layout.obstacles),
+                  raised_support=bool(layout and layout.raised_support))
+    if layout is not None:
+        scene.overview.offset.pos = layout.inspection_position
+        scene.overview.offset.rot = look_at_xyzw(layout.inspection_position, layout.inspection_target)
+    elif scenario == "banana":
         scene.overview.offset.pos = (2.88, -4.1, 2.84)
         scene.overview.offset.rot = look_at_xyzw(scene.overview.offset.pos, (.52, .15, 1.52))
-    if scenario == "vineyard":
+    elif scenario == "vineyard":
         scene.overview.offset.pos = (1.75, -4.32, 3.28)
         scene.overview.offset.rot = look_at_xyzw(scene.overview.offset.pos, (.54, .15, 1.12))
     return cfg
 
 
-def populate_crop(scene, scenario, *, randomize):
+def populate_crop(scene, scenario, *, randomize, raised_support=False):
     crop = CROPS[scenario]
     scene.plant = visual_model(f"{NS}/Crop/Plant", crop.plant, crop.position, crop.yaw_deg)
     scene.soil = fixed_box(f"{NS}/Crop/Soil", (1.8, 3.8, .05), (1.49, .22, -.028), (.24, .14, .083))
@@ -170,7 +185,27 @@ def populate_crop(scene, scenario, *, randomize):
                                             (0., .145, (.37,.018,.042)),(0., -.145, (.37,.018,.042)))):
             setattr(scene, f"tray_{label}_{i}", fixed_box(path+f"/Rim{i}", size, (.24+dx, center+dy, TABLE_Z+.026), color))
     for i, (x, y, angle) in enumerate(FRUIT_PLACEMENTS[scenario]):
-        setattr(scene, f"fruit_{i}", loose_fruit(crop.fruit, i, (x, y, TABLE_Z+.006), angle))
+        z = TABLE_Z + .006
+        supported = raised_support and i == 0
+        if supported and scenario == "vineyard":
+            x, y, z = SUPPORTED_GRAPE_ROOT
+        fruit = loose_fruit(crop.fruit, i, (x, y, z + PICKUP_SUPPORT_HEIGHT if supported else z), angle)
+        if supported:
+            if scenario == "vineyard":
+                fruit.init_state.rot = SUPPORTED_GRAPE_ROTATION
+            for j, (dx, dy, sx, sy) in enumerate(PICKUP_SUPPORTS[scenario]):
+                setattr(scene, f"pickup_support_{j}", fixed_box(f"{NS}/Produce/Support{j}",
+                    (sx, sy, PICKUP_SUPPORT_HEIGHT), (x + dx, y + dy, TABLE_Z + PICKUP_SUPPORT_HEIGHT / 2),
+                    (.15, .22, .28)))
+            if scenario == "citrus":
+                # A low rim keeps the round fruit seated while the fingers approach above it.
+                rim = ((-.028, 0., .004, .056), (.028, 0., .004, .056),
+                       (0., -.028, .052, .004), (0., .028, .052, .004))
+                for j, (dx, dy, sx, sy) in enumerate(rim):
+                    setattr(scene, f"pickup_support_rim_{j}", fixed_box(f"{NS}/Produce/SupportRim{j}",
+                        (sx, sy, .008), (x + dx, y + dy, TABLE_Z + PICKUP_SUPPORT_HEIGHT + .004),
+                        (.15, .22, .28)))
+        setattr(scene, f"fruit_{i}", fruit)
     if randomize:
         scene.sunlight.spawn.intensity = 220.
         scene.fill.spawn.intensity = 155.

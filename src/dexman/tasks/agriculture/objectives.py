@@ -11,11 +11,13 @@ PHASE_TEXT = ("Acércate y agarra la fruta indicada.", "Levanta la fruta sin dej
               "Mantén la fruta estable dentro de la bandeja.")
 TRAY_CENTER = (.24, .46, TABLE_Z + .017)
 EPISODE_SECONDS = 12
+FORBIDDEN_IMPACT_N = 1.0
 MAX_DISTRACTORS = 3
 ARM_FEATURES = 24  # palm XYZ, five tip XYZ, five contact flags, grasp flag
-TASK_FEATURES = 37
+JOINT_FEATURES = 4  # position, velocity, executed target, queued target
+TASK_FEATURES = 39
 OBSTACLE_FEATURES = 5
-OBS_DIM = (ACTION_DIM * 3 + 2 * ARM_FEATURES + TASK_FEATURES
+OBS_DIM = (ACTION_DIM * JOINT_FEATURES + 2 * ARM_FEATURES + TASK_FEATURES
            + len(OBSTACLE_RADIUS) * OBSTACLE_FEATURES)
 
 

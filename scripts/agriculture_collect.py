@@ -41,12 +41,17 @@ def main():
         validate_teacher_runtime()
         seed_everything(args.seed)
         saved = read_checkpoint(checkpoint)
+        if saved["infos"]["agriculture"] != contract():
+            raise ValueError("La captura de tareas completas requiere un teacher de 60 acciones")
+        profile = saved["infos"]["simulation_profile"]
+        cfg.nominal = profile["nominal_scene"]
+        cfg.physics_variation = profile["physics_variation"]
         sim = SimulationContext(cfg.sim)
         actor = actor_from_checkpoint(saved, sim.device)
         env = AgriculturalPPOEnv(sim, cfg, seed=args.seed, capture=True)
         metadata = {"teacher": {"path": str(checkpoint), "sha256": sha256(checkpoint), "iteration": saved["iter"],
                                 "contract": contract()}, "seed": args.seed, "replicas": args.num_envs,
-                    "provenance": provenance()}
+                    "simulation_profile": profile, "provenance": provenance()}
         count = collect_demonstrations(env, actor, args.output, metadata, episodes=args.episodes,
                                        max_attempts=args.max_attempts, keep_failures=args.keep_failures)
         if count < args.episodes:

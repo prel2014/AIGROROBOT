@@ -21,7 +21,7 @@ def build():
         UsdGeom.SetStageMetersPerUnit(stage, 1)
         root = UsdGeom.Xform.Define(stage, root_path)
         stage.SetDefaultPrim(root.GetPrim())
-        return stage, root
+        return stage
 
     def material(stage, path, color, metallic, roughness):
         result = UsdShade.Material.Define(stage, path)
@@ -33,7 +33,7 @@ def build():
         result.CreateSurfaceOutput().ConnectToSource(shader.ConnectableAPI(), "surface")
         return result
 
-    stage, torso = stage_for(ASSETS / "robot/torso.usda", "/Torso")
+    stage = stage_for(ASSETS / "robot/torso.usda", "/Torso")
     ivory = material(stage, "/Torso/Materials/Shell", (.62, .69, .67), .28, .35)
     charcoal = material(stage, "/Torso/Materials/Frame", (.075, .11, .13), .52, .42)
     teal = material(stage, "/Torso/Materials/Accent", (.06, .28, .25), .18, .32)
@@ -74,7 +74,7 @@ def build():
         ("berry_bush", ()),
         ("blueberries", ()),
     ):
-        stage, root = stage_for(ASSETS / f"props/{name}.usda", "/Model")
+        stage = stage_for(ASSETS / f"props/{name}.usda", "/Model")
         model = UsdGeom.Xform.Define(stage, "/Model/Visual")
         model.GetPrim().GetReferences().AddReference(f"../models/{name}/visual.usda")
         for item in Usd.PrimRange(model.GetPrim()):
@@ -89,7 +89,7 @@ def build():
         ("grapes", "grapes/visual.usda", "convexHull"),
         ("blueberry", "blueberry/visual.usda", "convexHull"),
     ):
-        stage, root = stage_for(ASSETS / f"props/{name}.usda", "/Fruit")
+        stage = stage_for(ASSETS / f"props/{name}.usda", "/Fruit")
         placement = UsdGeom.Xform.Define(stage, "/Fruit/Placement")
         model = UsdGeom.Xform.Define(stage, "/Fruit/Placement/Model")
         model.GetPrim().GetReferences().AddReference("../models/" + source)
@@ -120,7 +120,7 @@ def build():
         UsdPhysics.CollisionAPI.Apply(segment.GetPrim())
         UsdShade.MaterialBindingAPI.Apply(segment.GetPrim()).Bind(surface)
 
-    stage, root = stage_for(ASSETS / "props/branch.usda", "/Obstacle")
+    stage = stage_for(ASSETS / "props/branch.usda", "/Obstacle")
     bark = material(stage, "/Obstacle/Bark", (.18, .092, .044), 0., .85)
     for i, (start, end, radius) in enumerate((
         ((-.090,-.016,.014), (-.026,.008,.014), .014),
@@ -132,14 +132,14 @@ def build():
         tube_segment(stage, f"/Obstacle/Segment{i}", start, end, radius, bark)
     stage.GetRootLayer().Save()
 
-    stage, root = stage_for(ASSETS / "props/irrigation_hose.usda", "/Obstacle")
+    stage = stage_for(ASSETS / "props/irrigation_hose.usda", "/Obstacle")
     rubber = material(stage, "/Obstacle/Rubber", (.020, .041, .036), 0., .55)
     points = [(i*.016-.088, .028*math.sin(i*.46), .009) for i in range(12)]
     for i, (a, b) in enumerate(zip(points, points[1:])):
         tube_segment(stage, f"/Obstacle/Hose{i}", a, b, .009, rubber)
     stage.GetRootLayer().Save()
 
-    stage, root = stage_for(ASSETS / "props/nursery_pot.usda", "/Obstacle")
+    stage = stage_for(ASSETS / "props/nursery_pot.usda", "/Obstacle")
     clay = material(stage, "/Obstacle/Clay", (.28, .095, .044), 0., .72)
     soil = material(stage, "/Obstacle/Soil", (.071, .046, .026), 0., .96)
     body = UsdGeom.Mesh.Define(stage, "/Obstacle/PotBody")

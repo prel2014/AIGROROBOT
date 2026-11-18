@@ -10,6 +10,7 @@ from dexman.experiments import write_json
 from dexman.tasks.agriculture.interface import EYE_KEYS, JOINT_ORDER
 from dexman.tasks.agriculture.objectives import PHASE_TEXT, SUBTASKS_BY_CROP
 from dexman.tasks.agriculture.randomization import OBSTACLE_RADIUS
+from dexman.vla.bimanual_contract import DEMO_SCHEMA, OUTPUT_SPACE
 from .writer import EpisodeWriter
 
 
@@ -26,9 +27,13 @@ def _calibration(group, index):
 @torch.inference_mode()
 def collect_demonstrations(env, actor, output, metadata, *, episodes, max_attempts, keep_failures):
     """Record observations at tick t with the physical commands used for t → t+1."""
+    limits = env.batch.joint_limits.detach()
+    if not torch.allclose(limits, limits[0].expand_as(limits), rtol=0., atol=1e-6):
+        raise ValueError("Las réplicas deben compartir los límites articulares")
     output.mkdir(parents=True, exist_ok=False)
-    metadata = {**metadata, "schema": "dexman.agriculture.demo.v1", "joint_order": list(JOINT_ORDER),
+    metadata = {**metadata, "schema": DEMO_SCHEMA, "joint_order": list(JOINT_ORDER),
                 "state_layout": "q_left,q_right,dq_left,dq_right", "eye_order": list(EYE_KEYS),
+                "joint_limits_rad": limits[0].cpu().tolist(), "joint_command_space": OUTPUT_SPACE,
                 "instruction_language": "es", "phase_text": list(PHASE_TEXT),
                 "obstacle_order": list(OBSTACLE_RADIUS),
                 "sample_hz": round(1 / env.dt), "depth_unit": "m",

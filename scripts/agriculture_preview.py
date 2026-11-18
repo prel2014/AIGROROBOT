@@ -37,10 +37,14 @@ def capture(scene, output):
 def main():
     from isaaclab.app import add_launcher_args, launch_simulation
     from dexman.tasks.agriculture.interface import ARM_KEYS, EYE_KEYS, JOINT_ORDER
+    from dexman.tasks.agriculture.layouts import LAYOUTS, layout_variation
+    from dexman.tasks.agriculture.randomization import OBSTACLE_LAYOUT_VERSION, apply_variations, sample_episode
     from dexman.tasks.agriculture.scene import CROPS, make_preview
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--scenario", required=True, choices=CROPS)
+    selection = parser.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--scenario", choices=CROPS)
+    selection.add_argument("--layout", choices=LAYOUTS, help="Select a fixed physical task layout")
     parser.add_argument("--output", type=Path, default=Path("assets/agriculture/previews"))
     parser.add_argument("--live", action="store_true", help="Keep the scene and eye panels open in Kit")
     parser.add_argument("--randomize", action="store_true", help="Apply a seeded episode layout")
@@ -52,14 +56,19 @@ def main():
         parser.error("--live requires --viz kit")
     if min(args.seed, args.episode) < 0:
         parser.error("--seed and --episode must be nonnegative")
-    output = args.output / args.scenario
-    variation = None
+    layout = LAYOUTS[args.layout] if args.layout else None
+    scenario = layout.crop if layout else args.scenario
+    output = args.output / (args.layout or scenario)
+    if layout:
+        variation = layout_variation(layout, args.seed, args.episode, randomize=args.randomize)
+    else:
+        variation = sample_episode(scenario, args.seed, 0, args.episode) if args.randomize else None
     if args.randomize:
-        from dexman.tasks.agriculture.randomization import OBSTACLE_LAYOUT_VERSION, apply_variations, sample_episode
-        variation = sample_episode(args.scenario, args.seed, 0, args.episode)
         output /= f"layout_{OBSTACLE_LAYOUT_VERSION}_seed_{args.seed}_episode_{args.episode}"
-    cfg = make_preview(args.scenario, randomize=args.randomize)
-    crop = CROPS[args.scenario]
+    cfg = make_preview(scenario, randomize=args.randomize, layout=layout)
+    crop = CROPS[scenario]
+    instruction = layout.objective if layout else crop.instruction
+    inspection_target = layout.inspection_target if layout else (.37, .05, 1.12)
     with launch_simulation(cfg, args):
         import torch
         from isaaclab.scene import InteractiveScene
@@ -68,7 +77,7 @@ def main():
 
         sim = SimulationContext(cfg.sim)
         scene = InteractiveScene(cfg.scene)
-        sim.set_camera_view(cfg.scene.overview.offset.pos, (.37, .05, 1.12))
+        sim.set_camera_view(cfg.scene.overview.offset.pos, inspection_target)
         sim.reset()
         scene.reset()
         if variation is not None:
@@ -106,24 +115,27 @@ def main():
                 "max_error_joint": arm.joint_names[int((actual-arm.data.default_joint_pos.torch).abs().argmax())]}
         fruits = {key: obj.data.root_pos_w.torch[0].cpu().tolist()
                   for key, obj in scene.rigid_objects.items() if key.startswith("fruit_")}
-        report = {"scenario": args.scenario, "instruction": crop.instruction, "plant": crop.plant,
+        report = {"scenario": scenario, "instruction": instruction, "plant": crop.plant,
                   "arms": arm_state, "joint_order": list(JOINT_ORDER), "views": views,
                   "fruit_positions_m": fruits, "eye_order": list(EYE_KEYS),
                   "physics_steps": 48, "training": False}
+        if layout:
+            report["layout"] = {"name": args.layout, **asdict(layout)}
         if variation is not None:
             report["variation"] = {"layout_version": OBSTACLE_LAYOUT_VERSION,
                                    "seed": args.seed, "replica_id": 0, "episode_id": args.episode,
+                                   "seeded": args.randomize,
                                    **asdict(variation)}
             report["obstacle_positions_m"] = {
                 prop.kind: scene[f"obstacle_{prop.kind}"].data.root_pos_w.torch[0].cpu().tolist()
                 for prop in variation.obstacles
             }
         (output / "scene.json").write_text(json.dumps(report, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
-        print(f"AGRICULTURE_CAPTURED {args.scenario} {output} {arm_state} {fruits}", flush=True)
+        print(f"AGRICULTURE_CAPTURED {args.layout or scenario} {output} {arm_state} {fruits}", flush=True)
 
         if args.live:
             from dexman.sensors.teacher_camera_panel import TeacherCameraPanel
-            panels = [TeacherCameraPanel(scene[key], 1, crop.instruction, title)
+            panels = [TeacherCameraPanel(scene[key], 1, instruction, title)
                       for key, title in zip(EYE_KEYS, ("Ojo izquierdo RGB-D", "Ojo derecho RGB-D"), strict=True)]
             try:
                 while sim.is_running():

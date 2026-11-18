@@ -20,13 +20,23 @@ def create_manifest(root, seed=42, validation_fraction=.2, test_fraction=.2):
     hashes = [row["sha256"] for row in demos + corrections]
     if len(set(hashes)) != len(hashes):
         raise ValueError("Duplicate episode contents: remove duplicate copies before splitting")
-    random.Random(seed).shuffle(demos)
-    test_count = min(len(demos) - 2, max(1, round(len(demos) * test_fraction)))
-    val_count = min(len(demos) - test_count - 1, max(1, round(len(demos) * validation_fraction)))
+    rng = random.Random(seed)
+    per_crop = {}
+    for row in demos:
+        per_crop.setdefault(row.get("crop"), []).append(row)
+    groups = per_crop.values() if all(len(rows) >= 3 for rows in per_crop.values()) else (demos,)
+    splits = {"test": [], "validation": [], "train": []}
+    for rows in groups:
+        rng.shuffle(rows)
+        test_count = min(len(rows) - 2, max(1, round(len(rows) * test_fraction)))
+        val_count = min(len(rows) - test_count - 1, max(1, round(len(rows) * validation_fraction)))
+        splits["test"].extend(rows[:test_count])
+        splits["validation"].extend(rows[test_count:test_count + val_count])
+        splits["train"].extend(rows[test_count + val_count:])
+    splits["train"].extend(corrections)
     return {"version": 1, "dataset_root": str(Path(root).resolve()), "seed": seed, "split_unit": "episode",
             "robot_contract": demos[0]["contract"], "partial_files_ignored": audit["partial_files"],
-            "splits": {"test": demos[:test_count], "validation": demos[test_count:test_count + val_count],
-                       "train": demos[test_count + val_count:] + corrections}}
+            "splits": splits}
 
 
 def resolve_manifest(manifest, root=None):

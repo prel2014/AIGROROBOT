@@ -1,5 +1,5 @@
 """Parallel crop groups with indexed episode resets and bimanual joint control."""
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from math import ceil, sqrt
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
@@ -9,12 +9,14 @@ from isaaclab_physx.physics import PhysxCfg
 
 from dexman.robot.joints import JOINT_NAMES
 from .interface import ACTION_DIM, ARM_KEYS, EYE_KEYS, JOINTS_PER_ARM
-from .randomization import EpisodeDynamics, apply_variations, sample_episode, write_lighting, write_obstacles
-from .scene import AgriculturalSceneCfg, CROPS, NS, eye, fixed_box, populate_crop
+from .physical_variation import FruitPhysicsRandomizer, sample_fruit_physics
+from .randomization import TABLE_Z, EpisodeDynamics, apply_variations, sample_episode, write_lighting, write_obstacles
+from .scene import AgriculturalSceneCfg, CROPS, NS, PICKUP_SUPPORT_HEIGHT, eye, fixed_box, populate_crop
 
 if TYPE_CHECKING:
     import torch
     from isaaclab.scene import InteractiveScene
+    from .grasp_curriculum import GraspCalibration
 
 
 DEFAULT_REPLICAS = 64
@@ -27,14 +29,26 @@ class AgriculturalBatchCfg:
     sim: SimulationCfg
     scenes: SimpleNamespace
     monitor: SimpleNamespace | None = None
+    nominal: bool = False
+    physics_variation: float = 0.
+    raised_support: bool = False
+    grasp: "GraspCalibration | None" = None
 
 
-def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, contacts=False, monitor=False):
-    if type(num_envs) is not int or num_envs < len(CROPS):
-        raise ValueError(f"Parallel agriculture requires at least {len(CROPS)} replicas")
-    base, remaining = divmod(num_envs, len(CROPS))
+def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, rgbd_size=224, contacts=False, monitor=False,
+                      nominal=False, physics_substeps=CONTROL_DECIMATION, physics_variation=0., raised_support=False,
+                      grasp=None):
+    crops = (grasp.crop,) if grasp is not None else tuple(CROPS)
+    if type(num_envs) is not int or num_envs < len(crops):
+        raise ValueError(f"Parallel agriculture requires at least {len(crops)} replicas")
+    if not 0. <= physics_variation <= 1.:
+        raise ValueError("Physical variation strength must be in [0, 1]")
+    if type(physics_substeps) is not int or physics_substeps < 1:
+        raise ValueError("Physics substeps must be a positive integer")
+    raised_support = raised_support or grasp is not None
+    base, remaining = divmod(num_envs, len(crops))
     scenes = {}
-    for index, crop in enumerate(CROPS):
+    for index, crop in enumerate(crops):
         scene = AgriculturalSceneCfg(
             num_envs=base + (index < remaining), env_spacing=ENV_SPACING,
             replicate_physics=False, filter_collisions=False)
@@ -45,10 +59,15 @@ def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, contacts=False, 
         if rgbd:
             for key in EYE_KEYS:
                 sensor = getattr(scene, key)
-                sensor.width = sensor.height = 224
+                sensor.width = sensor.height = rgbd_size
         else:
             scene.left_eye = scene.right_eye = None
-        populate_crop(scene, crop, randomize=True)
+        populate_crop(scene, crop, randomize=True, raised_support=raised_support)
+        if grasp is not None:
+            active = getattr(scene, ARM_KEYS[grasp.side])
+            active.init_state.joint_pos = dict(zip(JOINT_NAMES, grasp.initial_joints, strict=True))
+            scene.fruit_0.init_state.pos = grasp.initial_fruit_pose[:3]
+            scene.fruit_0.init_state.rot = grasp.initial_fruit_pose[3:]
         if contacts:
             from .scene import enable_task_contacts
             enable_task_contacts(scene)
@@ -62,9 +81,10 @@ def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, contacts=False, 
             right=eye(-1).replace(prim_path="/World/AgricultureMonitor/RightEye", width=224, height=224, update_period=0.),
         )
     return AgriculturalBatchCfg(
-        sim=SimulationCfg(dt=1 / 120, render_interval=CONTROL_DECIMATION, physics=PhysxCfg()),
+        sim=SimulationCfg(dt=1 / (30 * physics_substeps), render_interval=physics_substeps, physics=PhysxCfg()),
         # The Isaac Lab launcher discovers camera configurations through object attributes.
-        scenes=SimpleNamespace(**scenes), monitor=monitor_eyes)
+        scenes=SimpleNamespace(**scenes), monitor=monitor_eyes, nominal=nominal,
+        physics_variation=physics_variation, raised_support=raised_support, grasp=grasp)
 
 
 @dataclass
@@ -87,13 +107,21 @@ class AgriculturalBatch:
         from isaaclab.cloner import filter_collisions
         from isaaclab.scene import InteractiveScene
         from isaaclab.sim.utils import standardize_xform_ops
+        from .impact_sensors import configure_impact_sensors
 
         self.sim, self.seed = sim, seed
+        self.nominal = cfg.nominal
+        self.pickup_surface_z = TABLE_Z + (PICKUP_SUPPORT_HEIGHT if cfg.raised_support else 0.)
+        self.physics_variation = cfg.physics_variation
+        self.control_decimation = cfg.sim.render_interval
+        self.control_dt = self.control_decimation * sim.get_physics_dt()
         self.groups = []
         scenes = vars(cfg.scenes)
         group_spacing = ENV_SPACING * (ceil(sqrt(max(scene.num_envs for scene in scenes.values()))) + 1)
         start = 0
         for index, (crop, scene_cfg) in enumerate(scenes.items()):
+            if hasattr(scene_cfg, "fruit_obstacle_contact"):
+                configure_impact_sensors(scene_cfg, crop, history_length=self.control_decimation)
             scene = InteractiveScene(scene_cfg)
             offset = (group_spacing * (index % 2), group_spacing * (index // 2), 0.)
             namespace = scene.stage.DefinePrim(scene.env_ns, "Xform")
@@ -117,6 +145,7 @@ class AgriculturalBatch:
         self.control_tick = 0
         self.episode_ids = [-1] * self.num_envs
         self.dynamics = [None] * self.num_envs
+        self.fruit_randomizers = {}
         self.instructions = tuple(CROPS[group.crop].instruction + " Si ves obstáculos, esquívalos."
                                   for group in self.groups for _ in range(group.scene.num_envs))
 
@@ -138,6 +167,9 @@ class AgriculturalBatch:
             group.joint_ids = tuple(joint_ids)
             limits.append(torch.cat(arm_limits, dim=1))
         self.joint_limits = torch.cat(limits)
+        if self.physics_variation:
+            self.fruit_randomizers = {
+                group.crop: FruitPhysicsRandomizer(group.scene["fruit_0"]) for group in self.groups}
         self.reset()
 
     def reset(self, replica_ids=None):
@@ -174,14 +206,21 @@ class AgriculturalBatch:
                 replica_id = group.start + index
                 self.episode_ids[replica_id] += 1
                 episode = self.episode_ids[replica_id]
-                layout = layouts[index] = sample_episode(group.crop, self.seed, replica_id, episode)
-                self.dynamics[replica_id] = EpisodeDynamics(self.seed, replica_id, episode, layout, self.control_tick)
+                layout = sample_episode(group.crop, self.seed, replica_id, episode)
+                layouts[index] = replace(layout, obstacles=()) if self.nominal else layout
+                self.dynamics[replica_id] = EpisodeDynamics(
+                    self.seed, replica_id, episode, layouts[index], self.control_tick)
+            if group.crop in self.fruit_randomizers:
+                samples = [sample_fruit_physics(self.seed, group.start + index,
+                                                self.episode_ids[group.start + index],
+                                                strength=self.physics_variation) for index in local]
+                self.fruit_randomizers[group.crop].apply(local, samples)
             apply_variations(scene, layouts, world_origins=group.origins)
 
     def _advance_variations(self):
         import torch
 
-        tick_seconds = CONTROL_DECIMATION * self.sim.get_physics_dt()
+        tick_seconds = self.control_dt
         for group in self.groups:
             dynamics = self.dynamics[group.start:group.stop]
             seconds = [(self.control_tick - episode.start_tick) * tick_seconds for episode in dynamics]
@@ -241,19 +280,20 @@ class AgriculturalBatch:
         if angles.shape != (self.num_envs, ACTION_DIM) or not torch.isfinite(angles).all():
             raise ValueError(f"Expected finite joint targets [{self.num_envs},{ACTION_DIM}]")
         self.control_tick += 1
-        self._advance_variations()
+        if not self.nominal:
+            self._advance_variations()
         angles = angles.to(self.joint_limits).clamp(self.joint_limits[..., 0], self.joint_limits[..., 1])
         for group in self.groups:
             targets = angles[group.start:group.stop].split(JOINTS_PER_ARM, dim=-1)
             for key, ids, target in zip(ARM_KEYS, group.joint_ids, targets, strict=True):
                 group.scene[key].set_joint_position_target_index(target=target, joint_ids=ids)
         dt = self.sim.get_physics_dt()
-        for index in range(CONTROL_DECIMATION):
+        for index in range(self.control_decimation):
             for group in self.groups:
                 for key in ARM_KEYS:
                     arm = group.scene[key]
                     arm.actuators.target_command.set_effort_index(value=arm.data.gravity_compensation_forces.torch)
                 group.scene.write_data_to_sim()
-            self.sim.step(render=render and index == CONTROL_DECIMATION - 1)
+            self.sim.step(render=render and index == self.control_decimation - 1)
             for group in self.groups:
                 group.scene.update(dt)

@@ -1,18 +1,21 @@
 """RGB-D and language policy for the fixed torso with two articulated arms."""
+import numpy as np
 import torch
 from torch import nn
 from torch.nn import functional as F
 
-from dexman.perception.clip import clip_spatial_features, load_frozen_clip, prepare_multiview_inputs
 from dexman.tasks.agriculture.interface import ACTION_DIM, ARM_KEYS, EYE_KEYS, JOINTS_PER_ARM, STATE_DIM
+from .bimanual_contract import POLICY_VERSION, architecture_config
+from .bimanual_language import instruction_prompt, tokenize_instructions
 from .model import TransformerBlock
 
 
 class BimanualTransformer(nn.Module):
     """Fuse two eyes, separate arm states, an instruction and recurrent memory."""
 
-    architecture = "agriculture_rgbd_bimanual_v1"
+    architecture = POLICY_VERSION
     embedding_dim = 512
+    text_dim = 384
     patches_per_eye = 50
     depth_grid = 7
     memory_dim = 256
@@ -36,7 +39,7 @@ class BimanualTransformer(nn.Module):
         self.context_tokens = self.vision_tokens + self.depth_tokens + len(ARM_KEYS) + 2
         self.rgb_projection = nn.Linear(self.embedding_dim, width)
         self.depth_projection = nn.Linear(2, width)
-        self.instruction_projection = nn.Linear(self.embedding_dim, width)
+        self.instruction_projection = nn.Linear(self.text_dim, width)
         self.arm_projection = nn.Linear(2 * JOINTS_PER_ARM, width)
         self.memory_projection = nn.Linear(self.memory_dim, width)
         self.rgb_positions = nn.Parameter(torch.empty(self.vision_tokens, width))
@@ -76,11 +79,11 @@ class BimanualTransformer(nn.Module):
         """Return synchronized angles [B,8,60] in radians and next memory [B,256]."""
         batch = state.shape[0]
         if (vision_tokens.shape != (batch, self.vision_tokens, self.embedding_dim)
-                or text_embedding.shape != (batch, self.embedding_dim)
+                or text_embedding.shape != (batch, self.text_dim)
                 or depth.ndim != 4 or depth.shape[:2] != (batch, len(EYE_KEYS))
                 or min(depth.shape[2:]) < self.depth_grid
                 or state.shape != (batch, self.state_dim) or memory.shape != (batch, self.memory_dim)):
-            raise ValueError("Expected RGB tokens [B,100,512], text [B,512], two depth maps, "
+            raise ValueError("Expected RGB tokens [B,100,512], text [B,384], two depth maps, "
                              "angular state [B,120] and memory [B,256]")
         q, dq = state.split(self.action_dim, dim=-1)
         q = (q - self.joint_offset) / self.joint_scale
@@ -109,51 +112,64 @@ class BimanualTransformer(nn.Module):
 
 
 class BimanualActionPolicy(nn.Module):
-    """Frozen ViT-B/32 for RGB and text, with a trainable bimanual Transformer."""
+    """Frozen CLIP vision and multilingual E5 encoders with a trainable action head."""
 
-    encoder_model = "openai/clip-vit-base-patch32"
+    memory_dim = BimanualTransformer.memory_dim
+    horizon = BimanualTransformer.horizon
 
-    def __init__(self, joint_limits, *, clip_source=None, local_only=False):
+    def __init__(self, joint_limits, vision_encoder, text_encoder):
         super().__init__()
         self.head = BimanualTransformer(joint_limits)
-        self.backbone = load_frozen_clip(clip_source or self.encoder_model, local_only=local_only)
-        vision = self.backbone.config.vision_config
-        if self.backbone.config.projection_dim != self.head.embedding_dim or (vision.image_size, vision.patch_size) != (224, 32):
-            raise ValueError("Expected CLIP ViT-B/32 with 50 vision tokens per eye and projection dimension 512")
+        self.backbone = vision_encoder.requires_grad_(False).eval()
+        self.text_encoder = text_encoder.requires_grad_(False).eval()
+
+    @property
+    def architecture_config(self):
+        return architecture_config()
 
     def train(self, mode=True):
         super().train(mode)
         self.backbone.eval()
+        self.text_encoder.eval()
         return self
 
-    def encode(self, **inputs):
-        result = clip_spatial_features(self.backbone, inputs)
-        vision, text = result["vision_tokens"], result["text_embedding"]
-        eyes = len(EYE_KEYS)
-        if vision.shape[0] % eyes or text.shape[0] != vision.shape[0]:
-            raise ValueError("Expected two CLIP views per replica with the same instruction")
-        return vision.reshape(-1, self.head.vision_tokens, self.head.embedding_dim), text[::eyes]
+    @torch.no_grad()
+    def encode_vision(self, pixel_values):
+        if len(pixel_values) % len(EYE_KEYS):
+            raise ValueError("Expected two synchronized RGB views per replica")
+        return self.backbone(pixel_values).reshape(-1, self.head.vision_tokens, self.head.embedding_dim)
+
+    @torch.no_grad()
+    def encode_text(self, inputs):
+        return self.text_encoder(inputs)
 
     def forward(self, vision_tokens, text_embedding, depth, state, memory):
         return self.head(vision_tokens, text_embedding, depth, state, memory)
 
     @torch.inference_mode()
-    def predict(self, processor, rgb, depth, instructions, state, memory, *, subtasks=None):
+    def predict(self, processor, tokenizer, rgb, depth, instructions, state, memory, *, subtasks=None):
         """Apply the policy to both eyes with an optional active subtask per replica."""
-        if subtasks is not None:
-            if isinstance(subtasks, str) or len(subtasks) != len(instructions):
-                raise ValueError("Expected one active subtask per global instruction")
-            prompts = []
-            for instruction, subtask in zip(instructions, subtasks, strict=True):
-                if any(not isinstance(text, str) or not text.strip() for text in (instruction, subtask)):
-                    raise ValueError("Global instructions and active subtasks must be non-empty text")
-                instruction, subtask = instruction.strip(), subtask.strip()
-                separator = " " if instruction.endswith((".", "!", "?")) else ". "
-                prompts.append(f"{instruction}{separator}Ahora {subtask[0].lower()}{subtask[1:]}")
-            instructions = prompts
+        if isinstance(instructions, str) or not len(instructions):
+            raise ValueError("Expected one instruction per replica")
+        if subtasks is None:
+            subtasks = [None] * len(instructions)
+        if isinstance(subtasks, str) or len(subtasks) != len(instructions):
+            raise ValueError("Expected one optional subtask per instruction")
+        prompts = [instruction_prompt(text, subtask) for text, subtask in zip(instructions, subtasks, strict=True)]
         parameter = self.head.rgb_projection.weight
         rgb = rgb.detach().cpu().numpy() if isinstance(rgb, torch.Tensor) else rgb
-        inputs = prepare_multiview_inputs(processor, rgb, instructions, parameter.device)
-        vision, text = self.encode(**inputs)
-        return self(vision.to(parameter), text.to(parameter), depth.to(device=parameter.device),
-                    state.to(parameter), memory.to(parameter))
+        rgb = np.asarray(rgb)
+        if (rgb.ndim != 5 or rgb.shape[:2] != (len(prompts), len(EYE_KEYS)) or rgb.shape[-1] != 3
+                or rgb.dtype != np.uint8 or min(rgb.shape[2:4]) < 1):
+            raise ValueError("Expected uint8 RGB [B,2,H,W,3]")
+        if tuple(depth.shape) != rgb.shape[:-1]:
+            raise ValueError("La profundidad [B,2,H,W] debe coincidir con el RGB de cada ojo")
+        pixels = processor(images=rgb.reshape(-1, *rgb.shape[2:]), return_tensors="pt")["pixel_values"]
+        text_inputs = tokenize_instructions(tokenizer, prompts)
+        tensors = [torch.as_tensor(value, device=parameter.device, dtype=parameter.dtype)
+                   for value in (depth, state, memory)]
+        if not torch.isfinite(tensors[1]).all() or not torch.isfinite(tensors[2]).all():
+            raise ValueError("Joint state and incoming memory must be finite")
+        vision = self.encode_vision(pixels.to(parameter))
+        text = self.encode_text({key: value.to(parameter.device) for key, value in text_inputs.items()})
+        return self(vision.to(parameter), text.to(parameter), *tensors)

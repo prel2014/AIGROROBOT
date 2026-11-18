@@ -12,9 +12,10 @@ from .model import ActionChunkPolicy
 
 
 class VLAPredictor:
-    def __init__(self, checkpoint, device="cpu"):
+    def __init__(self, checkpoint, device="cpu", *, saved=None):
         checkpoint = Path(checkpoint)
-        saved = torch.load(checkpoint, map_location="cpu", weights_only=True)
+        if saved is None:
+            saved = torch.load(checkpoint, map_location="cpu", weights_only=True)
         if not isinstance(saved, dict) or saved.get("policy_version") != POLICY_VERSION:
             raise ValueError("Expected a VLA v5 spatial Transformer checkpoint; legacy policies require new training")
         config = saved.get("config")
@@ -76,6 +77,59 @@ class VLAPredictor:
         if not np.isfinite(angles).all() or not np.isfinite(updated).all():
             raise ValueError("Non-finite policy output")
         return angles, updated
+
+
+class BimanualVLAPredictor:
+    def __init__(self, checkpoint, device="cpu", *, saved=None):
+        from transformers import AutoTokenizer, CLIPImageProcessor
+
+        from dexman.perception.bimanual import load_frozen_bimanual
+
+        from .bimanual import BimanualActionPolicy
+        from .bimanual_contract import POLICY_VERSION, architecture_config, bimanual_contract
+
+        checkpoint = Path(checkpoint)
+        if saved is None:
+            saved = torch.load(checkpoint, map_location="cpu", weights_only=True)
+        config = saved.get("config") if isinstance(saved, dict) else None
+        if (not isinstance(config, dict) or saved.get("policy_version") != POLICY_VERSION
+                or config.get("architecture") != architecture_config()
+                or config.get("horizon") != BimanualActionPolicy.horizon):
+            raise ValueError("Se requiere un checkpoint VLA agrícola RGB-D bimanual compatible")
+        self.robot_contract = bimanual_contract(config["robot_contract"])
+        self.sources = config["model"], config["text_model"]
+        assets = {name: checkpoint.parent / name for name in ("processor", "backbone", "tokenizer", "text_encoder")}
+        if not all(path.is_dir() for path in assets.values()):
+            raise ValueError("Mantén processor/, backbone/, tokenizer/ y text_encoder/ junto al checkpoint agrícola")
+        self.processor = CLIPImageProcessor.from_pretrained(assets["processor"], local_files_only=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(assets["tokenizer"], local_files_only=True)
+        encoders = load_frozen_bimanual(assets["backbone"], assets["text_encoder"], local_only=True)
+        self.model = BimanualActionPolicy(self.robot_contract["joint_limits_rad"], *encoders)
+        declared = self.model.head.joint_limits.detach().clone()
+        self.model.head.load_state_dict(saved["head"], strict=True)
+        head = self.model.head
+        if (not torch.equal(head.joint_limits, declared) or not torch.equal(head.joint_offset, declared.mean(-1))
+                or not torch.equal(head.joint_scale, declared.diff(dim=-1).squeeze(-1) * .5)):
+            raise ValueError("Los límites articulares guardados no coinciden con el contrato agrícola")
+        self.model.to(device).eval()
+
+    def predict(self, rgb, depth, instruction, state, memory=None, *, subtask=None):
+        """Return [8,60] physical joint targets and the next [256] memory for one robot."""
+        memory = np.zeros(self.model.memory_dim, dtype=np.float32) if memory is None else np.asarray(memory)
+        angles, updated = self.model.predict(
+            self.processor, self.tokenizer, np.asarray(rgb)[None], np.asarray(depth)[None], [instruction],
+            np.asarray(state)[None], memory[None], subtasks=[subtask])
+        if not torch.isfinite(angles).all() or not torch.isfinite(updated).all():
+            raise ValueError("El VLA agrícola devolvió ángulos o memoria no finitos")
+        return angles[0].cpu().numpy(), updated[0].cpu().numpy()
+
+
+def load_predictor(checkpoint, device="cpu"):
+    from .bimanual_contract import POLICY_VERSION as BIMANUAL_VERSION
+
+    saved = torch.load(checkpoint, map_location="cpu", weights_only=True)
+    kind = BimanualVLAPredictor if isinstance(saved, dict) and saved.get("policy_version") == BIMANUAL_VERSION else VLAPredictor
+    return kind(checkpoint, device, saved=saved)
 
 
 class ChunkController:
