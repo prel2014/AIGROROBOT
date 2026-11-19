@@ -61,7 +61,12 @@ def inspect_bimanual_episode(path, episode, metadata):
         if (not np.isfinite(command).all() or not np.isfinite(state).all()
                 or (command < limits[:, 0] - 1e-6).any() or (command > limits[:, 1] + 1e-6).any()):
             raise ValueError("Estado o comando agrícola no finito o fuera de límites físicos")
+    reset = None
+    if metadata.get("seed") is not None and all(key in episode.attrs for key in ("replica_id", "episode_id")):
+        reset = [str(episode.attrs["crop"]), int(metadata["seed"]), int(episode.attrs["replica_id"]),
+                 int(episode.attrs["episode_id"])]
     return {"sha256": sha256(path), "samples": length, "success": bool(episode.attrs["success"]),
+            "scene_reset": reset, "exercise": metadata.get("exercise", "default"),
             "sample_kind": "teacher_demonstration", "seed": metadata.get("seed"),
             "teacher_sha256": metadata.get("teacher", {}).get("sha256"), "contract": contract,
             "crop": str(episode.attrs["crop"])}
@@ -78,10 +83,13 @@ def dataset_contract(files):
 
 
 class BimanualDemonstrations(Dataset):
-    def __init__(self, files, horizon=8, sequence_length=8):
+    def __init__(self, files, horizon=8, sequence_length=8, *, prompts="guided"):
         if horizon < 1 or sequence_length < 2:
             raise ValueError("Se requiere un horizonte positivo y al menos dos pasos para entrenar memoria")
         self.horizon, self.sequence_length = horizon, sequence_length
+        if prompts not in ("guided", "global", "both"):
+            raise ValueError("Modo de órdenes agrícolas desconocido")
+        self.prompts = prompts
         self.index = []
         for path in map(Path, files):
             with h5py.File(path, "r") as episode:
@@ -91,9 +99,12 @@ class BimanualDemonstrations(Dataset):
             self.index.extend((path, start, length) for start in range(0, length, sequence_length))
 
     def __len__(self):
-        return len(self.index)
+        return len(self.index) * (2 if self.prompts == "both" else 1)
 
     def __getitem__(self, index):
+        guided = self.prompts == "guided"
+        if self.prompts == "both":
+            index, guided = divmod(index, 2)
         path, start, length = self.index[index]
         stop = min(start + self.sequence_length, length)
         target_stop = min(stop + self.horizon - 1, length)
@@ -110,7 +121,8 @@ class BimanualDemonstrations(Dataset):
             depth = episode["depth_m"][start:stop].astype(np.float32)
             depth = np.where(episode["depth_valid"][start:stop], depth, 0.)
             return {"rgb": episode["rgb"][start:stop], "depth": depth,
-                    "text": episode_instructions(episode, phases[:valid]),
+                    "text": (episode_instructions(episode, phases[:valid]) if guided else
+                             [instruction_prompt(episode.attrs["instruction"])] * valid),
                     "state": np.pad(state, ((0, self.sequence_length - valid), (0, 0))),
                     "joint_angles": target[clipped], "mask": mask}
 

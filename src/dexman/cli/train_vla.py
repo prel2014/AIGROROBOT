@@ -114,6 +114,8 @@ def main():
         parser.error(str(error))
     seed_everything(args.seed)
     args.output_space = output_space
+    if args.bimanual:
+        args.global_instruction_training = saved["config"].get("global_instruction_training", False) if saved else True
     output = Path(args.output)
     if output.exists():
         parser.error("output already exists; use a new run name to preserve earlier checkpoints")
@@ -183,7 +185,12 @@ def main():
         print(f"Resumed student from {checkpoint}; next epoch {start + 1}; batch {args.batch_size}; "
               f"sequence {args.sequence_length}; learning rate {optimizer.param_groups[0]['lr']}", flush=True)
     collator = functools.partial(collate_batch, processor=processor, **({"tokenizer": tokenizer} if args.bimanual else {}))
-    loaders = [DataLoader(loader_type(files, args.horizon, args.sequence_length), batch_size=args.batch_size,
+    def dataset(files, training):
+        if args.bimanual and args.global_instruction_training:
+            return loader_type(files, args.horizon, args.sequence_length, prompts="both" if training else "global")
+        return loader_type(files, args.horizon, args.sequence_length)
+
+    loaders = [DataLoader(dataset(files, training), batch_size=args.batch_size,
                          shuffle=training, num_workers=args.workers,
                          generator=generators[index],
                          pin_memory=str(args.device).startswith("cuda"),

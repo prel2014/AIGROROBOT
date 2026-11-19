@@ -1,4 +1,5 @@
 """Record each agricultural replica as a separate MP4 per PPO rollout."""
+from itertools import groupby
 from math import ceil, isqrt
 from pathlib import Path
 import subprocess
@@ -90,16 +91,19 @@ class EpochVideoRecorder:
         self.frames.clear()
 
     def _encode_robots(self, directory):
-        """Fan out one raw frame stream to independent MP4 encoders."""
-        height, width = self.canvas.shape[:2]
-        layers = "".join(f"[tile{i}]" for i, _, _ in self.tiles)
-        crops = [f"[tile{i}]crop={self.tile_width}:{self.tile_height}:{x}:{y}[robot{i}]"
-                 for i, x, y in self.tiles]
+        """Stream one row at a time to bound encoder memory and command-line length."""
+        for y, tiles in groupby(self.tiles, key=lambda tile: tile[2]):
+            self._encode_row(directory, y, list(tiles))
+
+    def _encode_row(self, directory, y, tiles):
+        height, width = self.tile_height, self.canvas.shape[1]
+        layers = "".join(f"[tile{i}]" for i, _, _ in tiles)
+        crops = [f"[tile{i}]crop={self.tile_width}:{height}:{x}:0[robot{i}]" for i, x, _ in tiles]
         command = [self.ffmpeg, "-hide_banner", "-loglevel", "error", "-filter_complex_threads", "2",
                    "-f", "rawvideo", "-pixel_format", "rgb24", "-video_size", f"{width}x{height}",
                    "-framerate", str(VIDEO_FPS), "-i", "pipe:0",
-                   "-filter_complex", ";".join([f"[0:v]split={len(self.tiles)}{layers}", *crops])]
-        for i, _, _ in self.tiles:
+                   "-filter_complex", ";".join([f"[0:v]split={len(tiles)}{layers}", *crops])]
+        for i, _, _ in tiles:
             command.extend(["-map", f"[robot{i}]", "-an", "-c:v", "libx264", "-threads:v", "1",
                             "-preset", "ultrafast", "-crf", "24", "-pix_fmt", "yuv420p",
                             "-movflags", "+faststart", f"robot_{i:03d}.mp4"])
@@ -108,7 +112,7 @@ class EpochVideoRecorder:
             try:
                 with encoder.stdin as stream:
                     for frame in self.frames:
-                        stream.write(memoryview(frame).cast("B"))
+                        stream.write(memoryview(frame[y:y + height]).cast("B"))
             except BrokenPipeError as error:
                 raise subprocess.CalledProcessError(encoder.wait(), command) from error
             status = encoder.wait()

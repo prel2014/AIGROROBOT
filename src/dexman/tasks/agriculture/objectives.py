@@ -63,3 +63,36 @@ SUBTASKS_BY_CROP = {
         LIFT: "Levanta el arándano 3 cm y sostenlo sin mover los demás.",
     },
 }
+
+# Contrasting instructions share the same fruit, pregrasp and camera poses.
+BERRY_EXERCISES = {
+    "pinch": ("Pinza el arándano con pulgar e índice y sostenlo medio segundo sobre el apoyo sin levantarlo.",
+              {REACH: "Cierra la pinza y conserva el arándano en su sitio."}),
+    "return": ("Levanta el arándano 3 cm, sostenlo medio segundo, devuélvelo al mismo apoyo y suéltalo.",
+               {**SUBTASKS_BY_CROP["berries"], PLACE: "Baja el arándano a su lugar y abre la pinza.",
+                SETTLE: "Deja el arándano quieto sobre su apoyo."}),
+}
+
+
+def exercise_text(crop, exercise=None):
+    if exercise is None:
+        instruction = OBJECTIVES[crop].instruction
+        if crop == "berries":
+            instruction += " Levántalo 3 cm y sostenlo medio segundo."
+        return instruction, SUBTASKS_BY_CROP[crop]
+    if crop in ("citrus", "banana", "vineyard") and exercise in ("pinch", "lift15", "return15"):
+        fruit = {"citrus": "la naranja", "banana": "el plátano", "vineyard": "el racimo de uvas"}[crop]
+        grasp = f"Sujeta {fruit} entre el pulgar y dos dedos."
+        lift = f"Eleva {fruit} al menos 15 cm y mantén la altura medio segundo."
+        lower = f"Baja {fruit} hasta el apoyo inicial y abre la mano."
+        if exercise == "pinch":
+            order = f"Sujeta {fruit} durante medio segundo sin separarlo del apoyo."
+            return order, {REACH: grasp}
+        phases = {REACH: grasp, LIFT: lift}
+        if exercise == "return15":
+            phases.update({PLACE: lower, SETTLE: "Espera a que quede en reposo sin contacto de los dedos."})
+            return f"{grasp} {lift} {lower}", phases
+        return f"{grasp} {lift}", phases
+    if crop != "berries" or exercise not in BERRY_EXERCISES:
+        raise ValueError("El ejercicio requiere un preagarre de arándano")
+    return BERRY_EXERCISES[exercise]

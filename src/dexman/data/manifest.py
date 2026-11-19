@@ -21,20 +21,27 @@ def create_manifest(root, seed=42, validation_fraction=.2, test_fraction=.2):
     if len(set(hashes)) != len(hashes):
         raise ValueError("Duplicate episode contents: remove duplicate copies before splitting")
     rng = random.Random(seed)
-    per_crop = {}
+    units = {}
     for row in demos:
-        per_crop.setdefault(row.get("crop"), []).append(row)
-    groups = per_crop.values() if all(len(rows) >= 3 for rows in per_crop.values()) else (demos,)
+        key = tuple(row.get("scene_reset") or (row["sha256"],))
+        units.setdefault(key, []).append(row)
+    if len(units) < 3:
+        raise ValueError("Se requieren al menos tres escenas iniciales independientes para dividir los episodios")
+    per_crop = {}
+    for unit in units.values():
+        per_crop.setdefault(unit[0].get("crop"), []).append(unit)
+    groups = per_crop.values() if all(len(rows) >= 3 for rows in per_crop.values()) else (list(units.values()),)
     splits = {"test": [], "validation": [], "train": []}
     for rows in groups:
         rng.shuffle(rows)
         test_count = min(len(rows) - 2, max(1, round(len(rows) * test_fraction)))
         val_count = min(len(rows) - test_count - 1, max(1, round(len(rows) * validation_fraction)))
-        splits["test"].extend(rows[:test_count])
-        splits["validation"].extend(rows[test_count:test_count + val_count])
-        splits["train"].extend(rows[test_count + val_count:])
+        for name, selected in (("test", rows[:test_count]), ("validation", rows[test_count:test_count + val_count]),
+                               ("train", rows[test_count + val_count:])):
+            splits[name].extend(row for unit in selected for row in unit)
     splits["train"].extend(corrections)
-    return {"version": 1, "dataset_root": str(Path(root).resolve()), "seed": seed, "split_unit": "episode",
+    split_unit = "scene_reset" if any(row.get("scene_reset") for row in demos) else "episode"
+    return {"version": 1, "dataset_root": str(Path(root).resolve()), "seed": seed, "split_unit": split_unit,
             "robot_contract": demos[0]["contract"], "partial_files_ignored": audit["partial_files"],
             "splits": splits}
 
@@ -44,6 +51,7 @@ def resolve_manifest(manifest, root=None):
         raise ValueError("Unsupported dataset manifest")
     root = Path(root or manifest["dataset_root"]).resolve(strict=True)
     splits, seen_paths, seen_hashes = {}, set(), set()
+    reset_partitions = {}
     for name in ("train", "validation", "test"):
         rows = manifest.get("splits", {}).get(name, [])
         if not rows:
@@ -53,6 +61,9 @@ def resolve_manifest(manifest, root=None):
             path = (root / row["path"]).resolve(strict=True)
             if not path.is_relative_to(root) or path in seen_paths or row["sha256"] in seen_hashes:
                 raise ValueError("Dataset paths or contents leak across partitions")
+            reset = row.get("scene_reset")
+            if reset and reset_partitions.setdefault(tuple(reset), name) != name:
+                raise ValueError("Órdenes de la misma escena inicial aparecen en particiones distintas")
             if sha256(path) != row["sha256"]:
                 raise ValueError(f"Dataset changed since split was created: {path}")
             if name != "train" and (not row["success"] or row["sample_kind"] == "teacher_correction"):

@@ -1,5 +1,9 @@
 # Assets y escenas agrícolas
 
+[Rover de cuatro ruedas, sensores nativos y surco con tierra granular](../../docs/rover-cosechador.md)
+
+La espaldera reúne tres cepas con troncos, sarmientos, hojas lobuladas y 18 racimos unidos por el pedúnculo. El surco presenta el racimo objetivo de cada hilera hacia el pasillo. [Comparación en Isaac Sim](previews/vineyard/comparacion_vid.jpg) · [Vid completa](previews/vineyard/vid_completa.png) · [Detalle del racimo](previews/vineyard/racimo_en_vid.png)
+
 El torso monta dos módulos UR10e con manos articuladas y dos cámaras RGB-D. Los USD usan metros y eje Z hacia arriba. [Galería de escenarios](previews/escenarios.png) · [Vistas RGB-D](previews/ojos_rgbd.png) · [Obstáculos](previews/citrus/obstaculos_campo.png)
 
 ## Inspección
@@ -39,8 +43,8 @@ La vista previa guarda RGB de 640 × 480 por ojo, profundidad en milímetros y c
 | [Naranjo de referencia](models/orange_tree/visual.usda) | [Poly by Google](https://poly.pizza/m/8zS7mfHS0i7), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Conversión y ajuste a 2,4 m. |
 | [Plátano](models/bananas/bananas_1k.usdc) | [Poly Haven](https://polyhaven.com/a/bananas), [CC0 1.0](https://polyhaven.com/license). USD con referencias relativas para las texturas. |
 | [Platanera](models/banana_plant/visual.usda) | [Innerscene](https://www.innerscene.com/tools/library/3d-parts/banana-plant-with-a-bunch-of-bananas-905b58eb), CC0 1.0. GLB convertido a USD. |
-| [Racimo de uvas](models/grapes/visual.usda) | [Innerscene](https://www.innerscene.com/tools/library/3d-parts/bunch-of-grapes-abfcc57f), CC0 1.0. GLB convertido a USD. |
-| [Vid en espaldera](models/vineyard/visual.usda) | [3DAssets.dev](https://3dassets.dev/assets/vineyard-and-winery-vine-row-fruiting-f23824de), CC0 1.0. Malla y mapa convertidos a USD. La fuente declara asistencia de IA. |
+| [Racimo de uvas](models/grapes/bunch.usdc) | Bayas, pruina y pedicelos generados con [build_grape_bunch.py](../../tools/build_grape_bunch.py). Geometría de contacto y texturas de partida de [Innerscene](https://www.innerscene.com/tools/library/3d-parts/bunch-of-grapes-abfcc57f), CC0 1.0. |
+| [Vid en espaldera](models/vineyard/visual.usda) | Mallas y texturas generadas con [build_grapevine.py](../../tools/build_grapevine.py). Sustituye la representación inicial de [3DAssets.dev](https://3dassets.dev/assets/vineyard-and-winery-vine-row-fruiting-f23824de), CC0 1.0. |
 | [Arándano](models/blueberry/visual.usda) | [Gourmet Blueberry, inciprocal](https://sketchfab.com/3d-models/gourmet-blueberry-62f6c6368c484dd6a85a2a162133d2e0), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). GLB de [Objaverse](https://huggingface.co/datasets/allenai/objaverse/blob/main/glbs/000-154/62f6c6368c484dd6a85a2a162133d2e0.glb) convertido a USD. |
 | [Tazón de arándanos](models/blueberries/visual.usda) | [Grab3D](https://grab3d.com/models/food/blueberries/), CC0 1.0. USDZ extraído y orientado a Z arriba. |
 | [Arbusto de bayas](models/berry_bush/visual.usda) | [Grab3D](https://grab3d.com/models/nature/berry-bush/), CC0 1.0. Modelo provisional de bayas mixtas, orientado a Z arriba. |

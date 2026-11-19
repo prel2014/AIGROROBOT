@@ -7,9 +7,6 @@
 
 def Xform "Asset"
 {
-    float xformOp:rotateX = 90
-    uniform token[] xformOpOrder = ["xformOp:rotateX"]
-
     def Xform "Geometry" (
         prepend references = @./geometry.usdc@
     )

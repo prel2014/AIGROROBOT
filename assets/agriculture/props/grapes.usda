@@ -16,6 +16,8 @@ def Xform "Fruit"
             prepend references = @../models/grapes/visual.usda@
         )
         {
+            token visibility = "invisible"
+
             over "Geometry"
             {
                 over "Attached_berry_pedicel_00"
@@ -509,6 +511,11 @@ def Xform "Fruit"
                 }
             }
         }
+    }
+    def Xform "Bunch" (
+        prepend references = @../models/grapes/bunch.usdc@
+    )
+    {
     }
 }
 

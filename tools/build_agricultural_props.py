@@ -106,6 +106,11 @@ def build():
             if item.IsA(UsdGeom.Mesh):
                 UsdPhysics.CollisionAPI.Apply(item)
                 UsdPhysics.MeshCollisionAPI.Apply(item).CreateApproximationAttr(approximation)
+        if name == "grapes":
+            # Keep the calibrated colliders and origin; use the same skin as the vine clusters.
+            model.MakeInvisible()
+            skin = UsdGeom.Xform.Define(stage, "/Fruit/Bunch")
+            skin.GetPrim().GetReferences().AddReference("../models/grapes/bunch.usdc")
         stage.GetRootLayer().Save()
 
     def tube_segment(stage, path, a, b, radius, surface):

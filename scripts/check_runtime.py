@@ -18,7 +18,7 @@ def main():
     packages = ["numpy", "torch", "gymnasium"]
     if not offline:
         packages += ["isaaclab", "isaaclab_rl", "isaaclab_physx", "isaaclab_ov", "isaaclab_newton"]
-    if args.command in {"agriculture_preview", "scene_gallery", "train_vla", "infer_vla", "play_vla", "collect_demos", "collect_corrections", "dataset"}:
+    if args.command in {"agriculture_preview", "rover_eyes", "scene_gallery", "train_vla", "infer_vla", "play_vla", "collect_demos", "collect_corrections", "dataset"}:
         packages += ["h5py", "PIL"]
     if args.command in {"train_vla", "infer_vla", "play_vla", "memory_rl", "collect_corrections"}:
         packages += ["transformers"]

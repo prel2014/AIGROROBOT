@@ -102,6 +102,21 @@ class JointCommandController:
                            self._history[:, slots], self.home[:, None, :])
 
     @torch.no_grad()
+    def apply_joint_targets(self, targets_rad):
+        """Replay post-filter position targets at the same actuator boundary as the demonstrations."""
+        if targets_rad.shape != self.targets.shape:
+            raise ValueError(f"Expected physical joint targets {tuple(self.targets.shape)}")
+        requested = targets_rad.to(self.targets)
+        invalid = ~torch.isfinite(requested).all(-1)
+        desired = torch.where(invalid[:, None], self.targets, requested).clamp(self._low, self._high)
+        movement = (desired - self.targets).clamp(-self._step_limit, self._step_limit)
+        command = self.targets + movement
+        self.targets.copy_(command)
+        delta = command - self.home
+        scale = torch.where(delta >= 0, self._high - self.home, self.home - self._low)
+        return JointCommand(delta / scale.clamp_min(1.e-6), invalid, command, movement)
+
+    @torch.no_grad()
     def step(self, sampled_actions):
         if sampled_actions.shape != self.targets.shape:
             raise ValueError(f"Expected bimanual actions {tuple(self.targets.shape)}")

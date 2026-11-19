@@ -10,11 +10,14 @@
 | `depth_m`, `depth_valid` | `[2,224,224]` | Profundidad en metros y máscara válida |
 | `angular_state` | `[120]` | `q[60]` en rad y `dq[60]` en rad/s, izquierda antes de derecha |
 | `joint_command` | `[60]` | Ángulos aplicados después de limitar el comando, en rad |
+| `next_held`, `next_clearance_m` | `[2]`, escalar | Pinza física por mano y altura del punto más bajo del fruto tras el comando |
 | `phase`, `time_s` | Escalares | Fase y tiempo simulado |
 | `lighting`, `obstacles` | `[2]`, `[11,5]` | Intensidad y temperatura de color. Posición, radio y presencia de cada obstáculo |
 | `next_contact`, `next_target_pose` | `[2,5]`, `[7]` | Contactos de yemas y pose local de la fruta después del comando |
 
 RGB-D, estado y fase corresponden al instante previo al comando. `reward` y `done` se refieren a la transición ejecutada. El atributo `instruction` guarda la orden global en español. `subtasks_by_phase` contiene el texto de cada subtarea por ID de fase. El entrenador bimanual lee `joint_limits_rad[60,2]` y `joint_command_space=applied_joint_target_rad` de los metadatos. Los archivos `.partial` identifican capturas interrumpidas.
+
+Para comparar órdenes en la misma escena, captura los tres ejercicios con igual semilla y número de réplicas. En `dataset.json`, `demonstrator` distingue PPO de PPO más reglas de fase. El comando `dataset split` mantiene juntas todas las órdenes de un mismo cultivo, semilla, réplica y reinicio.
 
 ## Elevación de un brazo
 

@@ -33,12 +33,23 @@ class AgriculturalBatchCfg:
     physics_variation: float = 0.
     raised_support: bool = False
     grasp: "GraspCalibration | None" = None
+    exercise: str | None = None
 
 
 def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, rgbd_size=224, contacts=False, monitor=False,
                       nominal=False, physics_substeps=CONTROL_DECIMATION, physics_variation=0., raised_support=False,
-                      grasp=None):
-    crops = (grasp.crop,) if grasp is not None else tuple(CROPS)
+                      grasp=None, crop=None, exercise=None):
+    if exercise is not None:
+        from .objectives import exercise_text
+        if grasp is None:
+            raise ValueError("El ejercicio requiere --grasp-calibration")
+        exercise_text(grasp.crop, exercise)
+    if grasp is not None and crop not in (None, grasp.crop):
+        raise ValueError("La calibración debe corresponder al cultivo solicitado")
+    selected = grasp.crop if grasp is not None else crop
+    if selected is not None and selected not in CROPS:
+        raise ValueError(f"Cultivo desconocido: {selected}")
+    crops = (selected,) if selected is not None else tuple(CROPS)
     if type(num_envs) is not int or num_envs < len(crops):
         raise ValueError(f"Parallel agriculture requires at least {len(crops)} replicas")
     if not 0. <= physics_variation <= 1.:
@@ -84,7 +95,7 @@ def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, rgbd_size=224, c
         sim=SimulationCfg(dt=1 / (30 * physics_substeps), render_interval=physics_substeps, physics=PhysxCfg()),
         # The Isaac Lab launcher discovers camera configurations through object attributes.
         scenes=SimpleNamespace(**scenes), monitor=monitor_eyes, nominal=nominal,
-        physics_variation=physics_variation, raised_support=raised_support, grasp=grasp)
+        physics_variation=physics_variation, raised_support=raised_support, grasp=grasp, exercise=exercise)
 
 
 @dataclass

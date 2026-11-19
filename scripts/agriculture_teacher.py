@@ -4,7 +4,7 @@ import json
 from contextlib import ExitStack
 from datetime import datetime, timezone
 from pathlib import Path
-from shutil import which
+from shutil import copyfile, which
 
 from dexman.experiments import provenance, resolve_checkpoint, seed_everything, sha256, write_json
 from dexman.paths import ROOT
@@ -68,6 +68,49 @@ def evaluate_teacher(env, actor, episodes):
             for group in groups}
 
 
+def initialize_grasp_from_demonstrations(env, actor):
+    """Supervise only on completed physical pinches, then hand the actor to PPO."""
+    import torch
+    from dexman.tasks.agriculture.objectives import LIFT
+
+    states, commands, valid = [], [], []
+    with torch.no_grad():
+        active = torch.ones(env.num_envs, device=env.device, dtype=torch.bool)
+        succeeded = torch.zeros_like(active)
+        for _ in range(env.max_episode_length):
+            action = torch.stack((torch.ones_like(env.phase), env.phase == LIFT), dim=1).float()
+            states.append(env.get_observations()["policy"].clone())
+            commands.append(action)
+            valid.append(active.clone())
+            _, _, done, info = env.step(action)
+            succeeded |= active & info["success"]
+            active &= ~done.bool()
+            if not active.any():
+                break
+        if not succeeded.any():
+            raise RuntimeError("Ningún episodio guiado alcanzó el criterio físico para inicializar el actor")
+        mask = torch.stack(valid) & succeeded
+        examples, labels = torch.stack(states)[mask], torch.stack(commands)[mask]
+        actor.update_normalization({"policy": examples})
+
+    optimizer = torch.optim.Adam(actor.parameters(), lr=3.e-4)
+    actor.train()
+    for update in range(160):
+        idx = torch.randint(len(examples), (128,), device=env.device)
+        predicted = actor({"policy": examples[idx]})
+        loss = torch.nn.functional.mse_loss(predicted, labels[idx])
+        optimizer.zero_grad(set_to_none=True)
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(actor.parameters(), 1.)
+        optimizer.step()
+        if update >= 50 and loss.item() < .0005:
+            break
+    env._reset(torch.arange(env.num_envs, device=env.device))
+    env._update_observations()
+    return {"successful_demonstrations": int(succeeded.sum()), "attempted": env.num_envs,
+            "frames": len(examples), "supervised_updates": update + 1, "last_batch_mse": loss.item()}
+
+
 def main():
     from isaaclab.app import add_launcher_args, launch_simulation
     from dexman.tasks.agriculture.batch import DEFAULT_REPLICAS, make_batch_config
@@ -82,9 +125,12 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--resume", help="Bimanual checkpoint, run directory, or latest")
     parser.add_argument("--record-video", action="store_true", help="Save a separate RGB-D MP4 per robot and PPO iteration")
+    parser.add_argument("--ffmpeg", default="ffmpeg", help="Ruta al ejecutable FFmpeg para grabar videos")
     parser.add_argument("--grasp-calibration", type=Path, help="Passing raised-support calibration for grasp curriculum")
     parser.add_argument("--grasp-crop", choices=tuple(OBJECTIVES), default="berries")
     parser.add_argument("--grasp-start", choices=("pregrasp", "closed"), default="pregrasp")
+    parser.add_argument("--initialize-grasp-from-demos", action="store_true",
+                        help="Inicializar el actor desde ensayos físicos exitosos antes de PPO")
     behavior = parser.add_mutually_exclusive_group()
     behavior.add_argument("--validate", action="store_true", help="Check rollouts with no PPO updates or checkpoint writes")
     behavior.add_argument("--evaluate-episodes", type=int, help="Evaluate deterministic episodes without training")
@@ -95,6 +141,8 @@ def main():
     add_launcher_args(parser)
     args = parser.parse_args()
     check_only = args.validate or args.evaluate_episodes is not None
+    if args.initialize_grasp_from_demos and (not args.grasp_calibration or args.resume or check_only):
+        parser.error("La inicialización supervisada requiere un teacher nuevo con calibración")
     if args.evaluate_episodes is not None and args.evaluate_episodes < 1:
         parser.error("--evaluate-episodes requiere al menos un episodio")
     if args.num_envs < len(OBJECTIVES) or min(args.max_iterations, args.save_interval) < 1 or args.seed < 0:
@@ -116,13 +164,15 @@ def main():
     show_window = "kit" in (args.visualizer or ())
     if args.record_video and (show_window or (grasp is None and args.num_envs % len(OBJECTIVES)) or check_only):
         parser.error("--record-video requiere modo headless, réplicas iguales por cultivo y entrenamiento activo")
-    ffmpeg = which("ffmpeg") if args.record_video else None
-    if args.record_video and ffmpeg is None:
-        parser.error("--record-video requiere ffmpeg con libx264 en PATH")
+    ffmpeg = which(args.ffmpeg) if args.record_video else None
     if args.record_video:
+        import subprocess
         from dexman.data.epoch_video import VIDEO_EYE_SIZE, EpochVideoRecorder
         from dexman.tasks.agriculture.interface import EYE_KEYS
 
+        codecs = subprocess.run([ffmpeg, "-hide_banner", "-encoders"], capture_output=True) if ffmpeg else None
+        if codecs is None or codecs.returncode or b" libx264 " not in codecs.stdout:
+            parser.error("Indica el ejecutable FFmpeg con libx264 mediante --ffmpeg antes de grabar")
         cfg = make_batch_config(args.num_envs, rgbd=True, rgbd_size=VIDEO_EYE_SIZE, contacts=True, grasp=grasp)
         for scene in vars(cfg.scenes).values():
             for eye in EYE_KEYS:
@@ -159,9 +209,18 @@ def main():
         agent = ppo_config(args.save_interval)
         if not check_only:
             output.mkdir(parents=True, exist_ok=False)
+            if args.grasp_calibration:
+                copyfile(args.grasp_calibration, output / "calibration.json")
         runner = AgriculturalRunner(env, agent, log_dir=None if check_only else str(output), device=sim.device)
         if saved:
             runner.resume(saved)
+        if args.initialize_grasp_from_demos:
+            warmup = initialize_grasp_from_demonstrations(env, runner.alg.actor)
+            warmup["deterministic_before_ppo"] = evaluate_teacher(env, runner.get_inference_policy(), env.num_envs)
+            write_json(output / "grasp_initialization.json", warmup)
+            print(f"AGRICULTURE_INITIALIZATION {json.dumps(warmup)}", flush=True)
+            env._reset(torch.arange(env.num_envs, device=env.device))
+            env._update_observations()
         if args.record_video:
             runner.record_epochs(EpochVideoRecorder(env.batch, output / "videos", ffmpeg,
                                                      rollout_steps=agent["num_steps_per_env"]))
@@ -192,7 +251,8 @@ def main():
             print(f"AGRICULTURE_PPO_VALIDATED {env.num_envs} envs; "
                   f"obs={tuple(obs['policy'].shape)}; actions={tuple(actions.shape)}; no updates", flush=True)
             return 0
-        write_json(output / "run.json", {"contract": contract(grasp=grasp is not None), "args": vars(args), "agent": agent,
+        run_args = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
+        write_json(output / "run.json", {"contract": contract(grasp=grasp is not None), "args": run_args, "agent": agent,
                                         "simulation_profile": runner.simulation_profile(),
                                         "provenance": provenance(), "resume": None if checkpoint is None else
                                         {"path": str(checkpoint), "sha256": sha256(checkpoint)}})

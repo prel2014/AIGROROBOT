@@ -14,7 +14,7 @@ from .grasp_curriculum import GRASP_ACTION_DIM, GRASP_EPISODE_SECONDS, GraspMoti
 from .impact_sensors import forbidden_impact
 from .interface import ACTION_DIM, ARM_KEYS, JOINTS_PER_ARM
 from .objectives import (EPISODE_SECONDS, LIFT, MAX_DISTRACTORS, OBJECTIVES, OBS_DIM, PHASE_TEXT,
-                         PLACE, TRANSFER)
+                         PLACE, TRANSFER, exercise_text)
 from .randomization import GROUND_Z, OBSTACLE_RADIUS, TABLE_Z
 from .scene import CROPS
 from .task_rules import AgriculturalTaskRules
@@ -31,7 +31,8 @@ class AgriculturalPPOEnv(VecEnv):
         self.on_step = None
         self.on_rollout_step = None
         self.dt = self.batch.control_dt
-        self.max_episode_length = round((GRASP_EPISODE_SECONDS if cfg.grasp else EPISODE_SECONDS) / self.dt)
+        seconds = GRASP_EPISODE_SECONDS if cfg.grasp and cfg.exercise != "return" else EPISODE_SECONDS
+        self.max_episode_length = round(seconds / self.dt)
         self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
 
         self.fruits, self.body_ids, starting_poses, velocity_limits = [], [], [], []
@@ -56,10 +57,12 @@ class AgriculturalPPOEnv(VecEnv):
         self.deposit = torch.tensor([spec.deposit for spec in specs], device=self.device)
         self.handover = torch.tensor([spec.handover for spec in specs], device=self.device)
         self.precision = torch.tensor([spec.precision for spec in specs], device=self.device)
-        self.instructions = tuple(spec.instruction + " Si ves obstáculos, esquívalos." for spec in specs)
+        self.instructions = tuple(exercise_text(list(OBJECTIVES)[index], cfg.exercise)[0]
+                                  + " Si ves obstáculos, esquívalos." for index in crops)
         self.rules = AgriculturalTaskRules(self.lift_height, self.deposit, self.handover, self.precision,
                                            torch.cat(starting_poses), self.batch.joint_limits, self.dt,
-                                           reward_lift=cfg.grasp is not None)
+                                           reward_lift=cfg.grasp is not None, exercise=cfg.exercise,
+                                           pickup=cfg.grasp.initial_fruit_pose[:3] if cfg.exercise else None)
         self.tray = self.rules.tray
         self.home = self.batch.angular_state()[:, :ACTION_DIM].clone()
         physical_low, physical_high = self.batch.joint_limits.unbind(-1)
@@ -218,6 +221,14 @@ class AgriculturalPPOEnv(VecEnv):
             delta = desired - self.home
             scale = torch.where(delta >= 0., self.high - self.home, self.home - self.low).clamp_min(1.e-6)
             command = self.controller.step(torch.where(invalid[:, None], torch.nan, delta / scale))
+        return self._advance(command, scored_actions, invalid)
+
+    def step_joint_targets(self, angles_rad):
+        """Advance the student's applied radians through the same physics and task criteria."""
+        command = self.controller.apply_joint_targets(angles_rad)
+        return self._advance(command, command.actions, command.invalid)
+
+    def _advance(self, command, scored_actions, invalid):
         self.batch.step(command.joint_command, render=self.render)
         self.episode_length_buf += 1
         measurements = self._measure()
@@ -251,7 +262,7 @@ class AgriculturalPPOEnv(VecEnv):
         extras = {"time_outs": timeout, "log": log, "success": success, "dropped": dropped,
                   "invalid_pose": invalid, "obstacle_contact": impeded, "joint_command": command.joint_command,
                   "target_pose": measurements[0], "fingertip_contacts": measurements[5],
-                  "phase_at_step": self.phase.clone()}
+                  "phase_at_step": self.phase.clone(), "fruit_clearance_m": lift, "held": measurements[6]}
         if self.on_rollout_step is not None:
             self.on_rollout_step()
         ids = done.nonzero(as_tuple=True)[0]

@@ -32,6 +32,16 @@ El currículo recibe ese informe y selecciona un ensayo que haya sostenido y sol
 
 ## Formato de demostraciones
 
+En el preagarre de arándano hay tres objetivos físicos comparables con las mismas cámaras y el mismo apoyo.
+
+| Orden | Criterio físico | Control durante la captura |
+| --- | --- | --- |
+| Pinza el arándano y mantenlo sobre el apoyo. | Contacto opuesto y estable durante 0,5 s. La altura se mantiene a menos de 4 mm del apoyo. | PPO para los dedos, elevación bloqueada. |
+| Levanta el arándano 3 cm y sostenlo. | Altura mínima de 3 cm y pinza estable durante 0,5 s. | PPO. |
+| Levántalo 3 cm, devuélvelo a su apoyo y suéltalo. | Tras el sostén, queda sin contacto de yemas, en reposo y a menos de 12 mm de la posición horizontal inicial. | PPO para el agarre y la subida, regla de descenso y apertura. |
+
+Para capturarlos, usa `agriculture_collect` con el checkpoint y su `--grasp-calibration`. Para la primera orden añade `--exercise pinch`, para la segunda usa el comportamiento predeterminado y para la tercera añade `--exercise return`. Guarda cada ejercicio en una subcarpeta del mismo conjunto. La evaluación con `play_vla` admite los mismos ejercicios.
+
 La captura guarda la orden global y la subtarea en español según la fase de cada muestra. El bloque textual las combina antes de Multilingual E5. La acción registrada es el objetivo articular aplicado por el controlador. [Campos y unidades](dataset.md#agricultura-bimanual)
 
 ## Hallazgos de la revisión
@@ -45,6 +55,8 @@ La captura guarda la orden global y la subtarea en español según la fase de ca
 | Ajustes iniciales | Isaac Sim 6.2 e Isaac Lab 3.0.0 están fijados. Física a 120 Hz, control a 30 Hz. PPO usa 32 pasos por réplica y actualización, cuatro épocas internas, ocho minilotes y tasa inicial de `1e-4`. Se medirán primero cambios de escenario y acción antes de barrer parámetros de PPO. |
 
 El ensayo guiado desde preagarre completó 64 de 64 levantamientos de arándano. La política inicial determinista completó 0 de 64. Los ensayos cartesianos de naranja, plátano y uva siguen sin sostén válido. [Capacidad medida](recursos-vram.md)
+
+El teacher de preagarre `berries_pregrasp_demoppo01/model_7.pt` se inicializó con 64 demostraciones físicas y completó ocho actualizaciones PPO. En la semilla reservada 725 consiguió 64/64 levantamientos sin caídas. La captura local `datasets/agriculture/berries_orders01` contiene ocho demostraciones por orden y 3.345 pasos con dos ojos RGB-D. El manifiesto agrupa las tres órdenes de cada reinicio en una misma partición. El éxito del estudiante en español queda por medir.
 
 ## Tareas en orden de ejecución
 

@@ -30,6 +30,15 @@ $teacher = 'logs/rsl_rl/agriculture_bimanual/agro_teacher01'
 
 Para entrenar en ventana, sustituye `--headless` por `--viz kit`. El panel **Ojos RGB-D · Teacher agrícola** permite elegir un robot y ver el RGB y la profundidad de sus dos ojos. Para continuar, añade `--resume $teacher` y usa otro `--run-name`. La captura usa una carpeta de salida nueva y conserva episodios exitosos por defecto. Añade `--keep-failures` para guardar también los fallidos.
 
-Añade `--record-video` al entrenamiento headless para guardar un MP4 por robot e iteración PPO. Cada video muestra RGB y profundidad de ambos ojos a 224 × 224 por vista. Busca `videos/epoch_000000/robot_000.mp4` dentro de la corrida. La carpeta de época coincide con el índice del checkpoint. Se requiere FFmpeg con `libx264` en `PATH`.
+Añade `--record-video` para guardar un MP4 por robot e iteración PPO en `videos/epoch_000000/robot_000.mp4`. Cada video muestra RGB y profundidad de ambos ojos a 224 × 224 por vista. Con Scoop puedes indicar el binario mediante `--ffmpeg "$env:USERPROFILE\scoop\apps\ffmpeg\current\bin\ffmpeg.exe"`.
 
-Para entrenar al VLA con episodios agrícolas válidos usa `.\scripts\run.ps1 train_vla --bimanual --dataset datasets/agriculture/agro_demos01 --output checkpoints/vla_bimanual`. `infer_vla` admite su checkpoint y una observación de un HDF5. La evaluación del estudiante en bucle cerrado queda pendiente. [Formato HDF5](docs/dataset.md) · [USD y capturas](assets/agriculture/README.md) · [Flujo de un brazo](docs/mvp.md)
+Para aprender el cierre y la elevación inicial desde demostraciones físicas del arándano, añade `--initialize-grasp-from-demos` al entrenamiento nuevo con calibración. La corrida registra el éxito determinista previo a PPO. Para capturar esa habilidad con `agriculture_collect`, pasa el mismo informe mediante `--grasp-calibration`. Los datos se identifican como `calibrated_grasp`.
+
+## Estudiante con órdenes en español
+
+```powershell
+.\scripts\run.ps1 train_vla --bimanual --dataset datasets/agriculture/agro_demos01 --output checkpoints/vla_bimanual
+.\scripts\run.ps1 play_vla --viz kit --checkpoint checkpoints/vla_bimanual/best.pt --crop berries --instruction "Pinza el arándano más cercano, levántalo 3 cm y sostenlo sin mover los demás." --episodes 5 --output logs/vla_arandano.json
+```
+
+El estudiante observa ambos ojos RGB-D y el estado articular en cada paso, conserva memoria por robot y envía 60 ángulos a los actuadores. Cada secuencia de entrenamiento se presenta con la orden sola y con la subtarea. La validación usa la orden sola. El informe mide el objetivo físico del cultivo elegido. Para evaluar una paráfrasis usa una orden con el mismo objetivo. Añade `--phase-hints` para medir el efecto de indicar la fase o `--grasp-calibration` para reproducir el preagarre. [Formato HDF5](docs/dataset.md) · [USD y capturas](assets/agriculture/README.md) · [Flujo de un brazo](docs/mvp.md)

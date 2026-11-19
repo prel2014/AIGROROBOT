@@ -222,6 +222,31 @@ def populate_crop(scene, scenario, *, randomize, raised_support=False):
             setattr(scene, f"obstacle_{kind}", prop)
 
 
+def configure_open_support(scene, crop):
+    """Provide finger clearance around loose fruit with narrow physical support points."""
+    x, y, _ = scene.fruit_0.init_state.pos
+    if crop == "citrus":
+        points = ((0., 0., .042, .042),)
+    elif crop == "banana":
+        points = ((-.022, -.052, .022, .012), (-.038, .027, .022, .012))
+    elif crop == "vineyard":
+        points = ((.034, -.041, .014, .014), (.063, -.036, .014, .014), (.047, -.012, .014, .014))
+    else:
+        raise ValueError(f"Sin apoyo abierto para {crop}")
+    for key in tuple(vars(scene)):
+        if key.startswith("pickup_support_"):
+            delattr(scene, key)
+    for i, (dx, dy, sx, sy) in enumerate(points):
+        setattr(scene, f"pickup_support_{i}", fixed_box(f"{NS}/Produce/Support{i}",
+                (sx, sy, PICKUP_SUPPORT_HEIGHT), (x+dx, y+dy, TABLE_Z + PICKUP_SUPPORT_HEIGHT / 2),
+                (.15, .22, .28)))
+    if crop == "citrus":
+        for i, (dx, dy, sx, sy) in enumerate(((-.021, 0., .004, .024), (.021, 0., .004, .024),
+                                               (0., -.021, .024, .004), (0., .021, .024, .004))):
+            setattr(scene, f"pickup_support_rim_{i}", fixed_box(f"{NS}/Produce/SupportRim{i}",
+                    (sx, sy, .006), (x+dx, y+dy, TABLE_Z+PICKUP_SUPPORT_HEIGHT+.003), (.15, .22, .28)))
+
+
 def enable_task_contacts(scene):
     """Measure fingertip contacts with the task fruit and physical obstacles."""
     from isaaclab.sensors import ContactSensorCfg
@@ -234,6 +259,6 @@ def enable_task_contacts(scene):
             setattr(scene, f"{arm_key}_{tip}", ContactSensorCfg(
                 prim_path=f"{NS}/Torso/{arm_name}/Hand/{tip}",
                 filter_prim_paths_expr=[target, *props],
-                track_contact_points=True, max_contact_data_count_per_prim=16))
+                track_contact_points=True, max_contact_data_count_per_prim=128))
     scene.fruit_0.spawn.activate_contact_sensors = True
     scene.fruit_obstacle_contact = ContactSensorCfg(prim_path=target, filter_prim_paths_expr=props)

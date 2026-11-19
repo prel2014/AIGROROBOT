@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('agriculture_teacher','agriculture_collect','agriculture_batch','agriculture_preview','scene_gallery','preview','train_rl','play','collect_demos','train_vla','play_vla','infer_vla','memory_rl','evaluate','dataset','collect_corrections','doctor')]
+    [ValidateSet('agriculture_teacher','agriculture_collect','agriculture_batch','agriculture_preview','rover_eyes','scene_gallery','preview','train_rl','play','collect_demos','train_vla','play_vla','infer_vla','memory_rl','evaluate','dataset','collect_corrections','doctor')]
     [string]$Command
 )
 $ErrorActionPreference = 'Stop'

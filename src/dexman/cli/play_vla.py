@@ -15,6 +15,12 @@ def main():
     parser.add_argument("--execute-steps", type=int, default=1, help="Chunk actions before replanning; default 1")
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument("--instruction", default=None)
+    parser.add_argument("--crop", choices=("berries", "banana", "citrus", "vineyard"),
+                        help="Evaluar la tarea agrícola de este cultivo con el estudiante bimanual")
+    parser.add_argument("--phase-hints", action="store_true",
+                        help="Añadir a la orden la subtarea indicada por el simulador agrícola")
+    parser.add_argument("--grasp-calibration", type=Path, help="Evaluar desde el preagarre agrícola calibrado")
+    parser.add_argument("--exercise", choices=("pinch", "return"), help="Selecciona el objetivo físico alternativo")
     parser.add_argument("--output", default="logs/vla_eval.json")
     from dexman.tasks.manipulation.scenarios import add_scenario_argument, configure_scenario
     add_scenario_argument(parser)
@@ -26,6 +32,15 @@ def main():
     output = Path(args.output)
     if output.exists():
         parser.error("output already exists; choose a new evaluation filename")
+    if args.crop:
+        if args.scenario != "red_cube" or args.execute_steps != 1:
+            parser.error("En agricultura se usa --crop y se reobservan ambos ojos en cada paso")
+        if args.instruction is not None and not args.instruction.strip():
+            parser.error("La orden debe contener texto")
+        from dexman.evaluation.agriculture_vla import play
+        return play(args, checkpoint, output)
+    if args.phase_hints or args.grasp_calibration or args.exercise:
+        parser.error("Las opciones de evaluación agrícola requieren --crop")
     import numpy as np
     from dexman.evaluation.metrics import REASONS
     from dexman.evaluation.policies import VisualPolicy

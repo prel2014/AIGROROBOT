@@ -11,7 +11,8 @@ from .randomization import TABLE_Z
 class AgriculturalTaskRules:
     """Evaluate measured contacts and motion and retain per-episode task state."""
 
-    def __init__(self, lift_height, deposit, handover, precision, starting_distractors, joint_limits, dt, *, reward_lift):
+    def __init__(self, lift_height, deposit, handover, precision, starting_distractors, joint_limits, dt, *,
+                 reward_lift, exercise=None, pickup=None):
         self.lift_height = lift_height
         self.deposit = deposit
         self.handover = handover
@@ -20,7 +21,8 @@ class AgriculturalTaskRules:
         self.joint_limits = joint_limits
         self.dt = dt
         self.reward_lift = reward_lift
-        self.tray = lift_height.new_tensor(TRAY_CENTER)
+        self.exercise = exercise
+        self.tray = lift_height.new_tensor(pickup if exercise else TRAY_CENTER)
         self.phase = torch.full_like(deposit, REACH, dtype=torch.long)
         self.hold = torch.zeros_like(self.phase)
         self.overlap_steps = torch.zeros_like(self.phase)
@@ -59,6 +61,13 @@ class AgriculturalTaskRules:
         impossible = ((q < low - .05) | (q > high + .05) | ~torch.isfinite(q) | ~torch.isfinite(dq)).any(-1)
         invalid |= impossible | ~torch.isfinite(pose).all(-1) | ~torch.isfinite(velocity).all(-1)
         fail = dropped | invalid | (self.precision & (displacement > .018))
+        if self.exercise:
+            on_support = (lift.abs() < .004) & (delta[:, :2].norm(dim=-1) < .012)
+            if self.exercise == "return":
+                in_tray = on_support
+                fail |= (self.phase == PLACE) & ~grasp & ~on_support
+            else:
+                fail |= ~on_support
 
         # Dense approach/transport shaping is bounded. Milestones require real contact.
         palm_distance = (palm - center[:, None]).norm(dim=-1)
@@ -81,9 +90,15 @@ class AgriculturalTaskRules:
                     | transfer_done
                     | (self.phase == PLACE) & in_tray & quiet & released
                     | (self.phase == SETTLE) & in_tray & quiet & released)
-        self.hold.copy_(torch.where(criteria & ~impeded & ~fail, self.hold + 1, 0))
         direct_success = (self.phase == LIFT) & ~self.deposit
-        cutoff = torch.where(direct_success, round(MIN_STABLE_HOLD_S / self.dt),
+        sustained = direct_success
+        if self.exercise == "pinch":
+            criteria = stable_grasp & quiet & on_support
+            direct_success = sustained = self.phase == REACH
+        elif self.exercise == "return":
+            direct_success = torch.zeros_like(direct_success)
+        self.hold.copy_(torch.where(criteria & ~impeded & ~fail, self.hold + 1, 0))
+        cutoff = torch.where(sustained, round(MIN_STABLE_HOLD_S / self.dt),
                              torch.where(self.phase == SETTLE, 9, 3))
         reached = (self.hold >= cutoff) & ~fail
         success = reached & (direct_success | (self.phase == SETTLE))
