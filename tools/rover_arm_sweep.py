@@ -67,7 +67,7 @@ def run(asset):
     dt, elapsed = 1./60., 0.
     rows = []
     neutral = (0.,) * 6
-    previous = neutral
+    previous = tuple(drive.GetTargetPositionAttr().Get() for drive in drives)
     path = [("home", neutral), ("frontal", (20,-20,35,0,0,0)), ("recto", neutral),
             ("pan_lateral", (85,0,0,0,0,0)), ("pan_posterior", (145,0,0,0,0,0)),
             ("plegado", (90,-70,105,0,0,0)), ("retorno", neutral),

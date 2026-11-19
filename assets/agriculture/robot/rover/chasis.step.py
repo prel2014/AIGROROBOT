@@ -2,7 +2,7 @@
 from pathlib import Path
 from runpy import run_path
 
-from build123d import Box, Color, Compound, Cylinder, Plane, Pos, Rot
+from build123d import Box, Color, Compound, Cylinder, Face, Plane, Pos, Rot, Solid, Wire
 
 
 def gen_step():
@@ -14,9 +14,19 @@ def gen_step():
         else:
             angles = {"X": (0, 90, 0), "Y": (90, 0, 0), "Z": (0, 0, 0)}
             solid = Rot(*angles[kind]) * Cylinder(*size)
+        angles = layout["eye_housing_angles"](name)
+        if angles:
+            yaw, pitch = angles
+            solid = Rot(0, 0, yaw) * Rot(0, pitch, 0) * solid
         item = Pos(*xyz) * solid
         item.label = name
         item.color = Color(color)
+        parts.append(item)
+    for plate in layout["plates"]():
+        lower_side = plate.vertices()[:len(plate.outline)]
+        face = Face(Wire.make_polygon(lower_side, close=True))
+        item = Solid.extrude(face, (0, plate.width, 0))
+        item.label, item.color = plate.name, Color(plate.color)
         parts.append(item)
     for tube in layout["rear_frame"]():
         inner = tube.width-2*tube.wall

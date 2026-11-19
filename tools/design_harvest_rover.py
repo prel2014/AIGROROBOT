@@ -2,6 +2,7 @@
 import math
 import os
 import random
+import sys
 from pathlib import Path
 from runpy import run_path
 
@@ -10,6 +11,9 @@ from rover_collision import configure_rover_collision
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+from dexman.robot.joints import ARM
+
 DESIGN = ROOT / "assets/agriculture/robot/rover"
 T = Sdf.ValueTypeNames
 WORLD = "/Surco"
@@ -33,12 +37,12 @@ def color(prim, rgb):
     UsdGeom.Gprim(prim).CreateDisplayColorAttr([Gf.Vec3f(*rgb)])
 
 
-def friction(stage, path, static, dynamic):
+def friction(stage, path, static, dynamic, restitution=0.01):
     mat = UsdShade.Material.Define(stage, path)
     physics = UsdPhysics.MaterialAPI.Apply(mat.GetPrim())
     physics.CreateStaticFrictionAttr(static)
     physics.CreateDynamicFrictionAttr(dynamic)
-    physics.CreateRestitutionAttr(0.01)
+    physics.CreateRestitutionAttr(restitution)
     return mat
 
 
@@ -157,9 +161,28 @@ def rover(stage):
     layout = run_path(str(DESIGN/"layout.py"))
     tubes = layout["rear_frame"]()
     rear_frame(stage, base_path, tubes)
-    total_mass = 135. + sum(tube.mass_kg for tube in tubes)
-    com = [(135.*c + sum(t.mass_kg*t.center[j]/1000 for t in tubes))/total_mass
-           for j,c in enumerate((-.07, 0., .46))]
+    liner = friction(stage, root + "/Materials/Revestimiento", .65, .48, restitution=.02)
+    parts_mass = [(135., (-70., 0., 460.))]
+    parts_mass.extend((tube.mass_kg, tube.center) for tube in tubes)
+    for plate in layout["plates"]():
+        mesh = UsdGeom.Mesh.Define(stage, base_path + "/" + plate.name)
+        n = len(plate.outline)
+        faces = [list(range(n)), list(reversed(range(n, 2*n)))]
+        for i in range(n):
+            j = (i+1) % n
+            faces.append([i, i+n, j+n, j])
+        mesh.CreatePointsAttr([Gf.Vec3f(*(v/1000 for v in point)) for point in plate.vertices()])
+        mesh.CreateFaceVertexCountsAttr([len(face) for face in faces])
+        mesh.CreateFaceVertexIndicesAttr([i for face in faces for i in face])
+        mesh.CreateSubdivisionSchemeAttr("none")
+        color(mesh, tuple((int(plate.color[i:i+2], 16)/255)**2.2 for i in (1,3,5)))
+        UsdPhysics.CollisionAPI.Apply(mesh.GetPrim())
+        UsdPhysics.MeshCollisionAPI.Apply(mesh.GetPrim()).CreateApproximationAttr("convexHull")
+        if plate.name.startswith(("Receptor_", "Lecho_")):
+            bind(mesh.GetPrim(), liner)
+        parts_mass.append(plate.added_mass_and_center())
+    total_mass = sum(kg for kg, _ in parts_mass)
+    com = [sum(kg*center[j] for kg, center in parts_mass)/(total_mass*1000) for j in range(3)]
     mass.CreateMassAttr(total_mass)
     mass.CreateCenterOfMassAttr(Gf.Vec3f(*com))
     tire = friction(stage, root + "/Materials/Neumatico", .92, .73)
@@ -191,17 +214,22 @@ def rover(stage):
         if kind == "box":
             geom = UsdGeom.Cube.Define(stage, path)
             geom.CreateSizeAttr(1.)
-            move(geom, pos)
-            geom.AddScaleOp().Set(Gf.Vec3f(*size))
         else:
             geom = UsdGeom.Cylinder.Define(stage, path)
             geom.CreateAxisAttr(kind)
             geom.CreateRadiusAttr(size[0])
             geom.CreateHeightAttr(size[1])
-            move(geom, pos)
+        move(geom, pos)
+        angles = layout["eye_housing_angles"](name)
+        if angles:
+            yaw, pitch = angles
+            geom.AddRotateZOp().Set(yaw)
+            geom.AddRotateYOp().Set(pitch)
+        if kind == "box":
+            geom.AddScaleOp().Set(Gf.Vec3f(*size))
         color(geom, tuple((int(shade[i:i+2], 16)/255)**2.2 for i in (1,3,5)))
-        if name.startswith(("Neumatico", "Chasis", "Fondo", "Lateral", "Testero", "Columna",
-                            "Placa", "Mastil", "Travesano_camaras", "Visor_RGBD",
+        if name.startswith(("Neumatico", "Chasis", "Fondo", "Testero", "Anclaje_visor",
+                            "Placa", "Mastil", "Travesano_camaras", "Soporte_travesano", "Visor_RGBD",
                             "Cubierta", "Carcasa_lidar", "Tapa_lidar", "Ojo_RGBD")):
             UsdPhysics.CollisionAPI.Apply(geom.GetPrim())
             if wheel_part:
@@ -213,11 +241,15 @@ def rover(stage):
                         ROOT / "assets/robots/ur10e_shadow/robot.usda", (pos[0],pos[1],pos[2]+.015))
         yaw_deg = sign*12.
         arm.AddRotateZOp().Set(yaw_deg)
-        # Topes de esta instalación, también activos con control directo en Kit.
-        if side == "Left":
-            for joint_name, (lower, upper) in layout["LEFT_OPERATING_LIMITS_DEG"].items():
-                joint_path = arm.GetPath().AppendPath("Arm/joints/" + joint_name)
-                joint = UsdPhysics.RevoluteJoint.Get(stage, joint_path)
+        for joint_name, angle in zip(ARM, layout["ROVER_TRAVEL_DEG"][side], strict=True):
+            joint = UsdPhysics.RevoluteJoint.Get(stage, arm.GetPath().AppendPath("Arm/joints/" + joint_name))
+            # El estado inicial y su consigna coinciden al dar Play en el surco.
+            joint.GetPrim().AddAppliedSchema("PhysicsJointStateAPI:angular")
+            attr(joint.GetPrim(), "state:angular:physics:position", T.Float, angle)
+            attr(joint.GetPrim(), "state:angular:physics:velocity", T.Float, 0.)
+            UsdPhysics.DriveAPI.Get(joint.GetPrim(), "angular").CreateTargetPositionAttr(angle)
+            if side == "Left" and joint_name in layout["LEFT_OPERATING_LIMITS_DEG"]:
+                lower, upper = layout["LEFT_OPERATING_LIMITS_DEG"][joint_name]
                 joint.CreateLowerLimitAttr(lower)
                 joint.CreateUpperLimitAttr(upper)
         anchor = UsdPhysics.FixedJoint(stage.GetPrimAtPath(arm.GetPath().AppendPath("Arm/root_joint")))
@@ -228,10 +260,13 @@ def rover(stage):
         anchor.CreateLocalRot0Attr(Gf.Quatf(rot))
         eye = UsdGeom.Camera.Define(stage, base_path + "/" + side + "Eye")
         ex, ey, ez = layout["EYE"]
-        location = Gf.Vec3d((ex+3)/1000, sign*ey/1000, ez/1000)
-        aim = Gf.Matrix4d().SetLookAt(location, Gf.Vec3d(.95,.27*sign,1.01), Gf.Vec3d(0,0,1))
+        location = Gf.Vec3d(ex/1000, sign*ey/1000, ez/1000)
+        axis = Gf.Vec3d(*layout["eye_axis"](sign))
+        aim = Gf.Matrix4d().SetLookAt(location, location+axis, Gf.Vec3d(0,0,1))
         eye.AddTransformOp().Set(aim.GetInverse())
-        eye.CreateFocalLengthAttr(15.)
+        eye.CreateFocalLengthAttr(12.)
+        eye.CreateHorizontalApertureAttr(20.955)
+        eye.CreateVerticalApertureAttr(20.955)
         eye.CreateClippingRangeAttr((.055, 18.))
         schemas(eye.GetPrim(), "OmniSensorAPI")
     imu = stage.DefinePrim(base_path+"/IMU", "IsaacImuSensor")
