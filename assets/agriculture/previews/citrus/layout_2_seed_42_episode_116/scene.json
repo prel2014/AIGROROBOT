@@ -1,0 +1,286 @@
+{
+  "scenario": "citrus",
+  "instruction": "Selecciona una naranja madura y colócala en la bandeja izquierda.",
+  "plant": "orange_tree",
+  "arms": {
+    "left_arm": {
+      "joints": 30,
+      "palm_world_m": [
+        0.028205011039972305,
+        0.36699602007865906,
+        1.2149335145950317
+      ],
+      "max_tracking_error_rad": 0.004493418615311384,
+      "max_error_joint": "robot0_WRJ0"
+    },
+    "right_arm": {
+      "joints": 30,
+      "palm_world_m": [
+        0.025520971044898033,
+        -0.35625508427619934,
+        1.2149208784103394
+      ],
+      "max_tracking_error_rad": 0.008946961723268032,
+      "max_error_joint": "robot0_WRJ1"
+    }
+  },
+  "joint_order": [
+    "left_arm/shoulder_pan_joint",
+    "left_arm/shoulder_lift_joint",
+    "left_arm/elbow_joint",
+    "left_arm/wrist_1_joint",
+    "left_arm/wrist_2_joint",
+    "left_arm/wrist_3_joint",
+    "left_arm/robot0_WRJ1",
+    "left_arm/robot0_WRJ0",
+    "left_arm/robot0_FFJ3",
+    "left_arm/robot0_FFJ2",
+    "left_arm/robot0_MFJ3",
+    "left_arm/robot0_MFJ2",
+    "left_arm/robot0_RFJ3",
+    "left_arm/robot0_RFJ2",
+    "left_arm/robot0_LFJ4",
+    "left_arm/robot0_LFJ3",
+    "left_arm/robot0_LFJ2",
+    "left_arm/robot0_THJ4",
+    "left_arm/robot0_THJ3",
+    "left_arm/robot0_THJ2",
+    "left_arm/robot0_THJ1",
+    "left_arm/robot0_THJ0",
+    "left_arm/robot0_FFJ1",
+    "left_arm/robot0_FFJ0",
+    "left_arm/robot0_MFJ1",
+    "left_arm/robot0_MFJ0",
+    "left_arm/robot0_RFJ1",
+    "left_arm/robot0_RFJ0",
+    "left_arm/robot0_LFJ1",
+    "left_arm/robot0_LFJ0",
+    "right_arm/shoulder_pan_joint",
+    "right_arm/shoulder_lift_joint",
+    "right_arm/elbow_joint",
+    "right_arm/wrist_1_joint",
+    "right_arm/wrist_2_joint",
+    "right_arm/wrist_3_joint",
+    "right_arm/robot0_WRJ1",
+    "right_arm/robot0_WRJ0",
+    "right_arm/robot0_FFJ3",
+    "right_arm/robot0_FFJ2",
+    "right_arm/robot0_MFJ3",
+    "right_arm/robot0_MFJ2",
+    "right_arm/robot0_RFJ3",
+    "right_arm/robot0_RFJ2",
+    "right_arm/robot0_LFJ4",
+    "right_arm/robot0_LFJ3",
+    "right_arm/robot0_LFJ2",
+    "right_arm/robot0_THJ4",
+    "right_arm/robot0_THJ3",
+    "right_arm/robot0_THJ2",
+    "right_arm/robot0_THJ1",
+    "right_arm/robot0_THJ0",
+    "right_arm/robot0_FFJ1",
+    "right_arm/robot0_FFJ0",
+    "right_arm/robot0_MFJ1",
+    "right_arm/robot0_MFJ0",
+    "right_arm/robot0_RFJ1",
+    "right_arm/robot0_RFJ0",
+    "right_arm/robot0_LFJ1",
+    "right_arm/robot0_LFJ0"
+  ],
+  "views": {
+    "overview": {
+      "shape": [
+        800,
+        1200,
+        3
+      ],
+      "valid_depth_pixels": 605517,
+      "position_world_m": [
+        2.950000047683716,
+        -3.8499999046325684,
+        2.75
+      ],
+      "orientation_ros_xyzw": [
+        -0.7766180038452148,
+        -0.2304086685180664,
+        0.16676725447177887,
+        0.5621078014373779
+      ],
+      "intrinsics": [
+        [
+          1088.0457763671875,
+          0.0,
+          600.0
+        ],
+        [
+          0.0,
+          1088.0457763671875,
+          400.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "left_eye": {
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "valid_depth_pixels": 246228,
+      "position_world_m": [
+        -0.4869999885559082,
+        0.12800000607967377,
+        1.4800000190734863
+      ],
+      "orientation_ros_xyzw": [
+        -0.541885256767273,
+        0.6107765436172485,
+        -0.4318637251853943,
+        0.38315272331237793
+      ],
+      "intrinsics": [
+        [
+          458.1245422363281,
+          0.0,
+          320.0
+        ],
+        [
+          0.0,
+          458.1245422363281,
+          240.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "right_eye": {
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "valid_depth_pixels": 246058,
+      "position_world_m": [
+        -0.4869999885559082,
+        -0.12800000607967377,
+        1.4800000190734863
+      ],
+      "orientation_ros_xyzw": [
+        -0.610776424407959,
+        0.5418853759765625,
+        -0.38315272331237793,
+        0.4318638741970062
+      ],
+      "intrinsics": [
+        [
+          458.1245422363281,
+          0.0,
+          320.0
+        ],
+        [
+          0.0,
+          458.1245422363281,
+          240.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    }
+  },
+  "fruit_positions_m": {
+    "fruit_0": [
+      0.30032384395599365,
+      -0.11980500817298889,
+      0.9002787470817566
+    ],
+    "fruit_1": [
+      0.48017409443855286,
+      0.1003621518611908,
+      0.9002787470817566
+    ],
+    "fruit_2": [
+      0.5897747278213501,
+      -0.06966858357191086,
+      0.9002788066864014
+    ]
+  },
+  "eye_order": [
+    "left_eye",
+    "right_eye"
+  ],
+  "physics_steps": 48,
+  "training": false,
+  "variation": {
+    "layout_version": 2,
+    "seed": 42,
+    "replica_id": 0,
+    "episode_id": 116,
+    "light_intensity": 5770.902393099193,
+    "color_temperature_k": 4039.825169215312,
+    "light_position_m": [
+      0.7273870216271976,
+      1.2035889690428287,
+      2.4864791605354166
+    ],
+    "bench_color": [
+      0.41,
+      0.34,
+      0.3
+    ],
+    "obstacles": [
+      {
+        "kind": "hand_trowel",
+        "xy": [
+          0.6405412825128667,
+          0.3605305885456458
+        ],
+        "yaw_deg": 174.34634995327116,
+        "surface": "bench"
+      },
+      {
+        "kind": "field_hoe",
+        "xy": [
+          0.1011692989042739,
+          -1.1847904649176613
+        ],
+        "yaw_deg": -124.77781563851622,
+        "surface": "ground"
+      },
+      {
+        "kind": "pruning_shears",
+        "xy": [
+          0.6286980402586472,
+          -0.40320421595367206
+        ],
+        "yaw_deg": 66.99597560311221,
+        "surface": "bench"
+      }
+    ]
+  },
+  "obstacle_positions_m": {
+    "hand_trowel": [
+      0.6405412554740906,
+      0.3605305850505829,
+      0.9010000228881836
+    ],
+    "field_hoe": [
+      0.10116929560899734,
+      -1.1847904920578003,
+      -0.004000003449618816
+    ],
+    "pruning_shears": [
+      0.6286980509757996,
+      -0.40320420265197754,
+      0.9010000228881836
+    ]
+  }
+}
