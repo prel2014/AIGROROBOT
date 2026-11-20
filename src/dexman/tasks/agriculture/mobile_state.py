@@ -5,7 +5,7 @@ from .interface import JOINT_ORDER, STATE_DIM
 VERSION = "agriculture-mobile-v2"
 WHEEL_JOINTS = ("drive_frontal_izq", "drive_frontal_der", "drive_trasero_izq", "drive_trasero_der")
 HEAD_JOINTS = ("head_pan_joint", "head_tilt_joint")
-HEAD_LIMITS_DEG = ((-40., 40.), (-22., 38.))
+HEAD_LIMITS_DEG = ((-70., 70.), (-22., 38.))
 STATE_ORDER = (tuple(f"q_rad/{name}" for name in JOINT_ORDER)
                + tuple(f"dq_rad_s/{name}" for name in JOINT_ORDER)
                + tuple(f"dq_rad_s/{name}" for name in WHEEL_JOINTS)

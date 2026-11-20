@@ -33,6 +33,7 @@ def main():
         from PIL import Image
         from isaacsim.core.utils.extensions import enable_extension
         from isaacsim.core.utils.stage import open_stage
+        from dexman.experiments import sha256
         from dexman.paths import ROOT
         from dexman.sensors.mobile import RoverArticulation, RoverSensors
         from dexman.vla.bimanual_contract import bimanual_contract, mobile_metadata
@@ -40,6 +41,7 @@ def main():
         enable_extension("isaacsim.sensors.experimental.physics")
         enable_extension("isaacsim.sensors.experimental.rtx")
         scene = ROOT / "assets/agriculture/robot/rover/surco.usdc"
+        rover_digest = sha256(scene.with_name("rover.usdc"))
         if not open_stage(str(scene)):
             raise RuntimeError(f"No se pudo abrir {scene}")
         sensors = RoverSensors("/Surco/Rover")
@@ -76,6 +78,7 @@ def main():
         metadata = bimanual_contract({**mobile_metadata(), "joint_limits_rad": robot.arm_limits(),
                                       "sample_kind": "robot_observation"})
         metadata["sample_kind"] = "robot_observation"
+        metadata["rover_asset_sha256"] = rover_digest
         depth = np.stack([frame[1] for frame in frames])[None].astype(np.float32)
         valid = np.isfinite(depth) & (depth > 0.)
         args.output.parent.mkdir(parents=True, exist_ok=True)

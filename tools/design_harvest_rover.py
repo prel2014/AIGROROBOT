@@ -200,8 +200,9 @@ def add_camera_head(stage, root, base_path, layout):
     # Masas nominales (kg). PhysX calcula las inercias a partir de los colisionadores del CAD.
     # Los drives de fuerza USD usan N·m/grado y N·m/(grado/s).
     parent, parent_origin = base_path, Gf.Vec3d(0.)
+    # Las lentes adelantadas generan un momento gravitatorio mayor sobre el eje de inclinación.
     axes = (("HeadPan", "Z", 1.2, 1.5, .12, 7., 55.),
-            ("HeadTilt", "Y", 2.4, .85, .06, 5., 40.))
+            ("HeadTilt", "Y", 2.4, 3.6, .13, 15., 40.))
     for name, limits, settings in zip(HEAD_JOINTS, HEAD_LIMITS_DEG, axes, strict=True):
         link, axis, kg, stiffness, damping, torque, speed = settings
         path = root + "/" + link

@@ -10,15 +10,18 @@ BASKET_FRONT = DECK[0]/2
 BASKET_BACK = BASKET_FRONT - DECK[0]*BASKET_FRACTION
 BASKET_FLOOR = 458
 RAMP_END = 330
-EYE = (-680, 220, 1720)
 EYE_YAW = 22.0
 EYE_PITCH_DOWN = 43.0
-HEAD_PAN_PIVOT = (-740, 0, 1612)
-HEAD_TILT_PIVOT = (-740, 0, 1720)
+HEAD_PAN_PIVOT = (-590, 0, 1612)
+HEAD_TILT_PIVOT = (HEAD_PAN_PIVOT[0], 0, 1720)
+EYE = (HEAD_TILT_PIVOT[0]+160, 220, HEAD_TILT_PIVOT[2])
 WHEEL_RADIUS = 230
 WHEEL_CORE_RADIUS = 215
 WHEEL_HALF_WIDTH = 70
-LIDAR = (-620, 0, 1900)
+MAST_X = -620
+LIDAR = (-855, 0, 2020)
+LIDAR_BRACE_BASE_Z = 1190
+LIDAR_UPRIGHT_BASE_Z = 1545
 ROVER_TRAVEL_DEG = {
     "Left": (-44., -23., 83., -75., -86., 0.),
     "Right": (-4., -32., 110., -68., -86., 0.),
@@ -185,14 +188,16 @@ def rear_frame():
     tubes = [
         Tube("Parachoques", (-735,-425,480), (-735,425,480), 80, 4),
         Tube("Travesano_columnas", (-360,-345,905), (-360,345,905), 65, 4),
-        Tube("Travesano_mastil", (-620,-345,530), (-620,345,530), 65, 4),
+        Tube("Travesano_mastil", (MAST_X,-345,530), (MAST_X,345,530), 65, 4),
+        Tube("Soporte_lidar_inclinado", (MAST_X,0,LIDAR_BRACE_BASE_Z),
+             (LIDAR[0],0,LIDAR_UPRIGHT_BASE_Z), 44, 3),
     ]
     for sign, side in [(1,"izq"), (-1,"der")]:
         y = sign*345
         tubes.extend([
             Tube("Larguero_"+side, (-735,y,480), (-232,y,480), 75, 4),
             Tube("Riostra_hombro_"+side, (-690,y,515), (-395,y,910), 55, 4),
-            Tube("Riostra_mastil_"+side, (-620,y,545), (-620,sign*15,1150), 45, 3),
+            Tube("Riostra_mastil_"+side, (MAST_X,y,545), (MAST_X,sign*15,1150), 45, 3),
         ])
     return tubes
 
@@ -293,11 +298,18 @@ def shapes():
         axis = eye_axis(sign)
         def behind_lens(distance):
             return tuple(v-distance*a for v,a in zip((ex, sign*ey, ez), axis))
-        box("Anclaje_visor_"+side, (35,28,38), (tilt_x+5,sign*(ey-46),ez+42), frame)
+        # Los dos apoyos laterales adelantan las lentes y dejan libre la ventana central.
+        anchor_start, anchor_end = tilt_x-12.5, behind_lens(65)[0]
+        box("Anclaje_visor_"+side, (anchor_end-anchor_start,28,38),
+            ((anchor_end+anchor_start)/2,sign*(ey-46),ez+42), frame)
         box("Visor_RGBD_" + side, (90, 121, 66), behind_lens(65), frame)
         part("Ojo_RGBD_" + side, cylinder_x(23, 18), behind_lens(11), sensor)
     lx, ly, lz = LIDAR
-    box("Soporte_travesano", (lx-pan_x+50,54,32), ((lx+pan_x-50)/2,0,pan_z-40), frame)
+    # La horquilla se apoya sobre la cara delantera del mástil inferior.
+    bridge_back, bridge_front = MAST_X-31, pan_x+47
+    mast_top = pan_z-62
+    box("Soporte_travesano", (bridge_front-bridge_back,54,32),
+        ((bridge_back+bridge_front)/2,0,mast_top+16), frame)
     part("Cuello_estator", cylinder_z(45,30), (pan_x,0,pan_z-15), metal)
     part("Giro_corona", cylinder_z(47,18), (pan_x,0,pan_z+9), frame)
     box("Giro_base_yugo", (70,146,18), (pan_x,0,pan_z+27), shell)
@@ -309,7 +321,11 @@ def shapes():
     part("Cabeza_eje_inclinacion", cylinder_y(10,150), (tilt_x,0,tilt_z), frame)
     box("Cabeza_biela", (30,58,42), (tilt_x,0,tilt_z+21), shell)
     box("Travesano_camaras", (38,2*EYE[1],26), (tilt_x,0,tilt_z+41), frame)
-    box("Mastil", (62, 62, 1376), (lx, ly, 1128), frame)
+    box("Mastil", (62,62,mast_top-440), (MAST_X,0,(mast_top+440)/2), frame)
+    # La rama posterior termina debajo de la carcasa. Deja libre el arco de ambos ojos.
+    lidar_bottom = lz-84
+    box("Soporte_lidar_superior", (46,46,lidar_bottom-LIDAR_UPRIGHT_BASE_Z),
+        (lx,ly,(LIDAR_UPRIGHT_BASE_Z+lidar_bottom)/2), frame)
     part("Carcasa_lidar", cylinder_z(60, 60), (lx, ly, lz-54), sensor)
     # Dos tirantes posteriores sujetan la tapa y dejan libre la ventana frontal de barrido.
     rim_top, lid_bottom = lz-24, lz+32-4.5

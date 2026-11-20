@@ -21,7 +21,7 @@ Para comparar órdenes en la misma escena, captura los tres ejercicios con igual
 
 ## Observación móvil
 
-`rover_eyes` guarda la orden en español, el RGB-D de ambos ojos, `time_s`, `mobile_state[132]` y la consigna `head_target_rad[2]` en `observacion.h5`. Los índices 130 y 131 de `mobile_state` contienen los ángulos medidos de giro y elevación en radianes. El esquema `dexman.agriculture.mobile.v2` declara el orden de los sensores. Esta captura es una observación para inferencia. Las demostraciones para aprendizaje supervisado requieren también las acciones aplicadas en cada paso. [Capturar desde Isaac Sim](rover-cosechador.md#sensores-y-entradas)
+`rover_eyes` guarda la orden en español, el RGB-D de ambos ojos, `time_s`, `mobile_state[132]` y la consigna `head_target_rad[2]` en `observacion.h5`. Los índices 130 y 131 contienen el giro y la elevación medidos en radianes. En los metadatos, el esquema `dexman.agriculture.mobile.v2` declara el orden de los sensores y `rover_asset_sha256` identifica la revisión del montaje. Esta captura es una observación para inferencia. Las demostraciones de entrenamiento requieren también las acciones aplicadas en cada paso. [Capturar desde Isaac Sim](rover-cosechador.md#sensores-y-entradas)
 
 ## Elevación de un brazo
 
