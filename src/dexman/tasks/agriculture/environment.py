@@ -5,6 +5,7 @@ from rsl_rl.env import VecEnv
 from tensordict import TensorDict
 from torch.nn.functional import one_hot
 
+from dexman.experiments import sha256
 from dexman.robot.joints import FINGERTIPS, PALM
 from .actuation import JointCommandController, NOMINAL_RESPONSE_TIME_S
 from .batch import AgriculturalBatch
@@ -12,9 +13,10 @@ from .contact_quality import contact_slip_speed, grasp_progress_masks, measure_c
 from .fruit_clearance import fruit_clearance_points, lowest_collider_height
 from .grasp_curriculum import GRASP_ACTION_DIM, GRASP_EPISODE_SECONDS, GraspMotion
 from .impact_sensors import forbidden_impact
-from .interface import ACTION_DIM, ARM_KEYS, JOINTS_PER_ARM
+from .interface import ACTION_DIM, ARM_KEYS, JOINTS_PER_ARM, STATE_DIM
+from .mobile_state import HEAD_LIMITS_DEG
 from .objectives import (EPISODE_SECONDS, LIFT, MAX_DISTRACTORS, OBJECTIVES, OBS_DIM, PHASE_TEXT,
-                         PLACE, TRANSFER, exercise_text)
+                         PLACE, ROVER_ACTION_DIM, ROVER_OBS_DIM, TRANSFER, exercise_text)
 from .randomization import GROUND_Z, OBSTACLE_RADIUS, TABLE_Z
 from .scene import CROPS
 from .task_rules import AgriculturalTaskRules
@@ -23,10 +25,13 @@ from .task_rules import AgriculturalTaskRules
 class AgriculturalPPOEnv(VecEnv):
     def __init__(self, sim, cfg, *, seed=42, capture=False, render=False):
         self.cfg = cfg
+        if cfg.rover:
+            scene_cfg = next(iter(vars(cfg.scenes).values()))
+            self.rover_asset_sha256 = sha256(scene_cfg.rover.spawn.usd_path)
         self.batch = AgriculturalBatch(sim, cfg, seed=seed)
         self.batch.initialize()
         self.device, self.num_envs = sim.device, self.batch.num_envs
-        self.num_actions = GRASP_ACTION_DIM if cfg.grasp else ACTION_DIM
+        self.num_actions = ROVER_ACTION_DIM if cfg.rover else GRASP_ACTION_DIM if cfg.grasp else ACTION_DIM
         self.capture, self.render = capture, capture or render
         self.on_step = None
         self.on_rollout_step = None
@@ -47,8 +52,8 @@ class AgriculturalPPOEnv(VecEnv):
                 [fruit.data.default_root_pose.torch[:, :3] for fruit in produce[1:]], group.scene.num_envs))
             crops.extend([list(OBJECTIVES).index(group.crop)] * group.scene.num_envs)
             keys = (PALM, *FINGERTIPS)
-            self.body_ids.append([scene[key].find_bodies(list(keys), preserve_order=True)[0] for key in ARM_KEYS])
-            velocity_limits.append(torch.cat([scene[key].data.joint_vel_limits.torch[:, ids]
+            self.body_ids.append([group.arm_body_ids(key, keys) for key in ARM_KEYS])
+            velocity_limits.append(torch.cat([group.arm(key).data.joint_vel_limits.torch[:, ids]
                                               for key, ids in zip(ARM_KEYS, group.joint_ids, strict=True)], dim=-1))
         self.crop_ids = torch.tensor(crops, device=self.device)
         self.crop_encoding = one_hot(self.crop_ids, len(OBJECTIVES))
@@ -65,6 +70,11 @@ class AgriculturalPPOEnv(VecEnv):
                                            pickup=cfg.grasp.initial_fruit_pose[:3] if cfg.exercise else None)
         self.tray = self.rules.tray
         self.home = self.batch.angular_state()[:, :ACTION_DIM].clone()
+        self.action_limits = self.batch.joint_limits
+        if cfg.rover:
+            self.head_limits = self.home.new_tensor(HEAD_LIMITS_DEG).deg2rad()
+            self.head_targets = self.home.new_zeros((self.num_envs, len(HEAD_LIMITS_DEG)))
+            self.action_limits = torch.cat((self.action_limits, self.head_limits.expand(self.num_envs, -1, -1)), dim=1)
         physical_low, physical_high = self.batch.joint_limits.unbind(-1)
         # Explore around the calibrated starting posture. Fingers retain their physical range.
         span = self.home.new_tensor(([1.5] * 6 + [10.] * (JOINTS_PER_ARM - 6)) * len(ARM_KEYS))
@@ -78,7 +88,7 @@ class AgriculturalPPOEnv(VecEnv):
         self.grasp_motion = GraspMotion(cfg.grasp, self.home, self.dt) if cfg.grasp else None
         self._configure_controller(range(self.num_envs))
         self._update_observations()
-        if capture:
+        if capture and not cfg.rover:
             self.batch.sim.render()
 
     @property
@@ -111,7 +121,7 @@ class AgriculturalPPOEnv(VecEnv):
             impact = forbidden_impact(scene)
             max_collision = torch.maximum(forbidden.amax(-1), torch.maximum(impact.environment_n, impact.inter_arm_n))
             for side, ids in zip(ARM_KEYS, body_ids, strict=True):
-                arm_data = scene[side].data
+                arm_data = group.arm(side).data
                 links.append(arm_data.body_pos_w.torch[:, ids] - origin[:, None, :])
                 sensors = [scene[f"{side}_{tip}"].data for tip in FINGERTIPS]
                 forces = torch.stack([sensor.normal_force_matrix_w.torch[:, 0] for sensor in sensors], dim=1)
@@ -154,7 +164,7 @@ class AgriculturalPPOEnv(VecEnv):
             rows.append(row)
         return self.tray.new_tensor(rows)
 
-    def _update_observations(self, measurement=None, angular_state=None):
+    def _update_observations(self, measurement=None, angular_state=None, gaze_alignment=None):
         if measurement is None:
             measurement = self._measure()
         pose, velocity, others, palm, tip, contacts, held, _, center, *_ = measurement
@@ -179,7 +189,13 @@ class AgriculturalPPOEnv(VecEnv):
         self.obstacle_features = self._obstacles()
         policy = torch.cat((joint_features, arm_features.flatten(1), task_features,
                             self.obstacle_features.flatten(1)), dim=-1)
-        if policy.shape != (self.num_envs, OBS_DIM):
+        self.vla_state = self.angular_state
+        if self.cfg.rover:
+            self.vla_state = self.batch.mobile_state(self.angular_state)
+            if gaze_alignment is None:
+                gaze_alignment = self.batch.gaze_alignment(center)
+            policy = torch.cat((policy, self.vla_state[:, STATE_DIM:], self.head_targets, gaze_alignment), dim=-1)
+        if policy.shape != (self.num_envs, ROVER_OBS_DIM if self.cfg.rover else OBS_DIM):
             raise RuntimeError(f"Agricultural observation contract changed: {policy.shape}")
         self.observation = TensorDict({"policy": torch.nan_to_num(policy, nan=0., posinf=0., neginf=0.)},
                                       batch_size=[self.num_envs])
@@ -207,12 +223,22 @@ class AgriculturalPPOEnv(VecEnv):
         self.rules.reset(ids)
         self._configure_controller(ids.tolist())
         self.controller.reset(ids)
+        if self.cfg.rover:
+            self.head_targets[ids] = 0.
         if self.grasp_motion is not None:
             self.grasp_motion.reset(ids)
-        if self.capture:
+        if self.capture and not self.cfg.rover:
             self.batch.sim.render()
 
     def step(self, actions):
+        head = None
+        if self.cfg.rover:
+            arms, gaze = actions.split((ACTION_DIM, len(self.head_limits)), dim=-1)
+            gaze = gaze.to(self.head_targets)
+            # A zero policy command centers both eyes in the harvest pose despite asymmetric pitch limits.
+            head = gaze.clamp(-1., 1.) * torch.where(gaze >= 0., self.head_limits[:, 1], -self.head_limits[:, 0])
+            head = torch.where(torch.isfinite(gaze), head, torch.nan)
+            actions = arms
         if self.grasp_motion is None:
             command = self.controller.step(actions)
             scored_actions, invalid = command.actions, command.invalid
@@ -221,15 +247,25 @@ class AgriculturalPPOEnv(VecEnv):
             delta = desired - self.home
             scale = torch.where(delta >= 0., self.high - self.home, self.home - self.low).clamp_min(1.e-6)
             command = self.controller.step(torch.where(invalid[:, None], torch.nan, delta / scale))
-        return self._advance(command, scored_actions, invalid)
+        return self._advance(command, scored_actions, invalid, head)
 
     def step_joint_targets(self, angles_rad):
         """Advance the student's applied radians through the same physics and task criteria."""
+        head = None
+        if self.cfg.rover:
+            angles_rad, head = angles_rad.split((ACTION_DIM, len(self.head_limits)), dim=-1)
+            head = head.to(self.head_targets)
         command = self.controller.apply_joint_targets(angles_rad)
-        return self._advance(command, command.actions, command.invalid)
+        return self._advance(command, command.actions, command.invalid, head)
 
-    def _advance(self, command, scored_actions, invalid):
-        self.batch.step(command.joint_command, render=self.render)
+    def _advance(self, command, scored_actions, invalid, head):
+        applied = command.joint_command
+        if self.cfg.rover:
+            invalid = invalid | ~torch.isfinite(head).all(-1)
+            head = torch.where(invalid[:, None], self.head_targets, head).clamp(*self.head_limits.unbind(-1))
+            self.head_targets.copy_(head)
+            applied = torch.cat((applied, head), dim=-1)
+        self.batch.step(command.joint_command, head_targets=head, render=self.render)
         self.episode_length_buf += 1
         measurements = self._measure()
         angular_state = self.batch.angular_state()
@@ -241,6 +277,13 @@ class AgriculturalPPOEnv(VecEnv):
                "Metrics/joint_tracking_error_rad": (angular_state[:, :ACTION_DIM] - command.joint_command).abs().mean(),
                "Metrics/forbidden_contact_fraction": impeded.float().mean(),
                "Metrics/drop_fraction": dropped.float().mean()}
+        gaze_alignment = None
+        if self.cfg.rover:
+            gaze_alignment = self.batch.gaze_alignment(measurements[8])
+            # Encourage at least one optical axis to follow the fruit. Looking alone never completes a task.
+            alignment = gaze_alignment.amax(dim=-1).clamp(-1., 1.)
+            rewards -= self.dt * (1. - alignment)
+            log["Gaze/best_eye_target_angle_deg"] = alignment.acos().rad2deg().mean()
         center, opposed, normal_force, slip_speed = measurements[8:12]
         near = (measurements[4] - center[:, None, None]).norm(dim=-1).amin(-1) < .07
         allowed = torch.stack((~self.handover | (self.phase >= TRANSFER), torch.ones_like(self.handover)), dim=-1)
@@ -260,7 +303,7 @@ class AgriculturalPPOEnv(VecEnv):
             if done[selected].any():
                 log[f"Success/{crop}"] = success[selected][done[selected]].float()
         extras = {"time_outs": timeout, "log": log, "success": success, "dropped": dropped,
-                  "invalid_pose": invalid, "obstacle_contact": impeded, "joint_command": command.joint_command,
+                  "invalid_pose": invalid, "obstacle_contact": impeded, "joint_command": applied,
                   "target_pose": measurements[0], "fingertip_contacts": measurements[5],
                   "phase_at_step": self.phase.clone(), "fruit_clearance_m": lift, "held": measurements[6]}
         if self.on_rollout_step is not None:
@@ -270,7 +313,7 @@ class AgriculturalPPOEnv(VecEnv):
             self._reset(ids)
             self._update_observations()
         else:
-            self._update_observations(measurements, angular_state)
+            self._update_observations(measurements, angular_state, gaze_alignment)
         if self.on_step is not None:
             self.on_step()
         return self.observation, rewards, done.long(), extras

@@ -10,33 +10,31 @@ from dexman.experiments import write_json
 from dexman.tasks.agriculture.interface import EYE_KEYS, JOINT_ORDER
 from dexman.tasks.agriculture.objectives import PHASE_TEXT, exercise_text
 from dexman.tasks.agriculture.randomization import OBSTACLE_RADIUS
-from dexman.vla.bimanual_contract import DEMO_SCHEMA, OUTPUT_SPACE
+from dexman.vla.bimanual_contract import DEMO_SCHEMA, OUTPUT_SPACE, bimanual_contract, mobile_metadata, state_field
 from .writer import EpisodeWriter
 
 
-def _calibration(group, index):
-    data = [group.scene[eye].data for eye in EYE_KEYS]
-    origin = group.origins[index]
-    return {
-        "camera_intrinsics": torch.stack([d.intrinsic_matrices.torch[index] for d in data]).cpu().numpy(),
-        "camera_pos_env_m": torch.stack([d.pos_w.torch[index] - origin for d in data]).cpu().numpy(),
-        "camera_quat_ros_xyzw": torch.stack([d.quat_w_ros.torch[index] for d in data]).cpu().numpy(),
-    }
+def _eye_poses(group, index):
+    eyes = [group.scene[name].data for name in EYE_KEYS]
+    return (torch.stack([eye.pos_w.torch[index] - group.origins[index] for eye in eyes], dim=-2),
+            torch.stack([eye.quat_w_ros.torch[index] for eye in eyes], dim=-2))
 
 
 def live_robot_contract(env):
-    limits = env.batch.joint_limits.detach()
+    limits = env.action_limits.detach()
     if not torch.allclose(limits, limits[0].expand_as(limits), rtol=0., atol=1e-6):
         raise ValueError("Las réplicas deben compartir los límites articulares")
-    return {"schema": DEMO_SCHEMA, "joint_order": list(JOINT_ORDER), "eye_order": list(EYE_KEYS),
-            "state_layout": "q_left,q_right,dq_left,dq_right", "joint_limits_rad": limits[0].cpu().tolist(),
-            "joint_command_space": OUTPUT_SPACE, "sample_hz": round(1 / env.dt), "depth_unit": "m"}
+    fields = mobile_metadata() if env.cfg.rover else {
+        "schema": DEMO_SCHEMA, "joint_order": list(JOINT_ORDER), "eye_order": list(EYE_KEYS),
+        "state_layout": "q_left,q_right,dq_left,dq_right", "joint_command_space": OUTPUT_SPACE, "depth_unit": "m"}
+    return bimanual_contract({**fields, "joint_limits_rad": limits[0].cpu().tolist(), "sample_hz": round(1 / env.dt)})
 
 
 @torch.inference_mode()
 def collect_demonstrations(env, actor, output, metadata, *, episodes, max_attempts, keep_failures):
     """Record observations at tick t with the physical commands used for t → t+1."""
     contract = live_robot_contract(env)
+    state_key, _ = state_field(contract["schema"])
     output.mkdir(parents=True, exist_ok=False)
     metadata = {**metadata, **contract,
                 "instruction_language": "es", "phase_text": list(PHASE_TEXT),
@@ -57,7 +55,12 @@ def collect_demonstrations(env, actor, output, metadata, *, episodes, max_attemp
         if index not in writers:
             writers[index] = EpisodeWriter(output / group.crop / f"replica_{index:03d}",
                                            metadata, success_only=not keep_failures)
-        calibration = _calibration(group, index - group.start)
+        local = index - group.start
+        calibration = {"camera_intrinsics": torch.stack(
+            [group.scene[eye].data.intrinsic_matrices.torch[local] for eye in EYE_KEYS]).cpu().numpy()}
+        if not env.cfg.rover:
+            position, rotation = _eye_poses(group, local)
+            calibration.update(camera_pos_env_m=position.cpu().numpy(), camera_quat_ros_xyzw=rotation.cpu().numpy())
         episode_id = env.batch.episode_ids[index]
         calibration.update(crop=group.crop, replica_id=index, episode_id=episode_id,
                            subtasks_by_phase=dumps(exercise_text(group.crop, env.cfg.exercise)[1], ensure_ascii=False),
@@ -76,7 +79,12 @@ def collect_demonstrations(env, actor, output, metadata, *, episodes, max_attemp
             depth = depth[indices].cpu().numpy().astype(np.float32, copy=False)
             depth_valid = np.isfinite(depth) & (depth > 0.)
             depth = np.where(depth_valid, depth, 0.)
-            state = env.angular_state[indices].cpu().numpy()
+            state = env.vla_state[indices].cpu().numpy()
+            camera_fields = {}
+            if env.cfg.rover:
+                poses = [_eye_poses(group, slice(None)) for group in env.batch.groups]
+                for name, values in zip(("camera_pos_env_m", "camera_quat_ros_xyzw"), zip(*poses), strict=True):
+                    camera_fields[name] = torch.cat(values)[indices].cpu().numpy()
             phase = env.phase[indices].cpu().numpy()
             time_s = env.episode_length_buf[indices].cpu().numpy() * env.dt
             obstacles = env.obstacle_features[indices].cpu().numpy()
@@ -104,7 +112,8 @@ def collect_demonstrations(env, actor, output, metadata, *, episodes, max_attemp
                                           or any(view.min() == view.max() for view in rgb[row])):
                     raise RuntimeError(f"Fotograma inicial RGB-D inválido en la réplica {index}")
                 writer.append(rgb=rgb[row], depth_m=depth[row], depth_valid=depth_valid[row],
-                              angular_state=state[row], joint_command=commands[row], phase=np.uint8(phase[row]),
+                              **{state_key: state[row]}, joint_command=commands[row], phase=np.uint8(phase[row]),
+                              **{key: values[row] for key, values in camera_fields.items()},
                               time_s=np.float32(time_s[row]), obstacles=obstacles[row], lighting=lighting[row],
                               reward=rewards[row], obstacle_contact=collisions[row],
                               next_contact=contacts[row], next_held=held[row], next_clearance_m=clearance[row],

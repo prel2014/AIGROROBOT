@@ -2,7 +2,7 @@
 
 Manipulación agrícola de fruta suelta con dos brazos UR10e, manos articuladas y dos cámaras RGB-D. El teacher PPO usa 64 réplicas por defecto. [Tareas y currículo](docs/plan-agricola.md) · [Arquitectura](docs/architecture.md) · [Referencias](docs/referencias-aprendizaje.md) · [Capacidad de VRAM](docs/recursos-vram.md)
 
-El rover de surco lleva cuatro ruedas agrícolas y un cabezal RGB-D con giro y elevación. [Abrir el rover y capturar una observación](docs/rover-cosechador.md#sensores-y-entradas)
+El teacher y el estudiante del rover controlan los brazos y orientan ambos ojos RGB-D. Para usar este perfil en el puesto de cosecha, añade `--rover` al teacher y al recolector. [Validar los ojos, entrenar y capturar](docs/rover-cosechador.md#teacher-y-demostraciones-del-rover)
 
 ## Preparación
 
@@ -43,4 +43,4 @@ Para aprender el cierre y la elevación inicial desde demostraciones físicas de
 .\scripts\run.ps1 play_vla --viz kit --checkpoint checkpoints/vla_bimanual/best.pt --crop berries --instruction "Pinza el arándano más cercano, levántalo 3 cm y sostenlo sin mover los demás." --episodes 5 --output logs/vla_arandano.json
 ```
 
-El estudiante observa ambos ojos RGB-D y el estado articular en cada paso, conserva memoria por robot y envía 60 ángulos a los actuadores. Cada secuencia de entrenamiento se presenta con la orden sola y con la subtarea. La validación usa la orden sola. El informe mide el objetivo físico del cultivo elegido. Para evaluar una paráfrasis usa una orden con el mismo objetivo. Añade `--phase-hints` para medir el efecto de indicar la fase o `--grasp-calibration` para reproducir el preagarre. [Formato HDF5](docs/dataset.md) · [USD y capturas](assets/agriculture/README.md) · [Flujo de un brazo](docs/mvp.md)
+El estudiante observa ambos ojos y el estado medido en cada paso, conserva memoria por robot y manda 60 ángulos en el torso fijo o 62 en el rover. El checkpoint selecciona el robot al ejecutar `play_vla`. El entrenamiento alterna la orden sola y la orden con subtarea. La evaluación usa la orden sola y mide el objetivo físico del cultivo. [Formato HDF5](docs/dataset.md) · [USD y capturas](assets/agriculture/README.md) · [Flujo de un brazo](docs/mvp.md)

@@ -5,7 +5,8 @@ from torch import nn
 from torch.nn import functional as F
 
 from dexman.tasks.agriculture.interface import ACTION_DIM, ARM_KEYS, EYE_KEYS, JOINTS_PER_ARM, STATE_DIM
-from .bimanual_contract import DEMO_SCHEMA, MOBILE_SCHEMA, POLICY_VERSION, architecture_config
+from dexman.tasks.agriculture.mobile_state import HEAD_JOINTS
+from .bimanual_contract import DEMO_SCHEMA, MOBILE_SCHEMA, MOBILE_SCHEMAS, POLICY_VERSION, architecture_config
 from .bimanual_language import instruction_prompt, tokenize_instructions
 from .model import TransformerBlock
 
@@ -28,11 +29,12 @@ class BimanualTransformer(nn.Module):
         self.schema = schema
         config = architecture_config(schema)
         self.state_dim = config["state_dim"]
+        self.action_dim = config["action_dim"]
         self.architecture = config["name"]
         limits = torch.as_tensor(joint_limits, dtype=torch.float32)
         if (limits.shape != (self.action_dim, 2) or not torch.isfinite(limits).all()
                 or not (limits[:, 1] > limits[:, 0]).all()):
-            raise ValueError("Expected finite bimanual joint_limits [60,2], lower < upper")
+            raise ValueError(f"Expected finite bimanual joint_limits [{self.action_dim},2], lower < upper")
         self.register_buffer("joint_limits", limits.detach().clone())
         self.register_buffer("joint_offset", self.joint_limits.mean(-1))
         self.register_buffer("joint_scale", self.joint_limits.diff(dim=-1).squeeze(-1) * 0.5)
@@ -46,7 +48,7 @@ class BimanualTransformer(nn.Module):
         self.instruction_projection = nn.Linear(self.text_dim, width)
         self.arm_projection = nn.Linear(2 * JOINTS_PER_ARM, width)
         self.mobile_projection = None
-        if schema == MOBILE_SCHEMA:
+        if schema in MOBILE_SCHEMAS:
             self.mobile_projection = nn.Linear(self.state_dim - STATE_DIM, width)
             self.context_tokens += 1
         self.memory_projection = nn.Linear(self.memory_dim, width)
@@ -58,6 +60,11 @@ class BimanualTransformer(nn.Module):
         for parameter in (self.rgb_positions, self.depth_positions, self.arm_identity,
                           self.action_queries, self.memory_query):
             nn.init.normal_(parameter, std=.02)
+        self.head_queries = None
+        if schema == MOBILE_SCHEMA:
+            self.head_queries = nn.Parameter(torch.empty(self.horizon, 1, width))
+            nn.init.normal_(self.head_queries, std=.02)
+            self.head_output = nn.Linear(width, len(HEAD_JOINTS))
         self.blocks = nn.ModuleList(TransformerBlock(width, 8, 1024, .1) for _ in range(6))
         self.output_norm = nn.LayerNorm(width)
         self.arm_output = nn.Linear(width, JOINTS_PER_ARM)
@@ -65,7 +72,8 @@ class BimanualTransformer(nn.Module):
         self.memory_gate = nn.Linear(width, self.memory_dim)
         nn.init.constant_(self.memory_gate.bias, -1.)
 
-        count = self.context_tokens + self.horizon * len(ARM_KEYS) + 1
+        self.action_groups = len(ARM_KEYS) + int(self.head_queries is not None)
+        count = self.context_tokens + self.horizon * self.action_groups + 1
         allowed = torch.zeros(count, count, dtype=torch.bool)
         allowed[:, :self.context_tokens] = True
         allowed[self.context_tokens:-1, self.context_tokens:-1] = True
@@ -84,7 +92,7 @@ class BimanualTransformer(nn.Module):
         return self.depth_projection(features.to(self.depth_projection.weight)) + self.depth_positions
 
     def forward(self, vision_tokens, text_embedding, depth, state, memory):
-        """Return synchronized angles [B,8,60] in radians and next memory [B,256]."""
+        """Return eight physical target vectors in radians and the next memory."""
         batch = state.shape[0]
         if (vision_tokens.shape != (batch, self.vision_tokens, self.embedding_dim)
                 or text_embedding.shape != (batch, self.text_dim)
@@ -93,8 +101,8 @@ class BimanualTransformer(nn.Module):
                 or state.shape != (batch, self.state_dim) or memory.shape != (batch, self.memory_dim)):
             raise ValueError("Expected RGB tokens [B,100,512], text [B,384], two depth maps, "
                              f"state [B,{self.state_dim}] and memory [B,256]")
-        q, dq = state[:, :STATE_DIM].split(self.action_dim, dim=-1)
-        q = (q - self.joint_offset) / self.joint_scale
+        q, dq = state[:, :STATE_DIM].split(ACTION_DIM, dim=-1)
+        q = (q - self.joint_offset[:ACTION_DIM]) / self.joint_scale[:ACTION_DIM]
         arms = torch.cat((q.reshape(batch, len(ARM_KEYS), JOINTS_PER_ARM),
                           torch.asinh(dq).reshape(batch, len(ARM_KEYS), JOINTS_PER_ARM)), dim=-1)
         context = (
@@ -109,14 +117,19 @@ class BimanualTransformer(nn.Module):
             extra = state[:, STATE_DIM:]
             features = torch.cat((torch.asinh(extra[:, :-2]), extra[:, -2:]), dim=-1)
             context += (self.mobile_projection(features).unsqueeze(1),)
-        queries = (self.action_queries + self.arm_identity).flatten(0, 1)
-        tokens = torch.cat((*context, queries.expand(batch, -1, -1),
+        queries = self.action_queries + self.arm_identity
+        if self.head_queries is not None:
+            queries = torch.cat((queries, self.head_queries), dim=1)
+        tokens = torch.cat((*context, queries.flatten(0, 1).expand(batch, -1, -1),
                             self.memory_query.expand(batch, -1, -1)), dim=1)
         for block in self.blocks:
             tokens = block(tokens, self.attention_mask)
         output = self.output_norm(tokens[:, self.context_tokens:])
-        normalized = self.arm_output(output[:, :-1]).reshape(batch, self.horizon, self.action_dim).tanh()
-        angles = self.joint_offset + normalized * self.joint_scale
+        actions = output[:, :-1].reshape(batch, self.horizon, self.action_groups, -1)
+        targets = self.arm_output(actions[:, :, :len(ARM_KEYS)]).flatten(2)
+        if self.head_queries is not None:
+            targets = torch.cat((targets, self.head_output(actions[:, :, -1])), dim=-1)
+        angles = self.joint_offset + targets.tanh() * self.joint_scale
         angles = angles.clamp(self.joint_limits[:, 0], self.joint_limits[:, 1])
         write = output[:, -1]
         gate = self.memory_gate(write).sigmoid()

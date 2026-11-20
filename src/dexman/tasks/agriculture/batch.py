@@ -11,12 +11,13 @@ from dexman.robot.joints import JOINT_NAMES
 from .interface import ACTION_DIM, ARM_KEYS, EYE_KEYS, JOINTS_PER_ARM
 from .physical_variation import FruitPhysicsRandomizer, sample_fruit_physics
 from .randomization import TABLE_Z, EpisodeDynamics, apply_variations, sample_episode, write_lighting, write_obstacles
-from .scene import AgriculturalSceneCfg, CROPS, NS, PICKUP_SUPPORT_HEIGHT, eye, fixed_box, populate_crop
+from .scene import AgriculturalRoverSceneCfg, AgriculturalSceneCfg, CROPS, NS, PICKUP_SUPPORT_HEIGHT, eye, fixed_box, populate_crop
 
 if TYPE_CHECKING:
     import torch
     from isaaclab.scene import InteractiveScene
     from .grasp_curriculum import GraspCalibration
+    from .rover_batch import RoverBinding
 
 
 DEFAULT_REPLICAS = 64
@@ -34,11 +35,14 @@ class AgriculturalBatchCfg:
     raised_support: bool = False
     grasp: "GraspCalibration | None" = None
     exercise: str | None = None
+    rover: bool = False
 
 
 def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, rgbd_size=224, contacts=False, monitor=False,
                       nominal=False, physics_substeps=CONTROL_DECIMATION, physics_variation=0., raised_support=False,
-                      grasp=None, crop=None, exercise=None):
+                      grasp=None, crop=None, exercise=None, rover=False):
+    if rover and grasp is not None:
+        raise ValueError("La calibración de preagarre del torso fijo no corresponde al montaje del rover.")
     if exercise is not None:
         from .objectives import exercise_text
         if grasp is None:
@@ -60,14 +64,15 @@ def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, rgbd_size=224, c
     base, remaining = divmod(num_envs, len(crops))
     scenes = {}
     for index, crop in enumerate(crops):
-        scene = AgriculturalSceneCfg(
+        scene_class = AgriculturalRoverSceneCfg if rover else AgriculturalSceneCfg
+        scene = scene_class(
             num_envs=base + (index < remaining), env_spacing=ENV_SPACING,
             replicate_physics=False, filter_collisions=False)
         scene.clone_cfg.clone_template = f"/World/Agriculture/{crop}/env_{{}}"
         scene.ground = fixed_box(f"{NS}/Ground", (6.95, 6.95, .10),
                                  (0., 0., -.055), (.21, .28, .145))
         scene.overview = None
-        if rgbd:
+        if rgbd or (rover and monitor):
             for key in EYE_KEYS:
                 sensor = getattr(scene, key)
                 sensor.width = sensor.height = rgbd_size
@@ -86,16 +91,17 @@ def make_batch_config(num_envs=DEFAULT_REPLICAS, *, rgbd=False, rgbd_size=224, c
             scene.sunlight = scene.fill = None
         scenes[crop] = scene
     monitor_eyes = None
-    if monitor:
+    if monitor and not (rgbd or rover):
         monitor_eyes = SimpleNamespace(
             left=eye(1).replace(prim_path="/World/AgricultureMonitor/LeftEye", width=224, height=224, update_period=0.),
             right=eye(-1).replace(prim_path="/World/AgricultureMonitor/RightEye", width=224, height=224, update_period=0.),
         )
     return AgriculturalBatchCfg(
-        sim=SimulationCfg(dt=1 / (30 * physics_substeps), render_interval=physics_substeps, physics=PhysxCfg()),
+        sim=SimulationCfg(dt=1 / (30 * physics_substeps), render_interval=physics_substeps,
+                          physics=PhysxCfg(gpu_max_num_partitions=1) if rover else PhysxCfg()),
         # The Isaac Lab launcher discovers camera configurations through object attributes.
         scenes=SimpleNamespace(**scenes), monitor=monitor_eyes, nominal=nominal,
-        physics_variation=physics_variation, raised_support=raised_support, grasp=grasp, exercise=exercise)
+        physics_variation=physics_variation, raised_support=raised_support, grasp=grasp, exercise=exercise, rover=rover)
 
 
 @dataclass
@@ -105,6 +111,13 @@ class CropBatch:
     start: int
     origins: "torch.Tensor"
     joint_ids: tuple[list[int], ...] = ()
+    rover: "RoverBinding | None" = None
+
+    def arm(self, side):
+        return self.rover.robot if self.rover is not None else self.scene[side]
+
+    def arm_body_ids(self, side, names):
+        return self.rover.body_ids(side, names) if self.rover else self.scene[side].find_bodies(names, preserve_order=True)[0]
 
     @property
     def stop(self):
@@ -121,6 +134,7 @@ class AgriculturalBatch:
         from .impact_sensors import configure_impact_sensors
 
         self.sim, self.seed = sim, seed
+        self.rover = cfg.rover
         self.nominal = cfg.nominal
         self.pickup_surface_z = TABLE_Z + (PICKUP_SUPPORT_HEIGHT if cfg.raised_support else 0.)
         self.physics_variation = cfg.physics_variation
@@ -167,12 +181,18 @@ class AgriculturalBatch:
         self.sim.reset()
         limits = []
         for group in self.groups:
+            if self.rover:
+                from .rover_batch import RoverBinding
+                group.rover = RoverBinding(group.scene, group.origins)
             joint_ids, arm_limits = [], []
-            for key in ARM_KEYS:
-                arm = group.scene[key]
-                indices, names = arm.find_joints(list(JOINT_NAMES), preserve_order=True)
-                if tuple(names) != JOINT_NAMES or len(arm.joint_names) != JOINTS_PER_ARM:
-                    raise RuntimeError(f"Unexpected joint order for {group.crop}/{key}: {names}")
+            for side, key in enumerate(ARM_KEYS):
+                arm = group.arm(key)
+                if group.rover:
+                    indices = group.rover.joints[side]
+                else:
+                    indices, names = arm.find_joints(list(JOINT_NAMES), preserve_order=True)
+                    if tuple(names) != JOINT_NAMES or len(arm.joint_names) != JOINTS_PER_ARM:
+                        raise RuntimeError(f"Unexpected joint order for {group.crop}/{key}: {names}")
                 joint_ids.append(indices)
                 arm_limits.append(arm.data.joint_pos_limits.torch[:, indices])
             group.joint_ids = tuple(joint_ids)
@@ -199,13 +219,16 @@ class AgriculturalBatch:
             scene = group.scene
             ids = torch.as_tensor(local, dtype=torch.long, device=scene.device)
             scene.reset(ids)
-            for key in ARM_KEYS:
-                arm = scene[key]
-                positions = arm.data.default_joint_pos.torch[ids]
-                velocities = arm.data.default_joint_vel.torch[ids]
-                arm.write_joint_position_to_sim_index(position=positions, env_ids=ids)
-                arm.write_joint_velocity_to_sim_index(velocity=velocities, env_ids=ids)
-                arm.set_joint_position_target_index(target=positions, env_ids=ids)
+            if group.rover:
+                group.rover.reset(ids)
+            else:
+                for key in ARM_KEYS:
+                    arm = scene[key]
+                    positions = arm.data.default_joint_pos.torch[ids]
+                    velocities = arm.data.default_joint_vel.torch[ids]
+                    arm.write_joint_position_to_sim_index(position=positions, env_ids=ids)
+                    arm.write_joint_velocity_to_sim_index(velocity=velocities, env_ids=ids)
+                    arm.set_joint_position_target_index(target=positions, env_ids=ids)
             for key, fruit in scene.rigid_objects.items():
                 if key.startswith("fruit_"):
                     pose = fruit.data.default_root_pose.torch[ids]
@@ -227,6 +250,19 @@ class AgriculturalBatch:
                                                 strength=self.physics_variation) for index in local]
                 self.fruit_randomizers[group.crop].apply(local, samples)
             apply_variations(scene, layouts, world_origins=group.origins)
+        if self.rover and selected:
+            # A reset teleports the floating base and joints without advancing the physics clock.
+            self.sim.forward()
+            if EYE_KEYS[0] in self.groups[0].scene.sensors:
+                self._refresh_eyes()
+
+    def _refresh_eyes(self):
+        from isaaclab.sensors import Camera
+
+        # Publish the moving head's transform before either eye samples the current Fabric frame.
+        self.sim.render_context.update_scene_state(self.sim.get_physics_step_count())
+        cameras = [group.scene[key] for group in self.groups for key in EYE_KEYS]
+        Camera.update_batch(cameras, 0.)
 
     def _advance_variations(self):
         import torch
@@ -244,7 +280,8 @@ class AgriculturalBatch:
             if not due:
                 continue
             origins = group.origins[due, None, :]
-            arms = torch.cat([group.scene[key].data.body_pos_w.torch[due] for key in ARM_KEYS], dim=1)
+            arms = (group.rover.robot.data.body_pos_w.torch[due] if group.rover else
+                    torch.cat([group.arm(key).data.body_pos_w.torch[due] for key in ARM_KEYS], dim=1))
             fruits = torch.stack([obj.data.root_pos_w.torch[due]
                                   for name, obj in group.scene.rigid_objects.items() if name.startswith("fruit_")], dim=1)
             arm_points = (arms - origins).cpu().numpy()
@@ -265,11 +302,36 @@ class AgriculturalBatch:
 
         states = []
         for group in self.groups:
-            arms = [group.scene[key] for key in ARM_KEYS]
+            arms = [group.arm(key) for key in ARM_KEYS]
             positions = [arm.data.joint_pos.torch[:, ids] for arm, ids in zip(arms, group.joint_ids, strict=True)]
             velocities = [arm.data.joint_vel.torch[:, ids] for arm, ids in zip(arms, group.joint_ids, strict=True)]
             states.append(torch.cat((*positions, *velocities), dim=-1))
         return torch.cat(states)
+
+    def mobile_state(self, angular_state):
+        import torch
+
+        if not self.rover:
+            raise ValueError("El estado móvil requiere el rover")
+        return torch.cat([group.rover.state(angular_state[group.start:group.stop]) for group in self.groups])
+
+    def gaze_alignment(self, target):
+        """Cosines of each moving optical axis with the target in replica-local metres."""
+        import torch
+
+        if not self.rover:
+            raise ValueError("La cabeza articulada requiere el rover")
+        return torch.cat([group.rover.gaze_alignment(target[group.start:group.stop] + group.origins)
+                          for group in self.groups])
+
+    def eye_cameras(self, replica):
+        """Return the actual per-replica stereo sensor handles and row in their crop group."""
+        for group in self.groups:
+            if group.start <= replica < group.stop:
+                if self.rover:
+                    self._refresh_eyes()
+                return tuple(group.scene[key] for key in EYE_KEYS), replica - group.start
+        raise IndexError(f"Réplica agrícola inexistente: {replica}")
 
     def rgbd(self):
         """Read synchronized eye pairs in RGB uint8 [B,2,H,W,3] and metric depth [B,2,H,W]."""
@@ -277,6 +339,8 @@ class AgriculturalBatch:
 
         if any(key not in self.groups[0].scene.sensors for key in EYE_KEYS):
             raise RuntimeError("Batch was initialized without RGB-D sensors")
+        if self.rover:
+            self._refresh_eyes()
         rgbs, depths = [], []
         for group in self.groups:
             outputs = [group.scene[key].data.output for key in EYE_KEYS]
@@ -284,12 +348,15 @@ class AgriculturalBatch:
             depths.append(torch.stack([output["distance_to_image_plane"].torch[..., 0] for output in outputs], dim=1))
         return torch.cat(rgbs), torch.cat(depths)
 
-    def step(self, angles, *, render=False):
+    def step(self, angles, *, head_targets=None, render=False):
         """Apply one [B,60] target and advance all crops by one control tick."""
         import torch
 
         if angles.shape != (self.num_envs, ACTION_DIM) or not torch.isfinite(angles).all():
             raise ValueError(f"Expected finite joint targets [{self.num_envs},{ACTION_DIM}]")
+        if head_targets is not None:
+            if not self.rover or head_targets.shape != (self.num_envs, 2) or not torch.isfinite(head_targets).all():
+                raise ValueError("Las consignas de la cabeza requieren [réplicas,2] valores finitos para el rover")
         self.control_tick += 1
         if not self.nominal:
             self._advance_variations()
@@ -297,13 +364,20 @@ class AgriculturalBatch:
         for group in self.groups:
             targets = angles[group.start:group.stop].split(JOINTS_PER_ARM, dim=-1)
             for key, ids, target in zip(ARM_KEYS, group.joint_ids, targets, strict=True):
-                group.scene[key].set_joint_position_target_index(target=target, joint_ids=ids)
+                group.arm(key).set_joint_position_target_index(target=target, joint_ids=ids)
+            if head_targets is not None:
+                lower, upper = group.rover.head_limits.unbind(dim=-1)
+                head = head_targets[group.start:group.stop].to(lower).clamp(lower, upper)
+                group.rover.robot.set_joint_position_target_index(target=head, joint_ids=group.rover.head)
         dt = self.sim.get_physics_dt()
         for index in range(self.control_decimation):
             for group in self.groups:
-                for key in ARM_KEYS:
-                    arm = group.scene[key]
-                    arm.actuators.target_command.set_effort_index(value=arm.data.gravity_compensation_forces.torch)
+                if group.rover:
+                    group.rover.compensate_arms()
+                else:
+                    for key in ARM_KEYS:
+                        arm = group.scene[key]
+                        arm.actuators.target_command.set_effort_index(value=arm.data.gravity_compensation_forces.torch)
                 group.scene.write_data_to_sim()
             self.sim.step(render=render and index == self.control_decimation - 1)
             for group in self.groups:

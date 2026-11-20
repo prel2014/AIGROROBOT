@@ -75,7 +75,7 @@ def main():
                 break
         else:
             raise RuntimeError("El cabezal no se asentó a 1° de la consigna o faltan lecturas RGB-D/IMU")
-        metadata = bimanual_contract({**mobile_metadata(), "joint_limits_rad": robot.arm_limits(),
+        metadata = bimanual_contract({**mobile_metadata(), "joint_limits_rad": robot.action_limits(),
                                       "sample_kind": "robot_observation"})
         metadata["sample_kind"] = "robot_observation"
         metadata["rover_asset_sha256"] = rover_digest

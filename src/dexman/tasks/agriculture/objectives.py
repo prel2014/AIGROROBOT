@@ -1,7 +1,8 @@
 """Task definitions and observation dimensions shared with the PPO checkpoint."""
 from dataclasses import dataclass
 
-from .interface import ACTION_DIM
+from .interface import ACTION_DIM, EYE_KEYS, STATE_DIM
+from .mobile_state import HEAD_JOINTS, MOBILE_STATE_DIM
 from .randomization import OBSTACLE_RADIUS, TABLE_Z
 
 REACH, LIFT, TRANSFER, PLACE, SETTLE = range(5)
@@ -19,6 +20,10 @@ TASK_FEATURES = 39
 OBSTACLE_FEATURES = 5
 OBS_DIM = (ACTION_DIM * JOINT_FEATURES + 2 * ARM_FEATURES + TASK_FEATURES
            + len(OBSTACLE_RADIUS) * OBSTACLE_FEATURES)
+ROVER_ACTION_DIM = ACTION_DIM + len(HEAD_JOINTS)
+# Wheel/IMU/encoder readings, last applied gaze targets, and eye-to-fruit alignment.
+ROVER_FEATURES = MOBILE_STATE_DIM - STATE_DIM + len(HEAD_JOINTS) + len(EYE_KEYS)
+ROVER_OBS_DIM = OBS_DIM + ROVER_FEATURES
 
 
 @dataclass(frozen=True)

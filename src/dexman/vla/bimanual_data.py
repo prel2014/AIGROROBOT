@@ -8,9 +8,9 @@ import torch
 from torch.utils.data import Dataset
 
 from dexman.experiments import sha256
-from dexman.tasks.agriculture.interface import ACTION_DIM, EYE_KEYS
+from dexman.tasks.agriculture.interface import EYE_KEYS
 from dexman.tasks.agriculture.objectives import SUBTASKS_BY_CROP
-from .bimanual_contract import bimanual_contract, state_field
+from .bimanual_contract import MOBILE_SCHEMA, action_order, bimanual_contract, state_field
 from .bimanual_language import instruction_prompt, tokenize_instructions
 
 
@@ -30,7 +30,14 @@ def _episode_shape(episode, schema):
         raise ValueError("RGB agrícola requiere [T,2,224,224,3] uint8 y dos vistas sincronizadas")
     key, width = state_field(schema)
     shapes = {"depth_m": rgb.shape[:-1], "depth_valid": rgb.shape[:-1], key: (length, width),
-              "joint_command": (length, ACTION_DIM), "phase": (length,), "done": (length,), "time_s": (length,)}
+              "joint_command": (length, len(action_order(schema))), "phase": (length,), "done": (length,),
+              "time_s": (length,)}
+    if schema == MOBILE_SCHEMA:
+        shapes.update(camera_pos_env_m=(length, len(EYE_KEYS), 3), camera_quat_ros_xyzw=(length, len(EYE_KEYS), 4))
+        intrinsics = np.asarray(episode.attrs.get("camera_intrinsics"))
+        if (intrinsics.shape != (len(EYE_KEYS), 3, 3) or not np.isfinite(intrinsics).all()
+                or (intrinsics[:, (0, 1), (0, 1)] <= 0).any()):
+            raise ValueError("Se requieren los intrínsecos de ambos ojos con focales positivas")
     for key, shape in shapes.items():
         if episode[key].shape != shape:
             raise ValueError(f"Campo agrícola {key} fuera de contrato: {episode[key].shape}, se espera {shape}")
@@ -54,6 +61,7 @@ def inspect_bimanual_episode(path, episode, metadata):
             or not np.allclose(np.diff(times), 1 / 30, atol=2e-5)):
         raise ValueError("Los timestamps agrícolas deben avanzar a 30 Hz")
     key, _ = state_field(contract["schema"])
+    stereo_baseline = None
     for start in range(0, length, 32):
         window = slice(start, start + 32)
         depth, valid = episode["depth_m"][window], episode["depth_valid"][window]
@@ -64,6 +72,16 @@ def inspect_bimanual_episode(path, episode, metadata):
         if (not np.isfinite(command).all() or not np.isfinite(state).all()
                 or (command < limits[:, 0] - 1e-6).any() or (command > limits[:, 1] + 1e-6).any()):
             raise ValueError("Estado o comando agrícola no finito o fuera de límites físicos")
+        if contract["schema"] == MOBILE_SCHEMA:
+            position = episode["camera_pos_env_m"][window]
+            orientation = episode["camera_quat_ros_xyzw"][window]
+            if not np.isfinite(position).all() or not np.allclose(np.linalg.norm(orientation, axis=-1), 1., atol=1e-3):
+                raise ValueError("Las poses de ambos ojos deben ser finitas con cuaterniones unitarios")
+            separation = np.linalg.norm(position[:, 0] - position[:, 1], axis=-1)
+            if stereo_baseline is None:
+                stereo_baseline = separation[0]
+            if stereo_baseline <= 0. or not np.allclose(separation, stereo_baseline, rtol=0., atol=.003):
+                raise ValueError("La distancia entre los ojos cambió dentro del episodio. Revisa la sincronización RGB-D.")
     reset = None
     if metadata.get("seed") is not None and all(key in episode.attrs for key in ("replica_id", "episode_id")):
         reset = [str(episode.attrs["crop"]), int(metadata["seed"]), int(episode.attrs["replica_id"]),

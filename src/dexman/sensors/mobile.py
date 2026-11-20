@@ -5,6 +5,19 @@ from dexman.robot.joints import JOINT_NAMES
 from dexman.tasks.agriculture.mobile_state import HEAD_JOINTS, HEAD_LIMITS_DEG, WHEEL_JOINTS, mobile_state
 
 
+def rover_indices(paths, root):
+    """Resolve PhysX indices by arm and leaf name; left and right repeat the same names."""
+    by_link = {}
+    for index, path in enumerate(paths):
+        local = path.removeprefix(root + "/")
+        owner, _, tail = local.partition("/")
+        key = (owner, tail.rsplit("/", 1)[-1]) if tail else ("", local)
+        if key in by_link:
+            raise ValueError(f"Nombre ambiguo en {root}: {path}")
+        by_link[key] = index
+    return by_link
+
+
 class RoverSensors:
     def __init__(self, base_path, resolution=(224, 224)):
         from isaacsim.sensors.experimental.physics import IMUSensor
@@ -28,14 +41,7 @@ class RoverArticulation:
 
         self.view = Articulation(root)
         paths, = self.view.dof_paths
-        by_link = {}
-        for i, path in enumerate(paths):
-            local = path.removeprefix(root + "/")
-            side, _, tail = local.partition("/")
-            key = (side, tail.rsplit("/", 1)[-1]) if tail else ("", local)
-            if key in by_link:
-                raise ValueError(f"Nombre articular ambiguo en {root}: {path}")
-            by_link[key] = i
+        by_link = rover_indices(paths, root)
         self.arms = [by_link[(side, name)] for side in ("LeftArm", "RightArm") for name in JOINT_NAMES]
         self.wheels = [by_link[("", name)] for name in WHEEL_JOINTS]
         self.head = [by_link[("", name)] for name in HEAD_JOINTS]
@@ -59,6 +65,6 @@ class RoverArticulation:
         return mobile_state(torch.cat((q[:, self.arms], dq[:, self.arms]), dim=1),
                             dq[:, self.wheels], accel, gyro, q[:, self.head])
 
-    def arm_limits(self):
-        lower, upper = self.view.get_dof_limits(dof_indices=self.arms)
+    def action_limits(self):
+        lower, upper = self.view.get_dof_limits(dof_indices=[*self.arms, *self.head])
         return np.stack((lower.numpy()[0], upper.numpy()[0]), axis=1).tolist()

@@ -13,6 +13,55 @@ from dexman.paths import ROOT
 RUNS = ROOT / "logs/rsl_rl/agriculture_bimanual"
 
 
+def validate_rover_gaze(env):
+    import torch
+    from isaaclab.sensors import SensorBase
+    from dexman.tasks.agriculture.interface import EYE_KEYS
+
+    eyes = [group.scene[key] for group in env.batch.groups for key in EYE_KEYS]
+
+    def capture():
+        for _ in range(4):
+            env.batch.sim.render()
+            SensorBase.update_batch(eyes, 0.)
+            rgb, depth = env.batch.rgbd()
+            valid = torch.isfinite(depth) & (depth > 0.)
+            varied = rgb.flatten(2).amax(-1) > rgb.flatten(2).amin(-1)
+            if valid.flatten(2).any(-1).all() and varied.all():
+                rotations, consistent = [], True
+                for group in env.batch.groups:
+                    left, right = (group.scene[key].data for key in EYE_KEYS)
+                    baseline = (left.pos_w.torch - right.pos_w.torch).norm(dim=-1)
+                    expected = (group.rover.eye_offsets[0] - group.rover.eye_offsets[1]).norm()
+                    consistent &= bool(((baseline - expected).abs() < .003).all())
+                    rotations.append(torch.stack((left.quat_w_ros.torch, right.quat_w_ros.torch), dim=1))
+                if consistent:
+                    return rgb.clone(), torch.cat(rotations)
+        raise RuntimeError("RTX no produjo ambas imágenes RGB-D con la separación física de los ojos del rover")
+
+    # Send opposite targets to alternate replicas to catch state leakage between robots.
+    with torch.inference_mode():
+        rgb0, rotation0 = capture()
+        actions = env.home.new_zeros((env.num_envs, env.num_actions))
+        signs = 1. - 2. * (torch.arange(env.num_envs, device=env.device) % 2)
+        actions[:, -2] = signs * .20
+        actions[:, -1] = -signs * .25
+        for _ in range(round(1.5 / env.dt)):
+            _, _, _, info = env.step(actions)
+        target = info["joint_command"][:, -2:]
+        measured = env.vla_state[:, -2:]
+        if ((target.abs() < .08).any() or ((target - measured).abs().rad2deg() > 2.).any()
+                or not torch.isfinite(measured).all()):
+            raise RuntimeError(f"Los encoders del rover no siguieron los dos ejes: {measured}, consigna {target}")
+        rgb, rotation = capture()
+        rotation_deg = 2. * (rotation0 * rotation).sum(-1).abs().clamp(0., 1.).acos().rad2deg()
+        if not (rotation_deg > 5.).all() or not (rgb != rgb0).flatten(2).any(-1).all():
+            raise RuntimeError("Una cámara no giró o sus píxeles no cambiaron con el cabezal")
+        print(f"ROVER_GAZE_VALIDATED error_max_deg={(target-measured).abs().rad2deg().max().item():.3f} "
+              f"eye_rotation_min_deg={rotation_deg.min().item():.3f} rgbd={tuple(rgb.shape)}",
+              flush=True)
+
+
 def validate_grasp_controls(env):
     import torch
 
@@ -115,6 +164,7 @@ def main():
     from isaaclab.app import add_launcher_args, launch_simulation
     from dexman.tasks.agriculture.batch import DEFAULT_REPLICAS, make_batch_config
     from dexman.tasks.agriculture.grasp_curriculum import read_grasp_calibration
+    from dexman.tasks.agriculture.interface import EYE_KEYS
     from dexman.tasks.agriculture.objectives import OBJECTIVES
 
     parser = argparse.ArgumentParser(description=__doc__)
@@ -123,6 +173,8 @@ def main():
     parser.add_argument("--save-interval", type=int, default=25)
     parser.add_argument("--run-name", default=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--rover", action="store_true", help="Teacher del rover con giro y elevación aprendidos")
+    parser.add_argument("--crop", choices=tuple(OBJECTIVES), help="Seleccionar un cultivo para todas las réplicas")
     parser.add_argument("--resume", help="Bimanual checkpoint, run directory, or latest")
     parser.add_argument("--record-video", action="store_true", help="Save a separate RGB-D MP4 per robot and PPO iteration")
     parser.add_argument("--ffmpeg", default="ffmpeg", help="Ruta al ejecutable FFmpeg para grabar videos")
@@ -145,8 +197,11 @@ def main():
         parser.error("La inicialización supervisada requiere un teacher nuevo con calibración")
     if args.evaluate_episodes is not None and args.evaluate_episodes < 1:
         parser.error("--evaluate-episodes requiere al menos un episodio")
-    if args.num_envs < len(OBJECTIVES) or min(args.max_iterations, args.save_interval) < 1 or args.seed < 0:
-        parser.error("Configura al menos cuatro réplicas, iteraciones y guardado positivos y semilla no negativa")
+    if args.rover and args.grasp_calibration:
+        parser.error("La postura calibrada del torso fijo no corresponde al montaje de brazos del rover")
+    minimum = 1 if args.crop or args.grasp_calibration else len(OBJECTIVES)
+    if args.num_envs < minimum or min(args.max_iterations, args.save_interval) < 1 or args.seed < 0:
+        parser.error(f"Configura al menos {minimum} réplicas, iteraciones y guardado positivos y semilla no negativa")
     if args.physics_variation is not None and not 0. <= args.physics_variation <= 1.:
         parser.error("--physics-variation debe estar entre 0 y 1")
     if (Path(args.run_name).name != args.run_name or args.run_name in {"", ".", ".."}
@@ -162,23 +217,26 @@ def main():
     except (ValueError, OSError, KeyError, IndexError, TypeError) as error:
         parser.error(str(error))
     show_window = "kit" in (args.visualizer or ())
-    if args.record_video and (show_window or (grasp is None and args.num_envs % len(OBJECTIVES)) or check_only):
+    if args.record_video and (show_window or args.num_envs % minimum or check_only):
         parser.error("--record-video requiere modo headless, réplicas iguales por cultivo y entrenamiento activo")
     ffmpeg = which(args.ffmpeg) if args.record_video else None
     if args.record_video:
         import subprocess
         from dexman.data.epoch_video import VIDEO_EYE_SIZE, EpochVideoRecorder
-        from dexman.tasks.agriculture.interface import EYE_KEYS
 
         codecs = subprocess.run([ffmpeg, "-hide_banner", "-encoders"], capture_output=True) if ffmpeg else None
         if codecs is None or codecs.returncode or b" libx264 " not in codecs.stdout:
             parser.error("Indica el ejecutable FFmpeg con libx264 mediante --ffmpeg antes de grabar")
-        cfg = make_batch_config(args.num_envs, rgbd=True, rgbd_size=VIDEO_EYE_SIZE, contacts=True, grasp=grasp)
+        cfg = make_batch_config(args.num_envs, rgbd=True, rgbd_size=VIDEO_EYE_SIZE, contacts=True,
+                                grasp=grasp, crop=args.crop, rover=args.rover)
+    else:
+        cfg = make_batch_config(args.num_envs, contacts=True, monitor=show_window, grasp=grasp,
+                                rgbd=args.rover and args.validate,
+                                crop=args.crop, rover=args.rover)
+    if args.record_video or (args.rover and args.validate):
         for scene in vars(cfg.scenes).values():
             for eye in EYE_KEYS:
                 getattr(scene, eye).update_period = 0.
-    else:
-        cfg = make_batch_config(args.num_envs, contacts=True, monitor=show_window, grasp=grasp)
     with launch_simulation(cfg, args), ExitStack() as ui_lifetime:
         import torch
         from isaaclab.sim import SimulationContext
@@ -197,11 +255,15 @@ def main():
             args.physics_variation = profile["physics_variation"]
         cfg.nominal, cfg.physics_variation = args.nominal_scene, args.physics_variation
         sim = SimulationContext(cfg.sim)
-        sim.set_camera_view((23., -25., 36.), (15., 14., 0.))
         env = AgriculturalPPOEnv(sim, cfg, seed=args.seed, render=show_window)
         if show_window:
             from dexman.sensors.teacher_camera_panel import AgriculturalCameraPanel
 
+            if args.rover:
+                x, y, z = env.batch.groups[0].origins[0].tolist()
+                sim.set_camera_view((x+2.5, y-3.1, z+2.2), (x-.2, y, z+.95))
+            else:
+                sim.set_camera_view((23., -25., 36.), (15., 14., 0.))
             panel = AgriculturalCameraPanel(env.batch)
             ui_lifetime.callback(panel.close)
             env.on_step = panel.refresh
@@ -242,6 +304,8 @@ def main():
                     or bool(done[:-1].any()) or not bool(extras["time_outs"][-1])
                     or env.batch.episode_ids != [*episode_ids[:-1], episode_ids[-1] + 1]):
                 raise RuntimeError("Falló la validación de observaciones, PPO o reinicio indexado")
+            if args.rover:
+                validate_rover_gaze(env)
             if grasp is not None:
                 validate_grasp_controls(env)
                 env._reset(torch.arange(env.num_envs, device=env.device))
@@ -252,7 +316,8 @@ def main():
                   f"obs={tuple(obs['policy'].shape)}; actions={tuple(actions.shape)}; no updates", flush=True)
             return 0
         run_args = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
-        write_json(output / "run.json", {"contract": contract(grasp=grasp is not None), "args": run_args, "agent": agent,
+        write_json(output / "run.json", {"contract": contract(grasp=grasp is not None, rover=args.rover),
+                                        "args": run_args, "agent": agent,
                                         "simulation_profile": runner.simulation_profile(),
                                         "provenance": provenance(), "resume": None if checkpoint is None else
                                         {"path": str(checkpoint), "sha256": sha256(checkpoint)}})

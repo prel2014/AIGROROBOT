@@ -65,17 +65,19 @@ class TeacherCameraPanel:
 
 
 class AgriculturalCameraPanel:
-    """Use the monitor cameras at the selected replica's calibrated torso eye poses."""
+    """Display both eyes of the selected robot, including a moving camera head."""
 
     def __init__(self, batch):
         import omni.ui as ui
         import torch
 
+        self._batch = batch
         self._sim = batch.sim
         self.cameras = batch.monitor_eyes
-        self._origins = torch.cat([group.origins for group in batch.groups])
-        self._offsets = tuple(self._origins.new_tensor(camera.cfg.offset.pos) for camera in self.cameras)
-        self._providers = tuple((ui.ByteImageProvider(), ui.ByteImageProvider()) for _ in self.cameras)
+        if self.cameras:
+            self._origins = torch.cat([group.origins for group in batch.groups])
+            self._offsets = tuple(self._origins.new_tensor(camera.cfg.offset.pos) for camera in self.cameras)
+        self._providers = tuple((ui.ByteImageProvider(), ui.ByteImageProvider()) for _ in range(2))
         self._last_replica = None
         self._last_physics_step = self._sim.get_physics_step_count()
         self._next_update = 0.
@@ -106,17 +108,19 @@ class AgriculturalCameraPanel:
         now = monotonic()
         if replica == self._last_replica and now < self._next_update:
             return
-        if replica != self._last_replica:
-            origin = self._origins[replica:replica + 1]
-            for camera, offset in zip(self.cameras, self._offsets, strict=True):
-                # Replica roots differ only by translation; all torsos are fixed.
-                camera.set_world_poses(positions=origin + offset)
-            # Submit the new poses before reading the RTX annotators.
-            self._sim.render()
         step = self._sim.get_physics_step_count()
-        Camera.update_batch(self.cameras, (step - self._last_physics_step) * self._sim.get_physics_dt())
-        for camera, (rgb, depth) in zip(self.cameras, self._providers, strict=True):
-            _refresh_rgbd(camera, 0, rgb, depth, .055, 2.5)
+        if self.cameras:
+            if replica != self._last_replica:
+                origin = self._origins[replica:replica + 1]
+                for camera, offset in zip(self.cameras, self._offsets, strict=True):
+                    camera.set_world_poses(positions=origin + offset)
+                self._sim.render()
+            Camera.update_batch(self.cameras, (step - self._last_physics_step) * self._sim.get_physics_dt())
+            cameras, local_id = self.cameras, 0
+        else:
+            cameras, local_id = self._batch.eye_cameras(replica)
+        for camera, (rgb, depth) in zip(cameras, self._providers, strict=True):
+            _refresh_rgbd(camera, local_id, rgb, depth, .055, 2.5)
         self._last_replica, self._last_physics_step, self._next_update = replica, step, now + .1
 
     def close(self):

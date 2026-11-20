@@ -10,7 +10,7 @@ flowchart LR
     B[Fruta, contactos, fase y obstáculos] --> T
     T --> C[Crítico con valor por réplica]
     T --> D[Actor del currículo con cierre y elevación]
-    T --> E[Actor de tarea completa con 60 mandos]
+    T --> E[Actor de tarea completa con 60 mandos en mesa o 62 en el rover]
     D --> F[Adaptador de trayectoria calibrada]
     F --> G[Control articular a 30 Hz]
     E --> G
@@ -18,7 +18,7 @@ flowchart LR
     H --> B
 ```
 
-El actor y el crítico reciben 382 valores. Cada red tiene tres bloques Transformer de 128 canales y cuatro cabezas. El currículo carga un ensayo físico aprobado. La acción nula mantiene el objetivo y el contacto medido habilita la elevación. El teacher de tarea completa usa 30 mandos por brazo.
+El actor y el crítico reciben 382 valores en el torso fijo. En el rover reciben 398, incluidos los 12 sensores móviles, las dos últimas consignas del cabezal y la alineación de cada ojo con la fruta. Cada red tiene tres bloques Transformer de 128 canales y cuatro cabezas. El teacher móvil controla las 60 juntas de brazos y manos y los dos ejes de mirada. Los contactos y la altura medida determinan el éxito físico.
 
 ### Estudiante VLA
 
@@ -36,7 +36,7 @@ flowchart LR
     mobile --> fusion
     previous["Memoria anterior 256"] --> fusion
     fusion --> transformer["Seis bloques Transformer"]
-    transformer --> angles["Ocho pasos de 60 ángulos"]
+    transformer --> angles["Ocho pasos de 60 ángulos en mesa o 62 en el rover"]
     transformer --> nextMemory["Siguiente memoria 256"]
     nextMemory -.->|"Siguiente observación"| previous
     angles --> sim["Controlador y PhysX"]
@@ -53,8 +53,8 @@ flowchart LR
 | Propiocepción | `q[60]` y `dq[60]`. | Dos tokens de 60, uno por brazo. |
 | Rover de surco | Cuatro velocidades de rueda, seis canales de IMU y dos ángulos medidos del cabezal. | Un token adicional de 256 canales para el perfil móvil. |
 | Memoria | Estado anterior de 256 valores. | Un token de contexto. Se reinicia al comienzo del episodio. |
-| Fusión | 202 tokens de contexto en mesa o 203 en el rover, 16 consultas de acción y una de memoria. | Seis bloques Transformer con 256 canales y ocho cabezas. |
-| Salida | Consultas procesadas. | Ocho pasos de 60 ángulos absolutos en radianes y memoria actualizada de 256 valores. |
+| Fusión | 202 tokens de contexto y 16 consultas de acción en mesa. En el rover v3 son 203 y 24, con una consulta del cabezal por paso. Ambos perfiles tienen una consulta de memoria. | Seis bloques Transformer con 256 canales y ocho cabezas. |
+| Salida | Consultas procesadas. | Ocho pasos de 60 ángulos en mesa o 62 en el rover, en radianes, y memoria actualizada de 256 valores. |
 
 Los tokens de las modalidades se proyectan a 256 canales y se concatenan en el eje de secuencia. El orden de las cámaras y los brazos es izquierda, derecha. El controlador aplica los límites articulares y permite volver a observar antes de ejecutar el resto del bloque. [Referencias de aprendizaje](referencias-aprendizaje.md)
 

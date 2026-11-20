@@ -53,7 +53,22 @@ Para mover el cabezal en la ventana del simulador, abre el surco, pulsa **Play**
 
 En una malla de 1° en ambos ejes (8.601 poses), el LiDAR y su soporte trasero proyectaron cero píxeles en los dos ojos de 224 × 224. En los extremos, al mirar al suelo, aparece el poste inferior del cabezal en el borde de la imagen (hasta 0,63 %), además de elementos del bastidor. [Comparación del montaje](../assets/agriculture/robot/rover/comparacion_montaje.png) · [Vista del ojo derecho antes y después](../assets/agriculture/robot/rover/comparacion_ojo_derecho.png)
 
-Los **132 valores** del [estado móvil](../src/dexman/tasks/agriculture/mobile_state.py) son, en orden, 60 posiciones de brazos y manos, 60 velocidades articulares, cuatro velocidades de rueda, tres aceleraciones y tres velocidades angulares de la IMU, giro y elevación del cabezal. Los dos últimos valores se miden después de mover la cabeza. El perfil móvil del VLA usa estos ángulos para interpretar las dos imágenes. Sus 60 salidas articulares controlan brazos y manos. El LiDAR y la IMU permanecen fijos al chasis mientras los ojos giran.
+Los **132 valores** del [estado móvil](../src/dexman/tasks/agriculture/mobile_state.py) son, en orden, 60 posiciones de brazos y manos, 60 velocidades articulares, cuatro velocidades de rueda, tres aceleraciones y tres velocidades angulares de la IMU, giro y elevación del cabezal. El estudiante combina estas medidas con los dos ojos y la orden en español. Predice 60 ángulos de brazos y manos y dos consignas para el cabezal, en radianes. El LiDAR y la IMU están fijos al chasis.
+
+## Teacher y demostraciones del rover
+
+El rover trabaja estacionado frente a la fruta. El borde de la mesa deja libre la muñeca izquierda al reiniciar el robot. El teacher PPO observa el estado físico y la dirección de cada ojo respecto al fruto. El estudiante usa las imágenes y vuelve a observar tras aplicar cada acción. En dos réplicas se grabaron 45 pasos por robot con giros opuestos de 22,4° y un error angular final máximo de 0,63°. [Ver los cuatro ojos y su profundidad](../assets/agriculture/robot/rover/ojos_teacher.png)
+
+```powershell
+.\scripts\run.ps1 agriculture_teacher --rover --crop citrus --num_envs 1 --headless --validate
+.\scripts\run.ps1 agriculture_teacher --rover --crop citrus --num_envs 1 --headless --run-name rover_citrus01
+$teacher = 'logs/rsl_rl/agriculture_bimanual/rover_citrus01'
+.\scripts\run.ps1 agriculture_collect --rover --crop citrus --num_envs 1 --headless --checkpoint $teacher --episodes 20 --max-attempts 200 --output datasets/agriculture/rover_citrus01
+.\scripts\run.ps1 train_vla --bimanual --dataset datasets/agriculture/rover_citrus01 --output checkpoints/vla_rover01
+.\scripts\run.ps1 play_vla --viz kit --crop citrus --checkpoint checkpoints/vla_rover01/best.pt --episodes 1 --output logs/evaluacion_rover01.json
+```
+
+La captura requiere un checkpoint del teacher móvil y guarda episodios exitosos por defecto. Para los cuatro cultivos, omite `--crop` en el teacher y el recolector y usa al menos cuatro réplicas. Cambia `--headless` por `--viz kit` para seleccionar un robot en el panel del teacher. Cada réplica del rover con el panel, captura o video activa dos cámaras RTX. [Campos por fotograma](dataset.md#observación-móvil)
 
 ## Criterio de cosecha
 

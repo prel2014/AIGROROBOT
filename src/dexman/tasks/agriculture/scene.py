@@ -3,7 +3,9 @@ from dataclasses import dataclass
 import json
 import math
 
-from isaaclab.assets import AssetBaseCfg, RigidObjectCfg
+from isaaclab.assets import ArticulationCfg, AssetBaseCfg, RigidObjectCfg
+from isaaclab.actuators import ImplicitActuatorCfg
+from isaaclab.sensors import ImuCfg
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sim import CuboidCfg, CylinderCfg, DistantLightCfg, DomeLightCfg, MassCfg, PreviewSurfaceCfg, SimulationCfg, UsdFileCfg
 from isaaclab.sim.schemas import UsdPhysicsRigidBodyCfg
@@ -23,6 +25,7 @@ from .randomization import FRUIT_PLACEMENTS, INACTIVE_Z, OBSTACLE_RADIUS, TABLE_
 
 
 ASSETS = ROOT / "assets/agriculture"
+ROVER_USD = ASSETS / "robot/rover/rover.usdc"
 NS = "{ENV_REGEX_NS}"
 
 
@@ -124,11 +127,15 @@ def loose_fruit(name, index, position, angle=0.):
 
 
 @configclass
-class AgriculturalSceneCfg(InteractiveSceneCfg):
+class AgriculturalBaseSceneCfg(InteractiveSceneCfg):
     ground = fixed_box("/World/Ground", (18., 18., .10), (0., 0., -.055), (.21, .28, .145))
     sunlight = AssetBaseCfg(prim_path="/World/Sun", spawn=DistantLightCfg(intensity=1550., angle=9.),
         init_state=AssetBaseCfg.InitialStateCfg(rot=look_at_xyzw((3., -4., 6.), (0., 0., 0.))))
     fill = AssetBaseCfg(prim_path="/World/Sky", spawn=DomeLightCfg(intensity=480., color=(.77, .85, 1.)))
+
+
+@configclass
+class AgriculturalSceneCfg(AgriculturalBaseSceneCfg):
     torso = AssetBaseCfg(prim_path=f"{NS}/Torso", spawn=UsdFileCfg(usd_path=str(ASSETS / "robot/torso.usda")))
     left_arm = arm(1)
     right_arm = arm(-1)
@@ -137,6 +144,32 @@ class AgriculturalSceneCfg(InteractiveSceneCfg):
     left_lens = lens(left_eye)
     right_lens = lens(right_eye)
     overview = camera(f"{NS}/Overview", (2.95, -3.85, 2.75), (.38, .10, 1.2), (1200, 800), 19.)
+
+
+def rover_eye(name):
+    # Bind the camera authored on the tilt body, retaining its measured optical transform and lens.
+    cfg = camera_cfg()
+    cfg.prim_path = f"{NS}/Rover/HeadTilt/{name}"
+    cfg.spawn = None
+    cfg.update_latest_camera_pose = True
+    return cfg
+
+
+@configclass
+class AgriculturalRoverSceneCfg(AgriculturalBaseSceneCfg):
+    rover = ArticulationCfg(prim_path=f"{NS}/Rover", spawn=UsdFileCfg(usd_path=str(ROVER_USD)),
+        init_state=ArticulationCfg.InitialStateCfg(pos=(-.68, 0., 0.)),
+        actuators={"usd_drives": ImplicitActuatorCfg(joint_names_expr=[".*"], stiffness=None, damping=None)})
+    imu = ImuCfg(prim_path=f"{NS}/Rover/Base/IMU")
+    left_eye = rover_eye("LeftEye")
+    right_eye = rover_eye("RightEye")
+
+
+def arm_path(scene, key):
+    if hasattr(scene, "rover"):
+        side = "LeftArm" if key == "left_arm" else "RightArm"
+        return f"{scene.rover.prim_path}/{side}"
+    return getattr(scene, key).prim_path
 
 
 @configclass
@@ -172,8 +205,14 @@ def populate_crop(scene, scenario, *, randomize, raised_support=False):
         scene.planter = fixed_box(f"{NS}/Crop/Planter", (.83, 1.04, .60), (1.12, .25, .30), (.34, .20, .11))
         scene.berry_sample = visual_model(f"{NS}/Produce/BerrySample", "blueberries", (.59, .38, TABLE_Z + .01))
     wood = (.45, .29, .16)
-    scene.worktop = fixed_box(f"{NS}/Bench/Top", (1.13, 1.36, .065), (.33, 0., TABLE_Z-.0325), wood)
-    for index, (x, y) in enumerate(((-.16, -.61), (-.16, .61), (.82, -.61), (.82, .61))):
+    # The rover's folded left wrist occupies the rear overhang of the pedestal's table.
+    # Bring the near edge back to the trays and keep both trays, fruit and supports on the surface.
+    rover_bench = hasattr(scene, "rover")
+    rear_edge, front_edge = (.035 if rover_bench else -.235), .895
+    scene.worktop = fixed_box(f"{NS}/Bench/Top", (front_edge-rear_edge, 1.36, .065),
+                              ((front_edge+rear_edge)/2, 0., TABLE_Z-.0325), wood)
+    leg_x, leg_y = (.09, .642) if rover_bench else (-.16, .61)
+    for index, (x, y) in enumerate(((leg_x, -leg_y), (leg_x, leg_y), (.82, -.61), (.82, .61))):
         setattr(scene, f"leg_{index}", fixed_box(f"{NS}/Bench/Leg{index}", (.065, .065, TABLE_Z-.06),
                                                   (x, y, (TABLE_Z-.06)/2), (.12, .17, .17)))
     for side, color in ((1, (.17, .34, .28)), (-1, (.23, .25, .33))):
@@ -253,11 +292,12 @@ def enable_task_contacts(scene):
 
     target = f"{NS}/Produce/Fruit0"
     props = [f"{NS}/Randomization/{kind}" for kind in OBSTACLE_RADIUS]
-    for arm_key, arm_name in zip(ARM_KEYS, ("LeftArm", "RightArm"), strict=True):
-        getattr(scene, arm_key).spawn.activate_contact_sensors = True
+    for arm_key in ARM_KEYS:
+        actor = scene.rover if hasattr(scene, "rover") else getattr(scene, arm_key)
+        actor.spawn.activate_contact_sensors = True
         for tip in FINGERTIPS:
             setattr(scene, f"{arm_key}_{tip}", ContactSensorCfg(
-                prim_path=f"{NS}/Torso/{arm_name}/Hand/{tip}",
+                prim_path=f"{arm_path(scene, arm_key)}/Hand/{tip}",
                 filter_prim_paths_expr=[target, *props],
                 track_contact_points=True, max_contact_data_count_per_prim=128))
     scene.fruit_0.spawn.activate_contact_sensors = True

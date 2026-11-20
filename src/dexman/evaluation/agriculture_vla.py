@@ -8,8 +8,9 @@ from dexman.tasks.agriculture.objectives import exercise_text
 @torch.inference_mode()
 def rollout(env, predictor, crop, instruction, *, phase_hints, episodes, max_steps):
     from dexman.data.agriculture import live_robot_contract
+    from dexman.vla.bimanual_contract import matches_robot_contract
 
-    if live_robot_contract(env) != predictor.robot_contract:
+    if not matches_robot_contract(live_robot_contract(env), predictor.robot_contract):
         raise ValueError("El contrato del checkpoint difiere de las articulaciones, cámaras o frecuencia de Isaac Sim")
     model = predictor.model
     goals = [instruction] * env.num_envs if instruction is not None else env.instructions
@@ -21,7 +22,7 @@ def rollout(env, predictor, crop, instruction, *, phase_hints, episodes, max_ste
         rgb, depth = env.batch.rgbd()
         subtasks = [phase_text[phase] for phase in env.phase.tolist()] if phase_hints else None
         angles, memory = model.predict(predictor.processor, predictor.tokenizer, rgb, depth, goals,
-                                       env.angular_state, memory, subtasks=subtasks)
+                                       env.vla_state, memory, subtasks=subtasks)
         if not torch.isfinite(angles).all() or not torch.isfinite(memory).all():
             raise ValueError("El estudiante devolvió ángulos o memoria no finitos")
         lengths = env.episode_length_buf + 1
@@ -49,12 +50,18 @@ def play(args, checkpoint, output):
     from isaaclab.app import launch_simulation
     from dexman.tasks.agriculture.batch import make_batch_config
     from dexman.tasks.agriculture.grasp_curriculum import read_grasp_calibration
+    from dexman.vla.bimanual_contract import LEGACY_MOBILE_SCHEMA, MOBILE_SCHEMA
     from dexman.vla.inference import BimanualVLAPredictor
 
     predictor = BimanualVLAPredictor(checkpoint, device="cpu")
+    schema = predictor.robot_contract["schema"]
+    if schema == LEGACY_MOBILE_SCHEMA:
+        raise ValueError("Este checkpoint móvil tiene 60 salidas. Para controlar el cabezal en Isaac Sim "
+                         "usa un checkpoint móvil con 62 salidas. infer_vla admite las capturas anteriores.")
+    rover = schema == MOBILE_SCHEMA
     grasp = read_grasp_calibration(args.grasp_calibration, args.crop, "pregrasp") if args.grasp_calibration else None
     cfg = make_batch_config(args.num_envs, crop=args.crop, rgbd=True, contacts=True, grasp=grasp,
-                            nominal=bool(grasp), exercise=args.exercise)
+                            nominal=bool(grasp), exercise=args.exercise, rover=rover)
     with launch_simulation(cfg, args):
         from isaaclab.sim import SimulationContext
         from dexman.tasks.agriculture.environment import AgriculturalPPOEnv
@@ -67,7 +74,8 @@ def play(args, checkpoint, output):
         records = rollout(env, predictor, args.crop, args.instruction, phase_hints=args.phase_hints,
                           episodes=args.episodes, max_steps=args.max_steps)
         score = sum(row["success"] for row in records) / len(records) if records else None
-        write_json(output, {"crop": args.crop, "exercise": args.exercise or "default", "scene_objective": env.instructions[0],
+        write_json(output, {"crop": args.crop, "robot_schema": schema,
+                            "exercise": args.exercise or "default", "scene_objective": env.instructions[0],
                             "instruction": args.instruction or env.instructions[0], "phase_hints": args.phase_hints,
                             "start": "calibrated_pregrasp" if grasp else "full_task",
                             "calibration_sha256": sha256(args.grasp_calibration) if grasp else None,

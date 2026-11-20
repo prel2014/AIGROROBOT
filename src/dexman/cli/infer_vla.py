@@ -27,20 +27,19 @@ def main():
     if output.exists():
         parser.error("output already exists; choose a new filename")
     context = {}
+    fields = {}
     try:
         predictor = load_predictor(args.checkpoint, args.device)
         with h5py.File(args.episode) as episode:
             metadata = json.loads(episode.attrs["metadata"])
             instruction = args.instruction or episode.attrs["instruction"]
             if isinstance(predictor, BimanualVLAPredictor):
-                from dexman.vla.bimanual_contract import bimanual_contract, state_field
+                from dexman.vla.bimanual_contract import bimanual_contract, matches_robot_contract, state_field
                 from dexman.vla.bimanual_data import episode_instructions
 
                 single_observation = metadata.get("sample_kind") == "robot_observation"
-                expected = dict(predictor.robot_contract)
-                if single_observation:
-                    expected.pop("sample_hz", None)
-                if bimanual_contract(metadata) != expected:
+                if not matches_robot_contract(bimanual_contract(metadata), predictor.robot_contract,
+                                              observation_only=single_observation):
                     raise ValueError("El episodio y el checkpoint difieren en su contrato agrícola")
                 if not 0 <= args.frame < len(episode["rgb"]):
                     raise ValueError("El fotograma no pertenece al episodio agrícola")
@@ -56,6 +55,7 @@ def main():
                 key, _ = state_field(metadata["schema"])
                 joint_angles, memory = predictor.predict(episode["rgb"][frame], depth, prompt,
                                                           episode[key][frame], memory)
+                fields["joint_order"] = np.asarray(predictor.robot_contract["joint_order"])
             else:
                 if contract_from_metadata(metadata) != predictor.robot_contract:
                     raise ValueError("episode and checkpoint robot/action contracts differ")
@@ -69,7 +69,7 @@ def main():
         parser.error(str(error))
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("xb") as stream:
-        np.savez(stream, joint_angles=joint_angles, memory=memory, **context)
+        np.savez(stream, joint_angles=joint_angles, memory=memory, **context, **fields)
     print(f"Saved joint angles {joint_angles.shape} in radians and memory {memory.shape} to {output}")
 
 

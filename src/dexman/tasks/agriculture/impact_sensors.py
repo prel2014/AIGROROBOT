@@ -47,6 +47,7 @@ def _collider_paths(usd_path: str, *, rigid_links: bool = False) -> tuple[str, .
 def configure_impact_sensors(scene_cfg, crop: str, *, history_length: int) -> None:
     """Add two grouped contact views after the crop has populated its scene."""
     from isaaclab.sensors import ContactSensorCfg
+    from .scene import arm_path
 
     if history_length < 1:
         raise ValueError("Impact history must store at least one physics substep")
@@ -64,16 +65,14 @@ def configure_impact_sensors(scene_cfg, crop: str, *, history_length: int) -> No
 
     robot_links = _arm_links()
     names = "|".join(re.escape(path.rsplit("/", 1)[-1]) for path in robot_links)
-    right_arm_path = scene_cfg.right_arm.prim_path
+    right_arm_path = arm_path(scene_cfg, "right_arm")
     opposing_links = [right_arm_path + link for link in robot_links]
     for arm_key in ARM_KEYS:
-        arm = getattr(scene_cfg, arm_key)
-        arm.spawn.activate_contact_sensors = True
         partners = [*environment, *opposing_links] if arm_key == "left_arm" else environment.copy()
         # The installed PhysX backend resolves the leaves to distinct link patterns and
         # supplies one filter list per pattern to create_rigid_contact_view.
         setattr(scene_cfg, f"{arm_key}_impact", ContactSensorCfg(
-            prim_path=f"{arm.prim_path}/(?:{names})", filter_prim_paths_expr=partners,
+            prim_path=f"{arm_path(scene_cfg, arm_key)}/(?:{names})", filter_prim_paths_expr=partners,
             history_length=history_length, update_period=0.0, max_contact_data_count_per_prim=0,
         ))
 

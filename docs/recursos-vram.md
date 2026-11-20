@@ -1,6 +1,6 @@
 # Capacidad de simulación en 12 GiB
 
-Medición en una RTX 3060 de 12.288 MiB con Isaac Sim 6.2 y RSL-RL 5.5.1. Se interpretó cada nodo como una réplica del robot. Cada prueba simuló 32 pasos con el actor. La pasada hacia atrás incluyó actor y crítico, un minilote del tamaño de PPO y memoria reservada para Adam. La prueba se limitó a calcular gradientes. El pico físico se muestreó con `nvidia-smi` cada 100 ms e incluye el escritorio.
+Medición del torso fijo en una RTX 3060 de 12.288 MiB con Isaac Sim 6.2 y RSL-RL 5.5.1. Se interpretó cada nodo como una réplica del robot. Cada prueba simuló 32 pasos con el actor. La pasada hacia atrás incluyó actor y crítico, un minilote del tamaño de PPO y memoria reservada para Adam. La prueba se limitó a calcular gradientes. El pico físico se muestreó con `nvidia-smi` cada 100 ms e incluye el escritorio.
 
 | Perfil | Réplicas | Pico físico | Margen de VRAM | Minilote |
 | --- | ---: | ---: | ---: | ---: |

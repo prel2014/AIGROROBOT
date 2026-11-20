@@ -116,7 +116,7 @@ class BimanualVLAPredictor:
         self.model.to(device).eval()
 
     def predict(self, rgb, depth, instruction, state, memory=None, *, subtask=None):
-        """Return [8,60] physical joint targets and the next [256] memory for one robot."""
+        """Return eight target vectors in robot_contract joint order and the next memory."""
         memory = np.zeros(self.model.memory_dim, dtype=np.float32) if memory is None else np.asarray(memory)
         angles, updated = self.model.predict(
             self.processor, self.tokenizer, np.asarray(rgb)[None], np.asarray(depth)[None], [instruction],

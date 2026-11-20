@@ -2,7 +2,7 @@
 
 ## Agricultura bimanual
 
-`agriculture_collect` guarda un HDF5 por episodio completo. `dataset.json` indica el esquema `dexman.agriculture.demo.v1`, la semilla, el orden de juntas y el checkpoint. `summary.json` informa resultados por cultivo. [Comando de captura](../README.md#teacher-y-captura-agrícolas)
+`agriculture_collect` guarda un HDF5 por episodio completo. En el torso fijo, `dataset.json` indica el esquema `dexman.agriculture.demo.v1`, la semilla, el orden de juntas y el checkpoint. `summary.json` informa resultados por cultivo. [Comando de captura](../README.md#teacher-y-captura-agrícolas)
 
 | Campo | Forma por paso | Contenido |
 | --- | --- | --- |
@@ -21,7 +21,9 @@ Para comparar órdenes en la misma escena, captura los tres ejercicios con igual
 
 ## Observación móvil
 
-`rover_eyes` guarda la orden en español, el RGB-D de ambos ojos, `time_s`, `mobile_state[132]` y la consigna `head_target_rad[2]` en `observacion.h5`. Los índices 130 y 131 contienen el giro y la elevación medidos en radianes. En los metadatos, el esquema `dexman.agriculture.mobile.v2` declara el orden de los sensores y `rover_asset_sha256` identifica la revisión del montaje. Esta captura es una observación para inferencia. Las demostraciones de entrenamiento requieren también las acciones aplicadas en cada paso. [Capturar desde Isaac Sim](rover-cosechador.md#sensores-y-entradas)
+`agriculture_collect --rover` guarda demostraciones `dexman.agriculture.mobile.v3` a 30 Hz. Cada fila contiene ambos RGB-D, `mobile_state[132]`, la posición y orientación de cada cámara (`camera_pos_env_m[2,3]`, `camera_quat_ros_xyzw[2,4]`) y `joint_command[62]`. Los índices 130 y 131 del estado son el giro y la elevación **medidos** antes de actuar. Los índices 60 y 61 del comando son sus **consignas** en radianes para el paso siguiente. La orden global se guarda en español junto con las subtareas del episodio.
+
+`rover_eyes` guarda una observación individual del surco con la consigna `head_target_rad[2]` y la revisión del montaje `rover_asset_sha256`. Las observaciones anteriores `mobile.v2` se pueden leer con su checkpoint de 60 salidas en `infer_vla`. [Comandos del rover](rover-cosechador.md#teacher-y-demostraciones-del-rover)
 
 ## Elevación de un brazo
 
