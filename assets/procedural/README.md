@@ -1,6 +1,6 @@
 # Escenarios procedurales de un brazo
 
-Ocho USD con mesas, objetos, distractores y obstáculos. Isaac Lab añade el robot y las cámaras. El catálogo incluye dimensiones, masas, objetivos y órdenes. [Catálogo](catalog.json) · [Capturas](../previews/environments.png)
+Ocho USD con mesas, objetos, distractores y obstáculos. Isaac Lab añade el robot y las cámaras. El catálogo incluye dimensiones, masas, objetivos y órdenes. [Catálogo](catalog.json)
 
 Desde la raíz del repo:
 

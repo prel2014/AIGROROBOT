@@ -1,0 +1,77 @@
+#usda 1.0
+(
+    defaultPrim = "Produce"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Produce"
+{
+    def Xform "Fruit0" (
+        prepend references = @orange.usda@</Fruit>
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysxContactReportAPI", "MaterialBindingAPI"]
+    )
+    {
+        float physics:mass = 0.16
+        float physxContactReport:threshold = 0
+        rel material:binding:physics = </Produce/Piel>
+        double3 xformOp:translate = (0.16, -0.04, 0.93511)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        over "Placement"
+        {
+            over "Model"
+            {
+                over "Geometry"
+                {
+                    over "Orange_seated_green_calyx"
+                    {
+                        over "Orange_seated_green_calyx" (prepend apiSchemas = ["PhysxCollisionAPI"])
+                        {
+                            float physxCollision:contactOffset = 0.001
+                            float physxCollision:restOffset = 0
+                        }
+                    }
+                    over "Short_clipped_orange_stalk"
+                    {
+                        over "Short_clipped_orange_stalk" (prepend apiSchemas = ["PhysxCollisionAPI"])
+                        {
+                            float physxCollision:contactOffset = 0.001
+                            float physxCollision:restOffset = 0
+                        }
+                    }
+                    over "Slightly_oblate_orange_rind"
+                    {
+                        over "Slightly_oblate_orange_rind" (prepend apiSchemas = ["PhysxCollisionAPI"])
+                        {
+                            float physxCollision:contactOffset = 0.001
+                            float physxCollision:restOffset = 0
+                        }
+                    }
+                }
+            }
+        }
+    }
+    def Material "Piel" (prepend apiSchemas = ["PhysicsMaterialAPI"])
+    {
+        float physics:staticFriction = 0.60
+        float physics:dynamicFriction = 0.48
+        float physics:restitution = 0.03
+    }
+    def Cylinder "Rama"
+    {
+        uniform token axis = "Z"
+        double radius = 0.003
+        double height = 0.04
+        color3f[] primvars:displayColor = [(0.13, 0.19, 0.04)]
+        double3 xformOp:translate = (0.16, -0.04, 1.02611)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    def BasisCurves "BroteFructifero"
+    {
+        uniform token type = "linear"
+        int[] curveVertexCounts = [5]
+        point3f[] points = [(0.48,-0.04,1.177),(0.40,-0.05,1.158),(0.31,-0.07,1.143),(0.22,-0.05,1.112),(0.16,-0.04,1.045)]
+        float[] widths = [0.014,0.011,0.008,0.006,0.004] (interpolation = "vertex")
+        color3f[] primvars:displayColor = [(0.17,0.11,0.047)]
+    }
+}

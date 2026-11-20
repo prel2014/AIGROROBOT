@@ -37,6 +37,8 @@ El prototipo de viñedo BACCHUS usa dos UR10e. Un brazo sostiene el racimo y el 
 
 ## Alcance y colisiones de los brazos
 
+En cada brazo, una junta fija une la muñeca UR10e al montaje de la mano Shadow. Un casquillo entre dos bridas cubre los 40 mm entre las mallas. Las tres piezas tienen colisión y pertenecen al cuerpo rígido del montaje de la mano.
+
 El soporte vertical de la cámara interfería con el brazo superior al girar hacia la izquierda. El travesaño nuevo deja libre ese sector. En el rover, PhysX limita el giro del hombro a −45°…+60°, su elevación articular a −60°…0° y el codo a −10°…+85°. Las colisiones entre los eslabones móviles y el chasis están activas.
 
 En el ensayo de traslado y entrega, los brazos recogidos quedaron dentro del ancho de 1,16 m del tren de ruedas, con un margen lateral mínimo de 10 mm. Las palmas descargadas llegaron a la vez a (0,13; ±0,23; 0,72) m respecto a la base con menos de 0,4 mm de error mientras se movía el cabezal. En un ensayo separado se soltó una naranja de 160 g sobre cada rampa. Ambas permanecieron en la canasta. Con los brazos recogidos y la cabeza centrada, el ojo izquierdo vio ambas frutas con profundidad válida y el brazo ocultó una al ojo derecho.
@@ -60,7 +62,7 @@ Desde la raíz del proyecto, ejecuta el barrido del brazo izquierdo o el ensayo 
 
 El LiDAR queda fijo en **(−0,855; 0; 2,02) m** respecto al chasis. En posición neutra, los centros de las cámaras quedan en **(−0,430; ±0,220; 1,72) m**, a 160 mm por delante del eje de inclinación. El origen nominal está en el suelo bajo el centro de la cubierta. El conjunto trasero del LiDAR sobresale 142 mm del parachoques, contando la tapa. En 120 orientaciones de la cabeza, sus piezas móviles dejaron libres las 32 elevaciones del LiDAR en los 720 azimuts comprobados.
 
-[Rover en el surco](../assets/agriculture/robot/rover/surco.png) · [Rueda](../assets/agriculture/robot/rover/llanta.png) · [Cabezal centrado](../assets/agriculture/robot/rover/cabezal_centrado.png) · [Cabezal girado](../assets/agriculture/robot/rover/cabezal.png) · [Bastidor trasero](../assets/agriculture/robot/rover/trasera.png) · [Recepción de dos naranjas](../assets/agriculture/robot/rover/recepcion.png).
+[Rover en el surco](../assets/agriculture/robot/rover/surco.png) · [Recepción de dos naranjas](../assets/agriculture/robot/rover/recepcion.png).
 
 La [captura neutra](../assets/agriculture/robot/rover/ojos.png) muestra el RGB arriba y la profundidad de 0 a 4 m abajo. Cada columna corresponde a un ojo. Para inspeccionar ambas naranjas con el ojo derecho, gira la cabeza a +65° e inclínala a −2°. [Vista de la canasta con la cabeza girada](../assets/agriculture/robot/rover/ojos_canasta_girada.png)
 
@@ -72,13 +74,29 @@ Para guardar ambos RGB-D y los ángulos medidos, elige una carpeta de salida nue
 
 Para mover el cabezal en la ventana del simulador, abre el surco, pulsa **Play** y cambia el objetivo angular de `/Surco/Rover/head_pan_joint` o `/Surco/Rover/head_tilt_joint`. El actuador simulado de inclinación admite 15 N·m y 40°/s. En 54 poses de CAD, la menor holgura de la barra de cámaras con el soporte del LiDAR fue de 20 mm.
 
-En una malla de 1° en ambos ejes (8.601 poses), el LiDAR y su soporte trasero proyectaron cero píxeles en los dos ojos de 224 × 224. En los extremos, al mirar al suelo, aparece el poste inferior del cabezal en el borde de la imagen (hasta 0,63 %), además de elementos del bastidor. [Comparación del montaje](../assets/agriculture/robot/rover/comparacion_montaje.png) · [Vista del ojo derecho antes y después](../assets/agriculture/robot/rover/comparacion_ojo_derecho.png)
+En una malla de 1° en ambos ejes (8.601 poses), el LiDAR y su soporte trasero proyectaron cero píxeles en los dos ojos de 224 × 224. En los extremos, al mirar al suelo, aparece el poste inferior del cabezal en el borde de la imagen (hasta 0,63 %), además de elementos del bastidor.
 
 Los **132 valores** del [estado móvil](../src/dexman/tasks/agriculture/mobile_state.py) son, en orden, 60 posiciones de brazos y manos, 60 velocidades articulares, cuatro velocidades de rueda, tres aceleraciones y tres velocidades angulares de la IMU, giro y elevación del cabezal. El estudiante combina estas medidas con los dos ojos y la orden en español. Predice 60 ángulos de brazos y manos y dos consignas para el cabezal, en radianes. El LiDAR y la IMU están fijos al chasis.
 
 ## Teacher y demostraciones del rover
 
-El rover trabaja estacionado frente a la fruta. El borde de la mesa deja libre la muñeca izquierda al reiniciar el robot. El teacher PPO observa el estado físico y la dirección de cada ojo respecto al fruto. El estudiante usa las imágenes y vuelve a observar tras aplicar cada acción. En dos réplicas se grabaron 45 pasos por robot con giros opuestos de 22,4° y un error angular final máximo de 0,63°. [Ver los cuatro ojos y su profundidad](../assets/agriculture/robot/rover/ojos_teacher.png)
+### Agarre y depósito en el surco de naranjos
+
+Para probar las tareas 1 y 3, ejecuta desde la raíz del repositorio con FFmpeg disponible. Elige una carpeta de salida nueva.
+
+```powershell
+..\isaac-sim-6.2.0\python.bat tools\rover_orange_trial.py --viz none --output captures\surco_naranjal_01
+```
+
+El rover queda estacionado frente al tercer árbol de la segunda hilera. Una rama se extiende 32 cm hacia la calle y sostiene una naranja de 160 g en lugar del fruto decorativo `Orange02`. El pedúnculo aplica una fuerza elástica amortiguada con un umbral de rotura de 4 N elegido para la simulación. Se prueban una entrada frontal derecha, una lateral izquierda y una diagonal derecha.
+
+Cada robot guarda dos MP4 sincronizados a 15 fps. `robot_NNN.mp4` muestra las vistas exterior y superior con la elevación desde la posición inicial del fruto. `robot_NNN_ojos.mp4` muestra el RGB de ambos ojos en la fila superior y su profundidad en la inferior. En la escala de 0,055 a 2,5 m, lo cercano aparece claro.
+
+`resultado.json` separa el agarre, el sostén a 15 cm durante 0,5 s y el depósito con la mano retirada. PhysX mide el contacto del pulgar y dos dedos, el deslizamiento, la altura y el contacto con la canasta. `mediciones.json` conserva esas señales por paso. Las trayectorias son guiadas por cinemática inversa.
+
+### Política móvil y adquisición
+
+El teacher PPO de mesa trabaja con el rover estacionado frente a la fruta. Observa el estado físico y la dirección de cada ojo respecto al fruto. El estudiante usa las imágenes y vuelve a observar tras aplicar cada acción.
 
 ```powershell
 .\scripts\run.ps1 agriculture_teacher --rover --crop citrus --num_envs 1 --headless --validate

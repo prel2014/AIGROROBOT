@@ -52,14 +52,15 @@ def configure_impact_sensors(scene_cfg, crop: str, *, history_length: int) -> No
     if history_length < 1:
         raise ValueError("Impact history must store at least one physics substep")
 
-    fixtures = [scene_cfg.worktop, *(getattr(scene_cfg, f"leg_{i}") for i in range(4))]
+    fixtures = ([scene_cfg.worktop, *(getattr(scene_cfg, f"leg_{i}") for i in range(4))]
+                if getattr(scene_cfg, "worktop", None) else [])
     fixtures.extend(asset for name, asset in vars(scene_cfg).items() if name.startswith("pickup_support_"))
     if crop == "berries":
         fixtures.append(scene_cfg.planter)
     environment = [f"{item.prim_path}/geometry/mesh" for item in fixtures]
     plant = scene_cfg.plant
     # The orange branches cook to two entries per replica under one prim.
-    if crop != "citrus":
+    if crop != "citrus" and plant:
         environment.extend(plant.prim_path + path for path in _collider_paths(plant.spawn.usd_path))
     environment.extend(getattr(scene_cfg, f"obstacle_{kind}").prim_path for kind in OBSTACLE_RADIUS)
 

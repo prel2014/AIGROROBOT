@@ -348,7 +348,7 @@ class AgriculturalBatch:
             depths.append(torch.stack([output["distance_to_image_plane"].torch[..., 0] for output in outputs], dim=1))
         return torch.cat(rgbs), torch.cat(depths)
 
-    def step(self, angles, *, head_targets=None, render=False):
+    def step(self, angles, *, head_targets=None, render=False, before_physics_step=None):
         """Apply one [B,60] target and advance all crops by one control tick."""
         import torch
 
@@ -371,6 +371,8 @@ class AgriculturalBatch:
                 group.rover.robot.set_joint_position_target_index(target=head, joint_ids=group.rover.head)
         dt = self.sim.get_physics_dt()
         for index in range(self.control_decimation):
+            if before_physics_step is not None:
+                before_physics_step()
             for group in self.groups:
                 if group.rover:
                     group.rover.compensate_arms()

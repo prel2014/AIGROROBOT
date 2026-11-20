@@ -73,7 +73,8 @@ class _Kinematics:
             body = shape.GetParent()
             while body and not body.HasAPI(UsdPhysics.RigidBodyAPI):
                 body = body.GetParent()
-            if not body or body.GetName() in {"robot0_forearm", "robot0_wrist"}:
+            # Only the palm and its descendants participate in fingertip planning.
+            if not body or body.GetName() in {"robot0_hand_mount", "robot0_forearm", "robot0_wrist"}:
                 continue
             body_path = str(body.GetPath())
             chain = self._chain(body_path, self.palm)

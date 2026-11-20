@@ -6,7 +6,7 @@ Las [cuatro parcelas de cultivo](../../docs/rover-cosechador.md#parcelas-de-cult
 
 La espaldera reúne tres cepas con troncos, sarmientos, hojas lobuladas y 18 racimos unidos por el pedúnculo. El surco presenta el racimo objetivo de cada hilera hacia el pasillo. [Comparación en Isaac Sim](previews/vineyard/comparacion_vid.jpg) · [Vid completa](previews/vineyard/vid_completa.png) · [Detalle del racimo](previews/vineyard/racimo_en_vid.png)
 
-El torso monta dos módulos UR10e con manos articuladas y dos cámaras RGB-D. Los USD usan metros y eje Z hacia arriba. [Galería de escenarios](previews/escenarios.png) · [Vistas RGB-D](previews/ojos_rgbd.png) · [Obstáculos](previews/citrus/obstaculos_campo.png)
+El torso monta dos módulos UR10e con manos articuladas y dos cámaras RGB-D. Los USD usan metros y eje Z hacia arriba.
 
 ## Inspección
 

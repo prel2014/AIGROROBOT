@@ -1,0 +1,32 @@
+#usda 1.0
+(
+    defaultPrim = "Parcela"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Parcela" (
+    prepend references = @naranjal.usdc@</Parcela>
+)
+{
+    over "Rover" (active = false) {}
+    over "Physics" (active = false) {}
+    over "Sol" (active = false) {}
+    over "Cielo" (active = false) {}
+    over "Vistas" (active = false) {}
+    over "Cubresuelo" (active = false) {}
+    over "Linderos" (active = false) {}
+    over "Hileras"
+    {
+        over "Fila2"
+        {
+            over "Planta03" (instanceable = false)
+            {
+                over "Fruit"
+                {
+                    over "Orange02" (active = false) {}
+                }
+            }
+        }
+    }
+}

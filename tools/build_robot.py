@@ -15,6 +15,31 @@ def world(prim):
     return UsdGeom.Xformable(prim).ComputeLocalToWorldTransform(Usd.TimeCode.Default())
 
 
+def flange_adapter(stage, mount):
+    """Cover the 40 mm between the UR flange face and the Shadow forearm mesh."""
+    root = mount.GetPath().AppendChild("FlangeAdapter")
+    UsdGeom.Xform.Define(stage, root)
+
+    def cylinder(name, center, radius, height, color, *, collides=False):
+        part = UsdGeom.Cylinder.Define(stage, root.AppendChild(name))
+        part.CreateAxisAttr(UsdGeom.Tokens.z)
+        part.CreateRadiusAttr(radius)
+        part.CreateHeightAttr(height)
+        part.AddTranslateOp().Set(Gf.Vec3d(*center))
+        part.CreateDisplayColorAttr([Gf.Vec3f(*color)])
+        if collides:
+            UsdPhysics.CollisionAPI.Apply(part.GetPrim())
+
+    # All three pieces belong to the existing 100 g hand-mount rigid body.
+    cylinder("WristFlange", (0., 0., .0035), .035, .009, (.34, .39, .43), collides=True)
+    cylinder("Sleeve", (0., 0., .022), .031, .030, (.095, .13, .15), collides=True)
+    cylinder("ForearmFlange", (0., .009, .038), .051, .008, (.34, .39, .43), collides=True)
+    for n in range(4):
+        angle = (n + .5) * math.pi / 2
+        center = (.042 * math.cos(angle), .009 + .042 * math.sin(angle), .0335)
+        cylinder(f"Screw{n+1}", center, .0034, .0025, (.06, .07, .08))
+
+
 def build():
     output = ROOT / "assets/robots/ur10e_shadow/robot.usda"
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -33,7 +58,7 @@ def build():
     flange = Gf.Matrix4d(1)
     flange.SetRotate(Gf.Quatd(ee.GetLocalRot0Attr().Get()))
     flange.SetTranslateOnly(Gf.Vec3d(ee.GetLocalPos0Attr().Get()))
-    # Engineering assumption: mount axes aligned to the source flange, no spacer.
+    # The fixed joint aligns the coordinate frames. The sleeve spans the mesh gap.
     desired = flange * world(wrist)
     hand = UsdGeom.Xformable(stage.GetPrimAtPath("/Robot/Hand"))
     mount_to_root = world(mount) * world(hand.GetPrim()).GetInverse()
@@ -56,6 +81,7 @@ def build():
     joint.CreateLocalPos1Attr().Set(Gf.Vec3f(0))
     joint.CreateLocalRot1Attr().Set(Gf.Quatf(1))
     joint.CreateCollisionEnabledAttr().Set(False)
+    flange_adapter(stage, mount)
     # Ignore adjacent adapter bodies in contact generation.
     UsdPhysics.FilteredPairsAPI.Apply(wrist).CreateFilteredPairsRel().SetTargets([
         Sdf.Path("/Robot/Hand/robot0_hand_mount"), Sdf.Path("/Robot/Hand/robot0_forearm")])
@@ -87,9 +113,10 @@ def build():
     assert len(movable) == 30, f"Expected 6 arm + 24 hand joints, got {len(movable)}"
     error = (world(mount).ExtractTranslation() - desired.ExtractTranslation()).GetLength()
     assert error < 1e-6, f"Mount translation mismatch: {error}"
-    robot.SetCustomDataByKey("project:mountAssumption", "flange and hand mount aligned; zero spacer")
+    robot.SetCustomDataByKey("project:mountAssumption", "aligned frames with a 40 mm flange adapter on the hand mount")
     robot.SetCustomDataByKey("project:handControl", "angular drives with software finger synergies")
     stage.GetRootLayer().Save()
+    output.write_text(output.read_text(encoding="utf-8").rstrip()+"\n", encoding="utf-8", newline="\n")
     (output.parent / "joint_manifest.json").write_text(json.dumps(movable, indent=2) + "\n")
     print(f"Built {output}; 30 joints; mount residual {error:.3g} m")
 

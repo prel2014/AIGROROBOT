@@ -9,7 +9,7 @@ def Xform "Robot" (
     customData = {
         dictionary project = {
             string handControl = "angular drives with software finger synergies"
-            string mountAssumption = "flange and hand mount aligned; zero spacer"
+            string mountAssumption = "aligned frames with a 40 mm flange adapter on the hand mount"
         }
     }
 )
@@ -348,6 +348,88 @@ def Xform "Robot" (
                 float drive:angular:physics:targetPosition = 0
                 float drive:angular:physics:targetVelocity = 0
                 uniform token drive:angular:physics:type = "force"
+            }
+        }
+
+        over "robot0_hand_mount"
+        {
+            def Xform "FlangeAdapter"
+            {
+                def Cylinder "WristFlange" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI"]
+                )
+                {
+                    uniform token axis = "Z"
+                    double height = 0.009
+                    color3f[] primvars:displayColor = [(0.34, 0.39, 0.43)]
+                    double radius = 0.035
+                    double3 xformOp:translate = (0, 0, 0.0035)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                }
+
+                def Cylinder "Sleeve" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI"]
+                )
+                {
+                    uniform token axis = "Z"
+                    double height = 0.03
+                    color3f[] primvars:displayColor = [(0.095, 0.13, 0.15)]
+                    double radius = 0.031
+                    double3 xformOp:translate = (0, 0, 0.022)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                }
+
+                def Cylinder "ForearmFlange" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI"]
+                )
+                {
+                    uniform token axis = "Z"
+                    double height = 0.008
+                    color3f[] primvars:displayColor = [(0.34, 0.39, 0.43)]
+                    double radius = 0.051
+                    double3 xformOp:translate = (0, 0.009, 0.038)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                }
+
+                def Cylinder "Screw1"
+                {
+                    uniform token axis = "Z"
+                    double height = 0.0025
+                    color3f[] primvars:displayColor = [(0.06, 0.07, 0.08)]
+                    double radius = 0.0034
+                    double3 xformOp:translate = (0.029698484809835, 0.038698484809834996, 0.0335)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                }
+
+                def Cylinder "Screw2"
+                {
+                    uniform token axis = "Z"
+                    double height = 0.0025
+                    color3f[] primvars:displayColor = [(0.06, 0.07, 0.08)]
+                    double radius = 0.0034
+                    double3 xformOp:translate = (-0.029698484809834995, 0.038698484809834996, 0.0335)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                }
+
+                def Cylinder "Screw3"
+                {
+                    uniform token axis = "Z"
+                    double height = 0.0025
+                    color3f[] primvars:displayColor = [(0.06, 0.07, 0.08)]
+                    double radius = 0.0034
+                    double3 xformOp:translate = (-0.029698484809835005, -0.020698484809834994, 0.0335)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                }
+
+                def Cylinder "Screw4"
+                {
+                    uniform token axis = "Z"
+                    double height = 0.0025
+                    color3f[] primvars:displayColor = [(0.06, 0.07, 0.08)]
+                    double radius = 0.0034
+                    double3 xformOp:translate = (0.02969848480983499, -0.020698484809835008, 0.0335)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
+                }
             }
         }
     }

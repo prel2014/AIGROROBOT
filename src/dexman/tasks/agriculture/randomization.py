@@ -191,6 +191,8 @@ def apply_variations(scene, layouts, *, world_origins=None):
         env_path = scene.env_prim_paths[index]
         light = scene.stage.GetPrimAtPath(env_path + "/Randomization/Light")
         light.GetAttribute("xformOp:translate").Set(Gf.Vec3d(*layout.light_position_m))
+        if "orchard" in scene.keys():
+            continue
         shader = UsdShade.Shader.Get(scene.stage, env_path + "/Bench/Top/geometry/material/Shader")
         if not shader:
             raise RuntimeError(f"Missing local bench shader in replica {index}")
