@@ -1,0 +1,53 @@
+{
+  "semilla": 751,
+  "simulador": "Isaac Sim 6.2 / PhysX",
+  "robot": 0,
+  "mano": "derecha",
+  "version": "derecha_despejada",
+  "adquisicion": "Directa durante el ensayo",
+  "punto_inferior_altura_cm": [
+    16.123,
+    16.822
+  ],
+  "sosten_s": 4.4333,
+  "deslizamiento_superficial_max_sosten_mm_s": 3.357,
+  "traslado_s": 6.4,
+  "subpasos_con_agarre": 768,
+  "subpasos_traslado": 768,
+  "desplazamiento_max_fruto_en_palma_mm": 0.586,
+  "separacion_dedos_xyz_canasta_m": [
+    0.4482,
+    0.1107,
+    0.6118
+  ],
+  "reposo_en_canasta_s": 3.5333,
+  "fotogramas": 501,
+  "ambos_ojos_ven_fruta": 501,
+  "ambos_ojos_ven_centro": 451,
+  "fotogramas_con_lente_tapada": 0,
+  "fotogramas_sin_profundidad": 0,
+  "informe_original": "resultado.json",
+  "sha256_informe": "4c4732fd38a7df822757c39cca623b56560c82defb0ecf8cb72017ce194de85d",
+  "videos": {
+    "robot_000.mp4": {
+      "codec_name": "h264",
+      "width": 1104,
+      "height": 492,
+      "r_frame_rate": "15/1",
+      "duration": "33.400000",
+      "nb_frames": "501",
+      "sha256": "4426fd50cf5477c9c471624f0f2941dabf7f7ee5bf3785a84d33bcfa863abebd"
+    },
+    "robot_000_ojos.mp4": {
+      "codec_name": "h264",
+      "width": 640,
+      "height": 722,
+      "r_frame_rate": "15/1",
+      "duration": "33.400000",
+      "nb_frames": "501",
+      "sha256": "170aaea05008748d87a0a4be2d708ee307b6bd04db11904c5a919df044adee8b"
+    }
+  },
+  "sha256_informe_en_captura": "4bb4199447db5fc0633f1ddf12b16cf5f4cf8ed3d08aae4d28f42f2957b93ddf",
+  "directorio_videos": "../../docs/videos/platano/derecha_despejada"
+}

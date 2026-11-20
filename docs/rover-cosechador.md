@@ -105,10 +105,18 @@ El robot 000 usa la postura derecha calibrada y el 001 ensaya el acceso lateral 
 
 Cada rover guarda dos MP4 sincronizados, exterior y RGB-D de ambos ojos. `subpasos.json` registra oposición, deslizamiento, velocidad y altura a 120 Hz. `pixeles.json` cuenta los píxeles visibles del fruto en cada ojo a 15 fps.
 
-| Trayectoria de la mano derecha | Sostén por encima de 15 cm | Vista exterior | Ojos RGB-D |
-| --- | ---: | --- | --- |
-| Calibrada | 4,40 s | [Abrir MP4](videos/platano/derecha_calibrada/robot_000.mp4) | [Abrir MP4](videos/platano/derecha_calibrada/robot_000_ojos.mp4) |
-| Despejada | 4,43 s | [Abrir MP4](videos/platano/derecha_despejada/robot_000.mp4) | [Abrir MP4](videos/platano/derecha_despejada/robot_000_ojos.mp4) |
+| Trayectoria de la mano derecha | Sostén por encima de 15 cm | Vista exterior | Ojos RGB-D | Datos de la simulación |
+| --- | ---: | --- | --- | --- |
+| Calibrada | 4,40 s | [Abrir MP4](videos/platano/derecha_calibrada/robot_000.mp4) | [Abrir MP4](videos/platano/derecha_calibrada/robot_000_ojos.mp4) | [Ver datos](../simulaciones/platano_cosecha_verificada) |
+| Despejada | 4,43 s | [Abrir MP4](videos/platano/derecha_despejada/robot_000.mp4) | [Abrir MP4](videos/platano/derecha_despejada/robot_000_ojos.mp4) | [Ver datos](../simulaciones/platano_surco_dos_ojos) |
+
+Las dos carpetas conservan la orden en español, la semilla y los resultados de ambas réplicas. `mediciones.json` y `contactos.json` registran la ejecución a 30 Hz. `poses_fisicas.npz` guarda 501 muestras por robot a 15 Hz. `verificacion_robot_000.json` relaciona las métricas del robot filmado con las huellas SHA-256 de sus dos MP4.
+
+Para reproducir las poses de la trayectoria calibrada en Isaac Sim desde la raíz del repositorio, usa una carpeta de salida nueva.
+
+```powershell
+..\isaac-sim-6.2.0\python.bat tools\render_field_replay.py --viz none --source simulaciones\platano_cosecha_verificada --robot 0 --eye-size 512 --output captures\reproduccion_platano
+```
 
 ### Agarre y depósito en el surco de naranjos
 

@@ -1,0 +1,471 @@
+{
+  "crop": "banana",
+  "scene": "platanal.usdc",
+  "seed": 751,
+  "simulation": "Isaac Sim 6.2 / PhysX",
+  "profile": "Traslado continuo",
+  "contract": "agriculture-mobile-v2",
+  "control_hz": 30.0,
+  "physics_hz": 120.0,
+  "frames": 501,
+  "fps": 15,
+  "columns": {
+    "recorrido": [
+      "base_x_m",
+      "base_y_m",
+      "base_z_m"
+    ],
+    "manipulacion": [
+      "lift_m",
+      "held",
+      "steady",
+      "speed_m_s",
+      "basket_x_m",
+      "basket_y_m",
+      "basket_z_m",
+      "basket_force_n",
+      "finger_gap_m",
+      "touching",
+      "base_drift_m",
+      "forbidden_force_n",
+      "stem_attached"
+    ]
+  },
+  "instruction": "Recorre el surco y estaciónate frente a la planta. Toma el plátano. Eleva la fruta 15 cm, sostenla medio segundo y déjala en la canasta.",
+  "field_seed": 739,
+  "target_plant": "Hileras/Fila2/Planta03",
+  "stem_break_n": 3.8,
+  "grasp_evidence": "tres dedos y par antipodal Coulomb mu=0.60",
+  "arguments": [
+    "--viz",
+    "none",
+    "--crop",
+    "banana",
+    "--output",
+    "captures\\platano_cosecha_verificada"
+  ],
+  "source_sha256": {
+    "film_field_cycle.py": "73b28107bf9185fc11e0b9ad716d3581e13883456191eb4fd67ef6ff0e3bb69b",
+    "rover_orange_trial.py": "871d440ea50b397b6df037a3cafca0d0213014d932a55642f9ec2a5c49fb1d79",
+    "harvest_route.py": "c1be57b14bcc14ec9b4e6d1e56021bd492a6ad232756113292af4acd803a1b32",
+    "field_contact_trace.py": "9104332651f181465e9de97d400e03d2547b5c82fd8edba86e0f5112f2d5367d",
+    "field_lift_control.py": "7f32bb236f3437c04bdcd3b31a4e1cc93d56664217a845f4e2b786123eb6b386",
+    "batch.py": "b0968ed46b50be3f2a4debb3db481f261b2ce79cee3e7b680cc8e056b8c979d0",
+    "contact_quality.py": "f84cf0d9eb5b85fbd58b77b7b3a28b7c4f1faf9ec68cb6d20427595f855edb25",
+    "rover_basket_task.py": "8251c6aaf631bf73a9535ef519b530c6bed0f3240e0ecfcf3de14ce3fa4d97ee",
+    "platanal.usdc": "8327ac0ac06af8228a24f2c510b84c6cc87f17a814481ab320b8a4b29c7fcc14",
+    "banana.usda": "23941d14e20ec4ac2a5068149ca4ecff3df143612239760e9eb04103654dab3a",
+    "banana.json": "242e2ffd750265cb7c0e553b46147456b2d1dbbb808d58e33cb2171285a861d0",
+    "banana_rover_right.json": "85b3247efa33cc61610257f27034dc326fcc8d5e6bac5f8756eb496e6a1675a5"
+  },
+  "robots": [
+    {
+      "robot": 0,
+      "version": "derecha_calibrada",
+      "hand": "derecha",
+      "travel_m": 3.26,
+      "motor_spring_relief": 0.041,
+      "motion_stop_reason": null,
+      "parking_error_m": 0.044,
+      "started_attached": true,
+      "detached": true,
+      "max_ik_residual_m": 0.0081,
+      "free_depth_fraction_left_right": [
+        1.0,
+        1.0
+      ],
+      "arm_block_fraction_of_identified_hits": [
+        0.0,
+        0.0
+      ],
+      "ray_hit_fraction_left_right": [
+        1.0,
+        1.0
+      ],
+      "grasp": true,
+      "hold_15cm": true,
+      "deposit": true,
+      "held_delivery_ticks": 192,
+      "delivery_ticks": 192,
+      "opened_over_basket": true,
+      "release_position_m": [
+        0.4446577727794647,
+        0.18020778894424438,
+        0.5787711143493652
+      ],
+      "peak_lift_m": 0.1808159351348877,
+      "stable_hold_s": 4.5,
+      "final_basket_rest_s": 3.8666666666666667,
+      "max_base_drift_m": 0.020182466134428978,
+      "max_forbidden_force_n": 0.0,
+      "lost_in_transit": false,
+      "success": true,
+      "surface_audit": {
+        "grasp": true,
+        "hold_15cm": true,
+        "deposit": true,
+        "held_delivery_ticks": 192,
+        "delivery_ticks": 192,
+        "opened_over_basket": true,
+        "release_position_m": [
+          0.4446577727794647,
+          0.18020778894424438,
+          0.5787711143493652
+        ],
+        "peak_lift_m": 0.18075501918792725,
+        "stable_hold_s": 4.4,
+        "final_basket_rest_s": 3.8666666666666667,
+        "max_base_drift_m": 0.020182466134428978,
+        "max_forbidden_force_n": 0.0,
+        "lost_in_transit": false,
+        "success": true
+      },
+      "binocular_visibility": {
+        "recorrido del surco": {
+          "frames": 108,
+          "both_visible": 108,
+          "eyes": [
+            {
+              "fruit_visible_frames": 108,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 26
+            },
+            {
+              "fruit_visible_frames": 108,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 28
+            }
+          ]
+        },
+        "estacionamiento": {
+          "frames": 12,
+          "both_visible": 12,
+          "eyes": [
+            {
+              "fruit_visible_frames": 12,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 307
+            },
+            {
+              "fruit_visible_frames": 12,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 321
+            }
+          ]
+        },
+        "aproximacion": {
+          "frames": 67,
+          "both_visible": 67,
+          "eyes": [
+            {
+              "fruit_visible_frames": 67,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 284
+            },
+            {
+              "fruit_visible_frames": 67,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 296
+            }
+          ]
+        },
+        "cierre": {
+          "frames": 38,
+          "both_visible": 38,
+          "eyes": [
+            {
+              "fruit_visible_frames": 38,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 269
+            },
+            {
+              "fruit_visible_frames": 38,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 272
+            }
+          ]
+        },
+        "elevacion": {
+          "frames": 36,
+          "both_visible": 36,
+          "eyes": [
+            {
+              "fruit_visible_frames": 36,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 272
+            },
+            {
+              "fruit_visible_frames": 36,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 272
+            }
+          ]
+        },
+        "sosten": {
+          "frames": 70,
+          "both_visible": 70,
+          "eyes": [
+            {
+              "fruit_visible_frames": 70,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 298
+            },
+            {
+              "fruit_visible_frames": 70,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 292
+            }
+          ]
+        },
+        "traslado": {
+          "frames": 96,
+          "both_visible": 96,
+          "eyes": [
+            {
+              "fruit_visible_frames": 96,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 297
+            },
+            {
+              "fruit_visible_frames": 96,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 298
+            }
+          ]
+        },
+        "apertura": {
+          "frames": 16,
+          "both_visible": 16,
+          "eyes": [
+            {
+              "fruit_visible_frames": 16,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 266
+            },
+            {
+              "fruit_visible_frames": 16,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 220
+            }
+          ]
+        },
+        "retirada": {
+          "frames": 58,
+          "both_visible": 58,
+          "eyes": [
+            {
+              "fruit_visible_frames": 58,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 418
+            },
+            {
+              "fruit_visible_frames": 58,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 304
+            }
+          ]
+        }
+      }
+    },
+    {
+      "robot": 1,
+      "version": "lateral",
+      "hand": "izquierda",
+      "travel_m": 3.262,
+      "motor_spring_relief": 0.848,
+      "motion_stop_reason": "sostén sin validar",
+      "parking_error_m": 0.046,
+      "started_attached": true,
+      "detached": true,
+      "max_ik_residual_m": 0.0442,
+      "free_depth_fraction_left_right": [
+        0.314,
+        1.0
+      ],
+      "arm_block_fraction_of_identified_hits": [
+        0.0,
+        0.0
+      ],
+      "ray_hit_fraction_left_right": [
+        1.0,
+        1.0
+      ],
+      "grasp": true,
+      "hold_15cm": false,
+      "deposit": false,
+      "held_delivery_ticks": 0,
+      "delivery_ticks": 0,
+      "opened_over_basket": null,
+      "release_position_m": null,
+      "peak_lift_m": 0.1304870843887329,
+      "stable_hold_s": 0.0,
+      "final_basket_rest_s": 0.0,
+      "max_base_drift_m": 0.018866267055273056,
+      "max_forbidden_force_n": 0.0,
+      "lost_in_transit": false,
+      "success": false,
+      "surface_audit": {
+        "grasp": true,
+        "hold_15cm": false,
+        "deposit": false,
+        "held_delivery_ticks": 0,
+        "delivery_ticks": 0,
+        "opened_over_basket": null,
+        "release_position_m": null,
+        "peak_lift_m": 0.13035261631011963,
+        "stable_hold_s": 0.0,
+        "final_basket_rest_s": 0.0,
+        "max_base_drift_m": 0.018866267055273056,
+        "max_forbidden_force_n": 0.0,
+        "lost_in_transit": false,
+        "success": false
+      },
+      "binocular_visibility": {
+        "recorrido del surco": {
+          "frames": 108,
+          "both_visible": 108,
+          "eyes": [
+            {
+              "fruit_visible_frames": 108,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 26
+            },
+            {
+              "fruit_visible_frames": 108,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 26
+            }
+          ]
+        },
+        "estacionamiento": {
+          "frames": 12,
+          "both_visible": 12,
+          "eyes": [
+            {
+              "fruit_visible_frames": 12,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 307
+            },
+            {
+              "fruit_visible_frames": 12,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 321
+            }
+          ]
+        },
+        "aproximacion": {
+          "frames": 67,
+          "both_visible": 41,
+          "eyes": [
+            {
+              "fruit_visible_frames": 41,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 0
+            },
+            {
+              "fruit_visible_frames": 67,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 289
+            }
+          ]
+        },
+        "cierre": {
+          "frames": 38,
+          "both_visible": 15,
+          "eyes": [
+            {
+              "fruit_visible_frames": 15,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 0
+            },
+            {
+              "fruit_visible_frames": 38,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 269
+            }
+          ]
+        },
+        "elevacion": {
+          "frames": 36,
+          "both_visible": 28,
+          "eyes": [
+            {
+              "fruit_visible_frames": 28,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 0
+            },
+            {
+              "fruit_visible_frames": 36,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 265
+            }
+          ]
+        },
+        "sosten": {
+          "frames": 70,
+          "both_visible": 70,
+          "eyes": [
+            {
+              "fruit_visible_frames": 70,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 11
+            },
+            {
+              "fruit_visible_frames": 70,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 265
+            }
+          ]
+        },
+        "traslado": {
+          "frames": 96,
+          "both_visible": 4,
+          "eyes": [
+            {
+              "fruit_visible_frames": 4,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 0
+            },
+            {
+              "fruit_visible_frames": 5,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 0
+            }
+          ]
+        },
+        "apertura": {
+          "frames": 16,
+          "both_visible": 0,
+          "eyes": [
+            {
+              "fruit_visible_frames": 0,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 0
+            },
+            {
+              "fruit_visible_frames": 0,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 0
+            }
+          ]
+        },
+        "retirada": {
+          "frames": 58,
+          "both_visible": 0,
+          "eyes": [
+            {
+              "fruit_visible_frames": 0,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 0
+            },
+            {
+              "fruit_visible_frames": 0,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 0
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

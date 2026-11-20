@@ -1,0 +1,57 @@
+#usda 1.0
+(
+    defaultPrim = "Produce"
+)
+
+def Xform "Produce"
+{
+    def Xform "Fruit0" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysxContactReportAPI", "MaterialBindingAPI"]
+        prepend references = @../../assets/agriculture/props/banana.usda@
+    )
+    {
+        rel material:binding:physics = </Produce/Piel>
+        float physics:mass = 0.12
+        float physxContactReport:threshold = 0
+        quatf xformOp:orient = (0.9914449, 0, 0, 0.13052619)
+        double3 xformOp:translate = (0.09171232574165057, -0.11648768841532713, 1.4742094203884333)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+        over "Placement"
+        {
+            over "Model"
+            {
+                over "bananas_a"
+                {
+                    over "mesh_009" (
+                        prepend apiSchemas = ["PhysxCollisionAPI"]
+                    )
+                    {
+                        float physxCollision:contactOffset = 0.0006
+                        float physxCollision:restOffset = 0
+                    }
+                }
+            }
+        }
+    }
+
+    def Material "Piel" (
+        prepend apiSchemas = ["PhysicsMaterialAPI"]
+    )
+    {
+        float physics:dynamicFriction = 0.48
+        float physics:restitution = 0.03
+        float physics:staticFriction = 0.6
+    }
+
+    def BasisCurves "Pedunculo"
+    {
+        int[] curveVertexCounts = [4]
+        point3f[] points = [(0.22163054, 0.31241998, 1.8565494), (0.18314572, 0.17490359, 1.7261494), (0.13, -0.015, 1.5215495), (0.13, -0.015, 1.4865494)]
+        color3f[] primvars:displayColor = [(0.12, 0.19, 0.042)]
+        uniform token type = "linear"
+        float[] widths = [0.012, 0.00936, 0.0054, 0.00336] (
+            interpolation = "vertex"
+        )
+    }
+}

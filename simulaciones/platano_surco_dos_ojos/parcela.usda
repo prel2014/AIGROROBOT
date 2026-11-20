@@ -1,0 +1,63 @@
+#usda 1.0
+(
+    defaultPrim = "Parcela"
+)
+
+def Xform "Parcela" (
+    prepend references = @../../assets/agriculture/parcelas/platanal.usdc@
+)
+{
+    over "Rover" (
+        active = false
+    )
+    {
+    }
+
+    over "Physics" (
+        active = false
+    )
+    {
+    }
+
+    over "Sol" (
+        active = false
+    )
+    {
+    }
+
+    over "Cielo" (
+        active = false
+    )
+    {
+    }
+
+    over "Vistas" (
+        active = false
+    )
+    {
+    }
+
+    over "Cubresuelo" (
+        active = false
+    )
+    {
+    }
+
+    over "Linderos" (
+        active = false
+    )
+    {
+    }
+
+    over "Terrones" (
+        active = false
+    )
+    {
+    }
+
+    over "SueloGranular" (
+        active = false
+    )
+    {
+    }
+}
