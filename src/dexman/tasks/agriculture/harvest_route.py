@@ -42,6 +42,25 @@ def arm_occlusion(observations):
     return blocked,coverage
 
 
+def binocular_visibility(pixel_rows, depth_rows):
+    """Count visible fruit pixels and covered lenses per eye and phase."""
+    summary = {}
+    for (step, phase, eyes), (depth_step, depth_phase, depth) in zip(pixel_rows, depth_rows, strict=True):
+        if (step, phase) != (depth_step, depth_phase):
+            raise ValueError("Las mediciones RGB y de profundidad no están sincronizadas")
+        phase_rows = summary.setdefault(phase, {"frames": 0, "both_visible": 0, "eyes": [
+            {"fruit_visible_frames": 0, "covered_lens_frames": 0, "min_fruit_pixels": None} for _ in range(2)
+        ]})
+        phase_rows["frames"] += 1
+        phase_rows["both_visible"] += int(all(pixels > 0 for pixels, _ in eyes))
+        for (pixels, _), label, result in zip(eyes, depth, phase_rows["eyes"], strict=True):
+            result["fruit_visible_frames"] += int(pixels > 0)
+            result["covered_lens_frames"] += int(label == "visor_cubierto")
+            minimum = result["min_fruit_pixels"]
+            result["min_fruit_pixels"] = pixels if minimum is None else min(minimum, pixels)
+    return summary
+
+
 def layout(crop):
     field, site = FIELDS[crop], SITES[crop]
     anchor = np.array(site.anchor)

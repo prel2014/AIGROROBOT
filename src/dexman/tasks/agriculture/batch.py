@@ -348,7 +348,7 @@ class AgriculturalBatch:
             depths.append(torch.stack([output["distance_to_image_plane"].torch[..., 0] for output in outputs], dim=1))
         return torch.cat(rgbs), torch.cat(depths)
 
-    def step(self, angles, *, head_targets=None, render=False, before_physics_step=None):
+    def step(self, angles, *, head_targets=None, render=False, before_physics_step=None, after_physics_step=None):
         """Apply one [B,60] target and advance all crops by one control tick."""
         import torch
 
@@ -384,3 +384,5 @@ class AgriculturalBatch:
             self.sim.step(render=render and index == self.control_decimation - 1)
             for group in self.groups:
                 group.scene.update(dt)
+            if after_physics_step is not None:
+                after_physics_step(dt)

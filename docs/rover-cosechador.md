@@ -93,6 +93,18 @@ Abre `index.html` para comparar los dos MP4 sincronizados y saltar al cierre, so
 
 `resultado.json` registra el recorrido, el agarre con contacto, el sostén de 15 cm durante 0,5 s y el reposo en la canasta. `visibilidad.json` mide los obstáculos delante del fruto con la profundidad de cada ojo. `rayos.json` registra el primer colisionador identificado entre el ojo y el centro del fruto, incluida la mano. Las fuerzas de rotura del pedúnculo son parámetros del ensayo.
 
+### Agarre y depósito de plátano
+
+Desde la raíz, con FFmpeg disponible y una carpeta de salida nueva, ejecuta el ensayo guiado en Isaac Sim 6.2.
+
+```powershell
+..\isaac-sim-6.2.0\python.bat tools\film_field_cycle.py --viz none --crop banana --output captures\ensayo_platano
+```
+
+El robot 000 usa la postura derecha calibrada y el 001 ensaya el acceso lateral izquierdo. Para probar la otra trayectoria derecha, añade `--banana-grasps derecha_despejada lateral`. El éxito exige que el punto inferior del plátano suba al menos 15 cm durante 0,5 s, que el pulgar y dos dedos mantengan el agarre durante el traslado y que la fruta repose en la canasta tras la retirada.
+
+Cada rover guarda dos MP4 sincronizados, exterior y RGB-D de ambos ojos. `subpasos.json` registra oposición, deslizamiento, velocidad y altura a 120 Hz. `pixeles.json` cuenta los píxeles visibles del fruto en cada ojo a 15 fps.
+
 ### Agarre y depósito en el surco de naranjos
 
 Para probar las tareas 1 y 3, ejecuta desde la raíz del repositorio con FFmpeg disponible. Elige una carpeta de salida nueva.

@@ -1,0 +1,16 @@
+{
+  "crop": "banana",
+  "hand": "right",
+  "seed": 751,
+  "source": "PhysX, cierre de la mano derecha en el platanal",
+  "source_states_sha256": "f26c63aaa158be4ea3512bd5af7fb04d453562e0c09c6d856c2520e80b3e5de2",
+  "joints": ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint", "robot0_WRJ1", "robot0_WRJ0"],
+  "closed_rad": [-0.145887, -0.130739, -0.615652, -0.503725, -0.553840, 1.634671, -0.488999, 0.460112],
+  "basket_targets_m": {"derecha_despejada": [0.49, 0.10, 0.66], "derecha_calibrada": [0.49, 0.16, 0.66]},
+  "hold": {
+    "source_states_sha256": "f1f3579debafb115da68b25f6d9e7511db81b281a10789f5e2950b968b8a28e6",
+    "wrist_path_fraction": 0.8142,
+    "finger_joints": ["robot0_FFJ3","robot0_FFJ2","robot0_MFJ3","robot0_MFJ2","robot0_RFJ3","robot0_RFJ2","robot0_LFJ4","robot0_LFJ3","robot0_LFJ2","robot0_THJ4","robot0_THJ3","robot0_THJ2","robot0_THJ1","robot0_THJ0","robot0_FFJ1","robot0_FFJ0","robot0_MFJ1","robot0_MFJ0","robot0_RFJ1","robot0_RFJ0","robot0_LFJ1","robot0_LFJ0"],
+    "motor_targets_rad": [0.292153,0.045812,-0.344177,0.596303,-0.242984,0.780827,0.003669,-0.110924,0.876061,0.15454,0.373704,0.210668,0.28849,-0.646304,1.52245,1.548833,1.190776,0.55865,1.398619,1.219837,1.29669,0.999458]
+  }
+}

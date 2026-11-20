@@ -52,6 +52,46 @@ def steady_contacts(slip_speed, touching):
     return (~touching | (slip_speed < MAX_HOLD_SLIP_M_S)).all(-1)
 
 
+def antipodal_power_grasp(forces_w, points_w, touching, friction):
+    """Require a thumb/finger contact chord inside both Coulomb friction cones.
+
+    A long curved fruit can be pinched across its width away from its centre
+    of mass. The measured force on each finger points out of the fruit.
+    A second non-thumb finger must also be loaded.
+    """
+    normal = torch.nn.functional.normalize(forces_w,dim=-1)
+    line = points_w[:,:-1]-points_w[:,-1:]
+    distance = line.norm(dim=-1)
+    chord = line/distance.clamp_min(1.e-8)[...,None]
+    cos_limit = (1.+friction**2)**-.5
+    pair = ((normal[:,:-1]*chord).sum(-1)>=cos_limit) & (-(normal[:,-1:]*chord).sum(-1)>=cos_limit)
+    return touching[:,-1] & (touching[:,:-1].sum(-1)>=2) & (pair & touching[:,:-1] & (distance>=.015)).any(-1)
+
+
+def surface_travel_speed(points, normals, previous_tip, tip, previous_fruit, fruit, dt):
+    """Tangential travel per second of coincident material points over one physics step.
+
+    Poses use XYZW quaternions. Express both material points in their rigid
+    link frames at contact, then compare where those points were one step ago.
+    This includes rolling and rotation about a stationary centre of mass.
+    """
+    def rotate(quaternion, vector, inverse=False):
+        xyz = quaternion[...,:3]
+        if inverse:
+            xyz = -xyz
+        xyz = xyz.expand_as(vector)
+        twice_cross = 2*torch.cross(xyz,vector,dim=-1)
+        return vector+quaternion[...,3:]*twice_cross+torch.cross(xyz,twice_cross,dim=-1)
+    def previous_offset(now, previous):
+        local = rotate(now[...,3:],points-now[...,:3],inverse=True)
+        return rotate(previous[...,3:],local)
+    delta = ((previous_fruit[...,:3]-previous_tip[...,:3])
+             +previous_offset(fruit,previous_fruit)-previous_offset(tip,previous_tip))/dt
+    unit = torch.nn.functional.normalize(normals,dim=-1)
+    tangent = delta-(delta*unit).sum(-1,keepdim=True)*unit
+    return tangent.norm(dim=-1)
+
+
 def opposing_tip_proximity(tips_w, center_w, precision):
     """Reward a nearby thumb and eligible finger on opposing sides of the fruit."""
     offsets = tips_w - center_w[:, None, None]

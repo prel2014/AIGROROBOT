@@ -101,7 +101,8 @@ def matrix(pose):
 
 def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
               reference_fruit=(.30,-.12,.9355), sightline_solver=None, residuals=None,
-              clearance_cost=None, keep_fruit_heading=False, lift_margin_m=0.):
+              clearance_cost=None, keep_fruit_heading=False, lift_margin_m=0., controlled_delivery=False,
+              pickup_seed=None, basket_target=None):
     from agriculture_grasp_geometry import _Kinematics, _solve_arm
     from dexman.tasks.agriculture.scene import arm
     group, = env.batch.groups
@@ -125,9 +126,18 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
         turn = np.eye(3)
     limits = env.batch.joint_limits[index,side*30:(side+1)*30].cpu().numpy()
     low, high = limits.T
-    def solve(q,position,axes):
+    def solve(q,position,axes,focus=None,continuous=False):
         if sightline_solver is not None:
-            result,error = sightline_solver(kin,base,q,low,high,position,axes)
+            lo,hi = low.copy(),high.copy()
+            if pickup_seed is not None:
+                # Keep a measured right-arm branch away from equivalent +/−360°
+                # wrist solutions. The wrist still follows Cartesian lift targets.
+                lo[3:6] = np.maximum(lo[3:6],pickup_seed[3:6]-1.7)
+                hi[3:6] = np.minimum(hi[3:6],pickup_seed[3:6]+1.7)
+            if continuous:
+                lo[:8] = np.maximum(lo[:8],q[:8]-.48)
+                hi[:8] = np.minimum(hi[:8],q[:8]+.48)
+            result,error = sightline_solver(kin,base,q,lo,hi,position,axes,focus)
             residuals.append(float(error))
             return result
         result,error = _solve_arm(kin,base,q,low,high,position,axes)
@@ -151,23 +161,33 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
         # physical eye positions before committing to the close and lift trajectory.
         seed = reference[2]
         closed_frame = kin.fk(kin.arm,seed,old_base)
+        seed = seed.copy()
+        if pickup_seed is not None:
+            seed[:8] = pickup_seed
         choices = []
         angles = (0.,-8.,8.,-18.,18.) if keep_fruit_heading else (0.,-35.,35.,-65.,65.)
         for angle in angles:
             orientation = Rotation.from_euler("z",angle,degrees=True).as_matrix()@turn
             position = fruit+orientation@(closed_frame[:3,3]-old_fruit+offset)
-            for lower in ((False,True) if low[2]<-1. else (False,)):
+            for lower in ((False,True) if low[2]<-1. and pickup_seed is None else (False,)):
                 q,error = sightline_solver(kin,base,elbow_seed(seed,lower),low,high,position,orientation@closed_frame[:3,:3])
                 cost = clearance_cost(kin,base,q,fruit)
                 rank = 6.*error+np.linalg.norm(cost)+.000025*abs(angle)
                 choices.append((rank,orientation,lower))
         _,turn,lower_elbow = min(choices,key=lambda item:item[0])
-    aligned = []
-    for k,q in enumerate(reference):
+    aligned = [None]*len(reference)
+    order = [2,1,0,*range(3,len(reference))] if pickup_seed is not None else range(len(reference))
+    for k in order:
+        q = reference[k]
         old = kin.fk(kin.arm,q,old_base)
         goal = fruit+turn@(old[:3,3]-old_fruit+offset)
         goal[2] += lift_margin_m*max(0.,(k-2)/(len(reference)-3))
-        aligned.append(solve(elbow_seed(q,lower_elbow),goal,turn@old[:3,:3]))
+        axes = turn@old[:3,:3]
+        seed = elbow_seed(q,lower_elbow).copy()
+        if pickup_seed is not None:
+            parent = (k+1) if k<2 else (k-1)
+            seed[:8] = pickup_seed if k==2 else aligned[parent][:8]
+        aligned[k] = solve(seed,goal,axes,continuous=pickup_seed is not None and k!=2)
     pickup = kin.fk(kin.arm,aligned[0],base)
     beginning = solve(aligned[0],pickup[:3,3]+approach,pickup[:3,:3])
     knots = [(beginning,"aproximacion",1),(aligned[0],"aproximacion",30),
@@ -189,28 +209,42 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
             pose = kin.fk(kin.arm,np.r_[angles,q[8:]],base)
             dv = pose[:3,3]+pose[:3,:3]@pivot-centre_goal
             dr = Rotation.from_matrix(top[:3,:3].T@pose[:3,:3]).as_rotvec()
-            cost = np.r_[dv,.022*dr,.002*(angles-q[:8])]
+            cost = np.r_[dv,(.085 if controlled_delivery else .022)*dr,
+                         (.012 if controlled_delivery else .002)*(angles-q[:8])]
             if clearance_cost is not None:
                 cost = np.r_[cost,clearance_weight*clearance_cost(kin,base,np.r_[angles,q[8:]],centre_goal)]
             return cost
-        result = least_squares(residual,np.clip(q[:8],low[:8],high[:8]),bounds=(low[:8],high[:8]))
+        # Adjacent Cartesian samples must stay on the same inverse-kinematics branch.
+        lo,hi = low[:8],high[:8]
+        if controlled_delivery:
+            lo,hi = np.maximum(lo,q[:8]-.18),np.minimum(hi,q[:8]+.18)
+        result = least_squares(residual,np.clip(q[:8],lo,hi),bounds=(lo,hi))
         if clearance_cost is not None and np.linalg.norm(result.fun[:3])>.009:
-            result = least_squares(residual,result.x,bounds=(low[:8],high[:8]),args=(.09,))
+            result = least_squares(residual,result.x,bounds=(lo,hi),args=(.09,))
         if residuals is not None:
             residuals.append(float(np.linalg.norm(result.fun[:3])))
         elif np.linalg.norm(result.fun[:3])>.012:
             raise ValueError(f"{owner} cannot carry fruit to {centre_goal}: {result.fun[:3]}")
         return np.r_[result.x,q[8:]]
     sign = 1 if side==0 else -1
-    release = (chassis@np.array([.59,sign*.13,.81,1.]))[:3]+palm_offset
+    destination = [.43,sign*.04,.66,1.] if controlled_delivery else [.59,sign*.13,.81,1.]
+    if basket_target is not None:
+        destination = [*basket_target,1.]
+    release = (chassis@np.array(destination))[:3]+palm_offset
     # First clear the canopy, then descend over the basket.
     over = release.copy()
     over[2] = top[2,3]+.025
     current = aligned[-1].copy()
+    if controlled_delivery:
+        # Descend on a diagonal with the original fruit heading. A high horizontal
+        # sweep across the front of the head can put the elbow against a joint stop.
+        over = .52*top[:3,3]+.48*release
+        over[2] += .065
     for start,end in ((top[:3,3],over),(over,release)):
-        for t in np.linspace(.125,1.,8):
+        count = 16 if controlled_delivery else 8
+        for t in np.arange(1,count+1)/count:
             current = carry(current,(1-t)*start+t*end)
-            knots.append((current,"traslado",8))
+            knots.append((current,"traslado",6 if controlled_delivery else 8))
     opened = current.copy()
     opened[8:] = 0.
     knots.append((opened,"apertura",32))
@@ -220,13 +254,14 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
 
 
 class Film:
-    def __init__(self, folder, trials, *, record_obstructions=False):
+    def __init__(self, folder, trials, *, record_obstructions=False,robot_indices=None):
         self.folder = folder
         self.trials = trials
         self.record_obstructions = record_obstructions
+        self.robot_indices = list(range(len(trials))) if robot_indices is None else list(robot_indices)
         self.live_frames = np.zeros((len(trials),2),dtype=int)
         self.frames = {f"robot_{i:03d}{suffix}": folder/f"fotogramas_{i:03d}{suffix}"
-                       for i in range(len(trials)) for suffix in ("","_ojos")}
+                       for i in self.robot_indices for suffix in ("","_ojos")}
         self.index = 0
         for directory in self.frames.values():
             directory.mkdir()
@@ -240,19 +275,21 @@ class Film:
         overhead = detail.data.output["rgb"].torch[...,:3].cpu().numpy()
         h, w = rgb.shape[1:3]
         for i,(name,side,_,_) in enumerate(self.trials):
+            number = self.robot_indices[i]
+            current_phase = phase if isinstance(phase,str) else phase[i]
             if rgb[i].std()<2 or overhead[i].std()<2:
                 raise RuntimeError(f"Sin imagen RTX en robot {i}")
             canvas = Image.new("RGB",(w+overhead.shape[2],h+44),(19,29,24))
             canvas.paste(Image.fromarray(rgb[i]),(0,0))
             canvas.paste(Image.fromarray(overhead[i]),(w,0))
-            label = f"Robot {i:03d} | {name} / {('izquierda','derecha')[side]} | {phase} | {100*lift[i]:+.1f} cm | " + ("agarre" if held[i] else "sin agarre")
+            label = f"Robot {number:03d} | {name} / {('izquierda','derecha')[side]} | {current_phase} | {100*lift[i]:+.1f} cm | " + ("agarre" if held[i] else "sin agarre")
             ImageDraw.Draw(canvas).text((10,h+10),label,fill="white",font_size=18 if w>=768 else 15)
-            name = f"robot_{i:03d}"
+            name = f"robot_{number:03d}"
             frame_path = f"{self.index:05d}.jpg"
             canvas.save(self.frames[name]/frame_path,quality=93)
             valid = (np.isfinite(eyes_depth[i]) & (eyes_depth[i]>0)).any(axis=(1,2))
             self.live_frames[i] += valid & (eyes_rgb[i].std(axis=(1,2,3))>2)
-            self.eyes(eyes_rgb[i],eyes_depth[i],i,phase,self.record_obstructions).save(self.frames[name+"_ojos"]/frame_path,quality=93)
+            self.eyes(eyes_rgb[i],eyes_depth[i],number,current_phase,self.record_obstructions).save(self.frames[name+"_ojos"]/frame_path,quality=93)
         self.index += 1
         return eyes_depth
 
