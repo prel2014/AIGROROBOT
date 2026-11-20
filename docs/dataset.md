@@ -19,6 +19,10 @@ RGB-D, estado y fase corresponden al instante previo al comando. `reward` y `don
 
 Para comparar órdenes en la misma escena, captura los tres ejercicios con igual semilla y número de réplicas. En `dataset.json`, `demonstrator` distingue PPO de PPO más reglas de fase. El comando `dataset split` mantiene juntas todas las órdenes de un mismo cultivo, semilla, réplica y reinicio.
 
+## Observación móvil
+
+`rover_eyes` guarda la orden en español, el RGB-D de ambos ojos, `time_s`, `mobile_state[132]` y la consigna `head_target_rad[2]` en `observacion.h5`. Los índices 130 y 131 de `mobile_state` contienen los ángulos medidos de giro y elevación en radianes. El esquema `dexman.agriculture.mobile.v2` declara el orden de los sensores. Esta captura es una observación para inferencia. Las demostraciones para aprendizaje supervisado requieren también las acciones aplicadas en cada paso. [Capturar desde Isaac Sim](rover-cosechador.md#sensores-y-entradas)
+
 ## Elevación de un brazo
 
 El VLA v5 usa el esquema 1.1. Cada fila registra `rgb` y `rgb_secondary` de 224 × 224, profundidad, `qpos[30]`, `qvel[30]`, `action[26]`, recompensa y final del episodio. `joint_command[30]` es la etiqueta antes del filtro, mientras que `joint_target[30]` registra el objetivo filtrado.

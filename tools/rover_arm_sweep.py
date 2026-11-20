@@ -33,13 +33,17 @@ def run(asset):
     root_digest = hashlib.sha256(asset.read_bytes()).hexdigest()
     rover.GetPrim().GetReferences().AddReference(str(asset))
     rear = {}
-    for prim in Usd.PrimRange(stage.GetPrimAtPath(BASE)):
-        if prim.HasAPI(UsdPhysics.CollisionAPI):
-            path = prim.GetPath()
-            rear[str(path)] = PhysicsSchemaTools.encodeSdfPath(path)
+    for fixture in (BASE, "/World/Rover/HeadPan", "/World/Rover/HeadTilt"):
+        body = stage.GetPrimAtPath(fixture)
+        if not body:
+            continue
+        PhysxSchema.PhysxContactReportAPI.Apply(body).CreateThresholdAttr(0.)
+        for prim in Usd.PrimRange(body):
+            if prim.HasAPI(UsdPhysics.CollisionAPI):
+                path = prim.GetPath()
+                rear[str(path)] = PhysicsSchemaTools.encodeSdfPath(path)
     if not rear:
         raise ValueError("No se han encontrado colisiones del bastidor")
-    PhysxSchema.PhysxContactReportAPI.Apply(stage.GetPrimAtPath(BASE)).CreateThresholdAttr(0.)
     names = ("shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint",
              "wrist_1_joint", "wrist_2_joint", "wrist_3_joint")
     joints = [UsdPhysics.RevoluteJoint.Get(stage, ARM+"/Arm/joints/"+name) for name in names]

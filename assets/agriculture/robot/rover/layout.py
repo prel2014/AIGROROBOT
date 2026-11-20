@@ -1,6 +1,6 @@
 """Geometría nominal en mm, X al frente, Y a la izquierda."""
 from dataclasses import dataclass
-from math import cos, dist, hypot, radians, sin
+from math import cos, dist, hypot, radians, sin, tau
 
 DECK = (1480, 890)
 BASKET_FRACTION = .60
@@ -13,6 +13,11 @@ RAMP_END = 330
 EYE = (-680, 220, 1720)
 EYE_YAW = 22.0
 EYE_PITCH_DOWN = 43.0
+HEAD_PAN_PIVOT = (-740, 0, 1612)
+HEAD_TILT_PIVOT = (-740, 0, 1720)
+WHEEL_RADIUS = 230
+WHEEL_CORE_RADIUS = 215
+WHEEL_HALF_WIDTH = 70
 LIDAR = (-620, 0, 1900)
 ROVER_TRAVEL_DEG = {
     "Left": (-44., -23., 83., -75., -86., 0.),
@@ -34,6 +39,117 @@ def eye_housing_angles(name):
     if name.startswith(("Visor_RGBD_", "Ojo_RGBD_")):
         return EYE_YAW if name.endswith("_izq") else -EYE_YAW, EYE_PITCH_DOWN
     return None
+
+
+def head_link(name):
+    if name.startswith("Giro_"):
+        return "HeadPan"
+    if name.startswith(("Cabeza_", "Travesano_camaras", "Anclaje_visor_", "Visor_RGBD_", "Ojo_RGBD_")):
+        return "HeadTilt"
+    return None
+
+
+def wheel_centers():
+    for axle, x in (("frontal", 550), ("trasero", -550)):
+        for side, y in (("izq", 510), ("der", -510)):
+            yield axle + "_" + side, (x, y, WHEEL_RADIUS)
+
+
+@dataclass(frozen=True)
+class WheelMesh:
+    """Cotas locales en mm. profile contiene (posición axial Y, radio) para STEP analítico."""
+    name: str
+    vertices: tuple
+    faces: tuple
+    color: str
+    collision: bool
+    profile: tuple = ()
+
+
+def _wheel_surface(name, points, faces, color, collision=False, profile=()):
+    # Normal exterior también en la rueda opuesta, cuyo perfil metálico está reflejado.
+    volume6 = 0.
+    for face in faces:
+        a = points[face[0]]
+        for i in range(1, len(face)-1):
+            b, c = points[face[i]], points[face[i+1]]
+            volume6 += (a[0]*(b[1]*c[2]-b[2]*c[1]) + a[1]*(b[2]*c[0]-b[0]*c[2])
+                        + a[2]*(b[0]*c[1]-b[1]*c[0]))
+    faces = tuple(tuple(f if volume6 > 0 else reversed(f)) for f in faces)
+    return WheelMesh(name, tuple(points), faces, color, collision, tuple(profile))
+
+
+def _turned_wheel_part(name, profile, color, side, collision=False):
+    profile = tuple((side*y, r) for y, r in profile)
+    rings, points, faces = [], [], []
+    sides = 72
+    for y, r in profile:
+        if r == 0:
+            rings.append([len(points)]*sides)
+            points.append((0, y, 0))
+        else:
+            rings.append(list(range(len(points), len(points)+sides)))
+            points.extend((r*sin(tau*k/sides), y, r*cos(tau*k/sides)) for k in range(sides))
+    for a, b in zip(rings, rings[1:]+rings[:1]):
+        for k in range(sides):
+            j = (k+1) % sides
+            face = tuple(dict.fromkeys((a[k], a[j], b[j], b[k])))
+            if len(face) >= 3:
+                faces.append(face)
+    return _wheel_surface(name, points, faces, color, collision, profile)
+
+
+def _radial_block(name, angle, sections, color, collision=False):
+    # Cuatro esquinas por sección, de dentro a fuera en dirección radial.
+    points = []
+    for section in sections:
+        for y, r, offset in section:
+            theta = angle+radians(offset)
+            points.append((r*sin(theta), y, r*cos(theta)))
+    faces = [(3,2,1), (3,1,0), (4,5,6), (4,6,7)]
+    # Los tacos curvos y con salida de molde pueden tener caras alabeadas.
+    for i in range(4):
+        j = (i+1) % 4
+        faces.extend(((i,j,j+4), (i,j+4,i+4)))
+    return _wheel_surface(name, points, faces, color, collision)
+
+
+def wheel_meshes(side):
+    """Cubierta, tacos en espiga y aro atornillado para una rueda derecha o izquierda."""
+    rubber, tread, rim = "#292E30", "#3B403F", "#B7C2BB"
+    tire = ((-62,135),(-54,129),(52,129),(61,137),(65,165),(65,180),(61,196),
+            (50,207),(34,WHEEL_CORE_RADIUS),(-34,WHEEL_CORE_RADIUS),(-50,207),
+            (-61,196),(-65,180),(-65,165))
+    yield _turned_wheel_part("Neumatico", tire, rubber, side, collision=True)
+    # Garganta de asiento y pestañas de la llanta; el valle abierto deja ver los radios.
+    barrel = ((-63,135),(-54,129),(52,129),(61,137),(66,137),(66,127),(59,120),
+              (36,114),(-54,114),(-63,121))
+    yield _turned_wheel_part("Llanta", barrel, rim, side)
+    hub = ((-65,0),(WHEEL_HALF_WIDTH,0),(WHEEL_HALF_WIDTH,30),(64,42),(54,44),(54,64),
+           (48,67),(37,67),(31,59),(-53,53),(-65,45))
+    yield _turned_wheel_part("Cubo", hub, "#638075", side)
+    for k in range(6):
+        angle = tau*k/6
+        # Radios de plato cóncavo: el borde queda 25 mm detrás de la brida del cubo.
+        sections = []
+        for radius, axial, spread in ((60,40,12), (118,15,18)):
+            sections.append([(side*(axial-5),radius,-spread), (side*(axial-5),radius,spread),
+                             (side*(axial+5),radius,spread), (side*(axial+5),radius,-spread)])
+        yield _radial_block(f"Radio_{k+1}", angle, sections, rim)
+        x, z = 55*sin(angle), 55*cos(angle)
+        points = [(x+7.5*sin(tau*i/6),side*y,z+7.5*cos(tau*i/6))
+                  for y in (54,63) for i in range(6)]
+        faces = [(5,4,3,2,1,0), (6,7,8,9,10,11)]
+        faces.extend((i,(i+1)%6,(i+1)%6+6,i+6) for i in range(6))
+        yield _wheel_surface(f"Perno_{k+1}", points, faces, "#777F7E")
+    for k in range(18):
+        for lane, half in (("A",1), ("B",-1)):
+            # Los dos medios tacos se abren hacia el hombro de la cubierta.
+            lower = [(half*2,211,1), (half*62,191,-10), (half*62,191,-2), (half*2,211,9)]
+            upper = [(half*4,WHEEL_RADIUS,2), (half*58,212,-8),
+                     (half*58,212,-3), (half*4,WHEEL_RADIUS,8)]
+            yield _radial_block(f"Taco_{lane}_{k+1:02}", tau*k/18,
+                                (lower,upper), tread, collision=True)
 
 
 @dataclass(frozen=True)
@@ -159,22 +275,15 @@ def shapes():
     def cylinder_z(r, h):
         return "Z", (r, h)
 
-    frame, shell, rubber = "#284346", "#468675", "#30363B"
+    frame, shell = "#284346", "#468675"
     metal, basket, sensor = "#B2C3BE", "#E3AC53", "#225777"
-    bridge_x = EYE[0]-60
+    pan_x, _, pan_z = HEAD_PAN_PIVOT
+    tilt_x, _, tilt_z = HEAD_TILT_PIVOT
 
     box("Chasis", (1500, 860, 155), (0, 0, 327.5), frame)
     box("Cubierta", (*DECK, 35), (0, 0, 422.5), shell)
     for x, axle in [(550, "frontal"), (-550, "trasero")]:
         part("Eje_" + axle, cylinder_y(45, 1020), (x, 0, 230), metal)
-        for y, side in [(510, "izq"), (-510, "der")]:
-            suffix = axle + "_" + side
-            part("Neumatico_" + suffix, cylinder_y(230, 130),
-                 (x, y, 230), rubber)
-            part("Llanta_" + suffix, cylinder_y(137, 134),
-                 (x, y, 230), metal)
-            part("Cubo_" + suffix, cylinder_y(62, 140),
-                 (x, y, 230), frame)
     for sign, side in [(1, "izq"), (-1, "der")]:
         x, y, z = SHOULDER
         y *= sign
@@ -184,15 +293,29 @@ def shapes():
         axis = eye_axis(sign)
         def behind_lens(distance):
             return tuple(v-distance*a for v,a in zip((ex, sign*ey, ez), axis))
-        box("Anclaje_visor_"+side, (36,28,62), (bridge_x+5,sign*(ey-46),ez+28), frame)
+        box("Anclaje_visor_"+side, (35,28,38), (tilt_x+5,sign*(ey-46),ez+42), frame)
         box("Visor_RGBD_" + side, (90, 121, 66), behind_lens(65), frame)
         part("Ojo_RGBD_" + side, cylinder_x(23, 18), behind_lens(11), sensor)
     lx, ly, lz = LIDAR
-    # El voladizo central retrasa los ojos para despejar la vista entre los hombros.
-    box("Soporte_travesano", (lx-bridge_x, 48, 40), ((lx+bridge_x)/2, 0, EYE[2]), frame)
-    box("Travesano_camaras", (48, 2*EYE[1], 40), (bridge_x, 0, EYE[2]), frame)
+    box("Soporte_travesano", (lx-pan_x+50,54,32), ((lx+pan_x-50)/2,0,pan_z-40), frame)
+    part("Cuello_estator", cylinder_z(45,30), (pan_x,0,pan_z-15), metal)
+    part("Giro_corona", cylinder_z(47,18), (pan_x,0,pan_z+9), frame)
+    box("Giro_base_yugo", (70,146,18), (pan_x,0,pan_z+27), shell)
+    for sign, side in ((1,"izq"),(-1,"der")):
+        box("Giro_oreja_"+side, (40,12,tilt_z-pan_z-36),
+            (tilt_x,sign*67,(tilt_z+pan_z+36)/2), shell)
+        part("Giro_cojinete_"+side, cylinder_y(20,18), (tilt_x,sign*67,tilt_z), metal)
+    part("Giro_reductor_inclinacion", cylinder_y(25,28), (tilt_x,-90,tilt_z), frame)
+    part("Cabeza_eje_inclinacion", cylinder_y(10,150), (tilt_x,0,tilt_z), frame)
+    box("Cabeza_biela", (30,58,42), (tilt_x,0,tilt_z+21), shell)
+    box("Travesano_camaras", (38,2*EYE[1],26), (tilt_x,0,tilt_z+41), frame)
     box("Mastil", (62, 62, 1376), (lx, ly, 1128), frame)
     part("Carcasa_lidar", cylinder_z(60, 60), (lx, ly, lz-54), sensor)
+    # Dos tirantes posteriores sujetan la tapa y dejan libre la ventana frontal de barrido.
+    rim_top, lid_bottom = lz-24, lz+32-4.5
+    for sign, side in ((1, "izq"), (-1, "der")):
+        part("Carcasa_lidar_tirante_"+side, cylinder_z(4, lid_bottom-rim_top),
+             (lx-47, ly+sign*23, (rim_top+lid_bottom)/2), metal)
     part("Tapa_lidar", cylinder_z(62, 9), (lx, ly, lz+32), metal)
     box("IMU_interna", (58, 44, 25), (0, 0, 360), sensor)
     length, width = DECK[0]*BASKET_FRACTION, DECK[1]

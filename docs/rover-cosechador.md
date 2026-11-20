@@ -4,7 +4,7 @@ En Isaac Sim 6.2 abre el [surco con el robot](../assets/agriculture/robot/rover/
 
 ## Mecánica y terreno
 
-- Cuatro ruedas motrices de radio 0,23 m, batalla de 1,10 m y vía de 1,02 m. Cada rueda tiene un guardabarros solidario al chasis con 17 mm de holgura vertical en la corona. La cubierta mide 1,48 × 0,89 m y la canasta ocupa el 60 % delantero.
+- Cuatro ruedas motrices de radio 0,23 m, batalla de 1,10 m y vía de 1,02 m. Cada neumático tiene 18 pares de tacos en espiga con colisión, llanta cóncava de seis radios y seis pernos. Los guardabarros van unidos al chasis. La cubierta mide 1,48 × 0,89 m y la canasta ocupa el 60 % delantero.
 - Los dos UR10e con manos Shadow se apoyan en columnas inclinadas. Cada brida avanza 75 mm y se acerca 26 mm al eje del rover para recoger los codos en marcha. El montaje queda a 1,08 m de altura y abre 12° hacia cada lado. La distancia recta desde cada brida hasta su punto de entrega pasa de 619 a 557 mm.
 - Cada mano dispone de una entrada a la canasta con borde bajo de 622 mm. Dos rampas de 15,6° confluyen en un lecho común. En PhysX, el revestimiento tiene contacto rígido con restitución de 0,02. Los parámetros de masa, fricción y rebote son hipótesis de simulación. El daño de la fruta requiere medición independiente.
 - El bastidor trasero integra nueve tubos cuadrados de 45 a 80 mm con paredes de 3 o 4 mm. Los largueros y el parachoques unen la parte inferior. Dos travesaños y cuatro diagonales vinculan los hombros y el mástil. Con acero de 7.850 kg/m³, la masa nominal añadida es 39,4 kg; el modelo actualiza masa y centro de masas del chasis. La resistencia de soldaduras y la flexión bajo carga quedan por dimensionar.
@@ -31,20 +31,25 @@ Desde la raíz del proyecto, ejecuta el barrido del brazo izquierdo o el ensayo 
 
 | Canal | Origen en Isaac Sim 6.2 | Entrada |
 | --- | --- | --- |
-| Dos ojos RGB-D | Cámaras RTX a 1,72 m, separadas 0,44 m sobre un travesaño trasero. Focal de 12 mm, orientación de 22° hacia su lado y 43° hacia abajo | RGB por CLIP y profundidad óptica en metros por ojo |
+| Dos ojos RGB-D | Cámaras RTX sobre un cabezal común, separadas 0,44 m. En posición cero miran 22° hacia su lado y 43° hacia abajo, a 1,72 m de altura | RGB por CLIP y profundidad óptica en metros por ojo |
+| Cabezal articulado | Dos juntas motrices PhysX. Giro de −40° a +40° (positivo a la izquierda) y elevación de −22° a +38° (positivo hacia arriba), relativos a la vista de cosecha | Dos ángulos medidos por los encoders, en radianes |
 | LiDAR de mástil | `OmniLidar` y `LidarSensor`, perfil giratorio nativo | Retornos con tiempo de captura y máscara de validez |
 | IMU del chasis | `IsaacImuSensor` y `IMUSensor` | Aceleración con gravedad en m/s² y giro en rad/s, en ejes del sensor |
 | Cuatro encoders | Velocidades medidas por las articulaciones PhysX | rad/s en orden delantera izq., delantera der., trasera izq., trasera der. |
 
 El centro óptico del LiDAR queda en **(−0,62; 0; 1,90) m** respecto al chasis, con origen nominal en el suelo bajo el centro de la cubierta. El mástil trasero deja despejada la abertura de la canasta. Un brazo extendido a esa altura y el follaje pueden ocluir direcciones del barrido; comprobar cobertura por azimut con los brazos recogidos, extendidos y descargando fruta.
 
-[Rover en el surco](../assets/agriculture/robot/rover/surco.png) · [Recepción de dos naranjas](../assets/agriculture/robot/rover/recepcion.png) · [Bastidor trasero](../assets/agriculture/robot/rover/trasera.png) · [Captura de los ojos](../assets/agriculture/robot/rover/ojos.png). Cada columna corresponde a un ojo. Arriba aparece RGB y abajo profundidad con escala de 0 a 4 m. Para guardar el RGB y la profundidad métrica original, usa una carpeta de salida nueva.
+[Rover en el surco](../assets/agriculture/robot/rover/surco.png) · [Rueda](../assets/agriculture/robot/rover/llanta.png) · [Cabezal centrado](../assets/agriculture/robot/rover/cabezal_centrado.png) · [Cabezal girado](../assets/agriculture/robot/rover/cabezal.png) · [Bastidor trasero](../assets/agriculture/robot/rover/trasera.png) · [Recepción de dos naranjas](../assets/agriculture/robot/rover/recepcion.png).
+
+La [captura de los ojos](../assets/agriculture/robot/rover/ojos.png) muestra el RGB arriba y la profundidad de 0 a 4 m abajo. Cada columna corresponde a un ojo. Para guardar una observación con ambos ojos, sus profundidades métricas y los ángulos medidos, elige una carpeta de salida nueva.
 
 ```powershell
-.\scripts\run.ps1 rover_eyes --headless --output captures\rover_ojos_01
+.\scripts\run.ps1 rover_eyes --pan-deg 25 --tilt-deg 12 --output captures\rover_cabeza_01
 ```
 
-El [contrato móvil](../src/dexman/tasks/agriculture/mobile_state.py) combina los 120 valores articulares de brazos y manos, cuatro velocidades de rueda y seis canales de IMU en un estado de **130 valores**. El LiDAR, los dos ojos, la orden en español y la memoria entran por canales separados. Para el piloto móvil se proponen 60 consignas articulares y dos de base (avance y giro). Registrar la velocidad medida junto a cada consigna. Las demostraciones de mesa conservan su contrato original.
+Para mover el cabezal desde la ventana del simulador, abre el surco, pulsa **Play** y cambia el objetivo angular de `/Surco/Rover/head_pan_joint` o `/Surco/Rover/head_tilt_joint`. En el barrido de los extremos de ambos ejes, la holgura mínima con el mástil fue de 10,4 mm.
+
+Los **132 valores** del [estado móvil](../src/dexman/tasks/agriculture/mobile_state.py) son, en orden, 60 posiciones de brazos y manos, 60 velocidades articulares, cuatro velocidades de rueda, tres aceleraciones y tres velocidades angulares de la IMU, giro y elevación del cabezal. Los dos últimos valores se miden después de mover la cabeza. El perfil móvil del VLA usa estos ángulos para interpretar las dos imágenes. Sus 60 salidas articulares controlan brazos y manos. El LiDAR y la IMU permanecen fijos al chasis mientras los ojos giran.
 
 ## Criterio de cosecha
 

@@ -70,7 +70,7 @@ def plan(stage):
 def simulate(asset):
     import carb
     import omni.physx
-    from pxr import PhysicsSchemaTools, PhysxSchema, Usd, UsdGeom, UsdPhysics, UsdUtils
+    from pxr import Gf, PhysicsSchemaTools, PhysxSchema, Usd, UsdGeom, UsdPhysics, UsdUtils
 
     stage = Usd.Stage.CreateInMemory()
     UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
@@ -92,12 +92,15 @@ def simulate(asset):
     arms = plan(stage)
     layout = run_path(str(ROOT/"assets/agriculture/robot/rover/layout.py"))
     travel = np.array([layout["ROVER_TRAVEL_DEG"][side] for side in SIDES])
-    # El cubo sobresale 5 mm del neumático en la dirección del eje.
-    wheel_edges = [(xyz[1] + sign * dims[1] / 2) / 1000
-                   for name, (axis, dims), xyz, _ in layout["shapes"]()
-                   if axis == "Y" and name.startswith(("Neumatico_", "Llanta_", "Cubo_"))
-                   for sign in (-1, 1)]
-    wheel_width = (min(wheel_edges), max(wheel_edges))
+    # Medir las cuatro ruedas compuestas del USD que se está ensayando.
+    bbox = UsdGeom.BBoxCache(Usd.TimeCode.Default(), [UsdGeom.Tokens.default_, UsdGeom.Tokens.render])
+    world_to_base = UsdGeom.XformCache().GetLocalToWorldTransform(stage.GetPrimAtPath(BASE)).GetInverse()
+    wheels = [bbox.ComputeWorldBound(prim) for prim in rover.GetPrim().GetChildren()
+              if prim.GetName().startswith("Wheel_")]
+    if len(wheels) != 4:
+        raise ValueError("Se esperaban cuatro ruedas en el USD del rover")
+    bounds = [Gf.BBox3d(w.GetRange(), w.GetMatrix()*world_to_base).ComputeAlignedRange() for w in wheels]
+    wheel_width = (min(b.GetMin()[1] for b in bounds), max(b.GetMax()[1] for b in bounds))
 
     # Soporte de cada colisionador en el eje Y del chasis, incluidas manos y dedos.
     def lateral_envelope(cache, inverse):
@@ -139,7 +142,7 @@ def simulate(asset):
             root = "/World/Rover/" + side + "Arm/"
             if path.startswith(root):
                 return "fixed" if path.startswith(root+"Arm/base_link/") else side
-        if path.startswith(BASE+"/") or path.startswith("/World/Rover/Wheel_"):
+        if path.startswith("/World/Rover/"):
             return "fixed"
         return None
 

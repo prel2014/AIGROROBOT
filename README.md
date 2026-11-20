@@ -2,6 +2,8 @@
 
 Manipulación agrícola de fruta suelta con dos brazos UR10e, manos articuladas y dos cámaras RGB-D. El teacher PPO usa 64 réplicas por defecto. [Tareas y currículo](docs/plan-agricola.md) · [Arquitectura](docs/architecture.md) · [Referencias](docs/referencias-aprendizaje.md) · [Capacidad de VRAM](docs/recursos-vram.md)
 
+El rover de surco lleva cuatro ruedas agrícolas y un cabezal RGB-D con giro y elevación. [Abrir el rover y capturar una observación](docs/rover-cosechador.md#sensores-y-entradas)
+
 ## Preparación
 
 En Windows coloca `isaac-sim-6.2.0`, `IsaacLab` (`release/3.0.0`) y este repositorio en la misma carpeta. Ejecuta desde la raíz del repo en PowerShell, sin conda ni venv. Los scripts usan el Python 3.12 de Isaac Sim. [Versiones fijadas](configs/runtime.lock.json)

@@ -28,10 +28,12 @@ flowchart LR
     eyes --> depth["Profundidad y máscara"]
     instruction["Orden y subtarea en español"] --> text["Multilingual E5"]
     joints["Ángulos y velocidades medidos"] --> proprio["Propiocepción por brazo"]
+    rover["Rover: cuatro ruedas, IMU y giro/elevación del cabezal"] --> mobile["Token de estado móvil"]
     clip --> fusion["Secuencia de tokens a ancho 256"]
     depth --> fusion
     text --> fusion
     proprio --> fusion
+    mobile --> fusion
     previous["Memoria anterior 256"] --> fusion
     fusion --> transformer["Seis bloques Transformer"]
     transformer --> angles["Ocho pasos de 60 ángulos"]
@@ -40,6 +42,7 @@ flowchart LR
     angles --> sim["Controlador y PhysX"]
     sim -.->|"Nuevas imágenes"| eyes
     sim -.->|"Nuevo estado medido"| joints
+    sim -.->|"Encoders e IMU"| rover
 ```
 
 | Modelo | Entradas | Salidas |
@@ -48,8 +51,9 @@ flowchart LR
 | Profundidad | Dos mapas en metros con máscara de validez. | 98 tokens con distancia y proporción válida. |
 | Lenguaje | Orden global y subtarea activa en español. | Multilingual E5 congelado. Un token de 384. |
 | Propiocepción | `q[60]` y `dq[60]`. | Dos tokens de 60, uno por brazo. |
+| Rover de surco | Cuatro velocidades de rueda, seis canales de IMU y dos ángulos medidos del cabezal. | Un token adicional de 256 canales para el perfil móvil. |
 | Memoria | Estado anterior de 256 valores. | Un token de contexto. Se reinicia al comienzo del episodio. |
-| Fusión | 202 tokens de contexto, 16 consultas de acción y una de memoria. | Seis bloques Transformer con 256 canales y ocho cabezas. |
+| Fusión | 202 tokens de contexto en mesa o 203 en el rover, 16 consultas de acción y una de memoria. | Seis bloques Transformer con 256 canales y ocho cabezas. |
 | Salida | Consultas procesadas. | Ocho pasos de 60 ángulos absolutos en radianes y memoria actualizada de 256 valores. |
 
 Los tokens de las modalidades se proyectan a 256 canales y se concatenan en el eje de secuencia. El orden de las cámaras y los brazos es izquierda, derecha. El controlador aplica los límites articulares y permite volver a observar antes de ejecutar el resto del bloque. [Referencias de aprendizaje](referencias-aprendizaje.md)

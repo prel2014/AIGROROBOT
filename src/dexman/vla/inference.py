@@ -93,10 +93,12 @@ class BimanualVLAPredictor:
             saved = torch.load(checkpoint, map_location="cpu", weights_only=True)
         config = saved.get("config") if isinstance(saved, dict) else None
         if (not isinstance(config, dict) or saved.get("policy_version") != POLICY_VERSION
-                or config.get("architecture") != architecture_config()
                 or config.get("horizon") != BimanualActionPolicy.horizon):
             raise ValueError("Se requiere un checkpoint VLA agrícola RGB-D bimanual compatible")
         self.robot_contract = bimanual_contract(config["robot_contract"])
+        schema = self.robot_contract["schema"]
+        if config.get("architecture") != architecture_config(schema):
+            raise ValueError("La dimensión o el perfil de estado del checkpoint no coinciden con el robot")
         self.sources = config["model"], config["text_model"]
         assets = {name: checkpoint.parent / name for name in ("processor", "backbone", "tokenizer", "text_encoder")}
         if not all(path.is_dir() for path in assets.values()):
@@ -104,7 +106,7 @@ class BimanualVLAPredictor:
         self.processor = CLIPImageProcessor.from_pretrained(assets["processor"], local_files_only=True)
         self.tokenizer = AutoTokenizer.from_pretrained(assets["tokenizer"], local_files_only=True)
         encoders = load_frozen_bimanual(assets["backbone"], assets["text_encoder"], local_only=True)
-        self.model = BimanualActionPolicy(self.robot_contract["joint_limits_rad"], *encoders)
+        self.model = BimanualActionPolicy(self.robot_contract["joint_limits_rad"], *encoders, schema=schema)
         declared = self.model.head.joint_limits.detach().clone()
         self.model.head.load_state_dict(saved["head"], strict=True)
         head = self.model.head

@@ -78,7 +78,7 @@ def main():
             if saved.get("policy_version") != policy_version:
                 raise ValueError(f"Checkpoint incompatible. Se requiere versión {policy_version} y la opción de robot correspondiente.")
             if args.bimanual:
-                if saved["config"]["architecture"] != architecture_config():
+                if saved["config"]["architecture"] != architecture_config(saved["config"]["robot_contract"]["schema"]):
                     raise ValueError("La arquitectura bimanual guardada no coincide con la actual")
                 args.text_model = saved["config"]["text_model"]
             else:
@@ -134,7 +134,8 @@ def main():
         processor = CLIPImageProcessor.from_pretrained(args.model)
         tokenizer = AutoTokenizer.from_pretrained(args.text_model, use_fast=True)
         encoders = load_frozen_bimanual(args.model, args.text_model)
-        model = BimanualActionPolicy(args.robot_contract["joint_limits_rad"], *encoders).to(args.device)
+        model = BimanualActionPolicy(args.robot_contract["joint_limits_rad"], *encoders,
+                                     schema=args.robot_contract["schema"]).to(args.device)
     else:
         processor = CLIPProcessor.from_pretrained(args.model)
         model = ActionChunkPolicy(args.model, args.horizon,

@@ -8,9 +8,9 @@ import torch
 from torch.utils.data import Dataset
 
 from dexman.experiments import sha256
-from dexman.tasks.agriculture.interface import ACTION_DIM, EYE_KEYS, STATE_DIM
+from dexman.tasks.agriculture.interface import ACTION_DIM, EYE_KEYS
 from dexman.tasks.agriculture.objectives import SUBTASKS_BY_CROP
-from .bimanual_contract import bimanual_contract
+from .bimanual_contract import bimanual_contract, state_field
 from .bimanual_language import instruction_prompt, tokenize_instructions
 
 
@@ -23,12 +23,13 @@ def episode_instructions(episode, phases, override=None):
     return [instruction_prompt(instruction, subtasks[str(int(phase))]) for phase in phases]
 
 
-def _episode_shape(episode):
+def _episode_shape(episode, schema):
     rgb = episode["rgb"]
     length = len(rgb)
     if not length or rgb.shape != (length, len(EYE_KEYS), 224, 224, 3) or rgb.dtype != np.uint8:
         raise ValueError("RGB agrícola requiere [T,2,224,224,3] uint8 y dos vistas sincronizadas")
-    shapes = {"depth_m": rgb.shape[:-1], "depth_valid": rgb.shape[:-1], "angular_state": (length, STATE_DIM),
+    key, width = state_field(schema)
+    shapes = {"depth_m": rgb.shape[:-1], "depth_valid": rgb.shape[:-1], key: (length, width),
               "joint_command": (length, ACTION_DIM), "phase": (length,), "done": (length,), "time_s": (length,)}
     for key, shape in shapes.items():
         if episode[key].shape != shape:
@@ -46,18 +47,20 @@ def _episode_shape(episode):
 
 def inspect_bimanual_episode(path, episode, metadata):
     contract = bimanual_contract(metadata)
-    length = _episode_shape(episode)
+    length = _episode_shape(episode, contract["schema"])
     limits = np.asarray(contract["joint_limits_rad"])
     times = episode["time_s"][:]
-    if not np.isfinite(times).all() or not np.allclose(np.diff(times), 1 / contract["sample_hz"], atol=2e-5):
+    if (metadata.get("sample_hz") != 30 or not np.isfinite(times).all()
+            or not np.allclose(np.diff(times), 1 / 30, atol=2e-5)):
         raise ValueError("Los timestamps agrícolas deben avanzar a 30 Hz")
+    key, _ = state_field(contract["schema"])
     for start in range(0, length, 32):
         window = slice(start, start + 32)
         depth, valid = episode["depth_m"][window], episode["depth_valid"][window]
         if (valid.dtype != np.bool_ or not np.isfinite(depth).all() or (depth < 0).any()
                 or not np.array_equal(valid, depth > 0)):
             raise ValueError("Inconsistencia entre profundidad en metros y máscara válida")
-        command, state = episode["joint_command"][window], episode["angular_state"][window]
+        command, state = episode["joint_command"][window], episode[key][window]
         if (not np.isfinite(command).all() or not np.isfinite(state).all()
                 or (command < limits[:, 0] - 1e-6).any() or (command > limits[:, 1] + 1e-6).any()):
             raise ValueError("Estado o comando agrícola no finito o fuera de límites físicos")
@@ -91,12 +94,20 @@ class BimanualDemonstrations(Dataset):
             raise ValueError("Modo de órdenes agrícolas desconocido")
         self.prompts = prompts
         self.index = []
+        contract = None
         for path in map(Path, files):
             with h5py.File(path, "r") as episode:
                 if not bool(episode.attrs["success"]):
                     raise ValueError(f"El VLA agrícola solo aprende de episodios exitosos: {path}")
-                length = _episode_shape(episode)
-            self.index.extend((path, start, length) for start in range(0, length, sequence_length))
+                metadata = json.loads(episode.attrs["metadata"])
+                episode_contract = bimanual_contract(metadata)
+                if contract is not None and episode_contract != contract:
+                    raise ValueError("No se pueden mezclar perfiles de estado o límites articulares en un lote")
+                contract = episode_contract
+                schema = contract["schema"]
+                length = _episode_shape(episode, schema)
+            key, _ = state_field(schema)
+            self.index.extend((path, start, length, key) for start in range(0, length, sequence_length))
 
     def __len__(self):
         return len(self.index) * (2 if self.prompts == "both" else 1)
@@ -105,7 +116,7 @@ class BimanualDemonstrations(Dataset):
         guided = self.prompts == "guided"
         if self.prompts == "both":
             index, guided = divmod(index, 2)
-        path, start, length = self.index[index]
+        path, start, length, key = self.index[index]
         stop = min(start + self.sequence_length, length)
         target_stop = min(stop + self.horizon - 1, length)
         valid = stop - start
@@ -117,7 +128,7 @@ class BimanualDemonstrations(Dataset):
             start_phases = phases[np.minimum(np.arange(self.sequence_length), len(phases) - 1)]
             mask = ((np.arange(self.sequence_length)[:, None] < valid) & (offsets < len(target))
                     & (start_phases[:, None] == phases[clipped]))
-            state = episode["angular_state"][start:stop].astype(np.float32)
+            state = episode[key][start:stop].astype(np.float32)
             depth = episode["depth_m"][start:stop].astype(np.float32)
             depth = np.where(episode["depth_valid"][start:stop], depth, 0.)
             return {"rgb": episode["rgb"][start:stop], "depth": depth,

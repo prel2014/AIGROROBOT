@@ -1,11 +1,11 @@
-"""RGB-D and language policy for the fixed torso with two articulated arms."""
+"""RGB-D and language policies for the fixed torso and the agricultural rover."""
 import numpy as np
 import torch
 from torch import nn
 from torch.nn import functional as F
 
 from dexman.tasks.agriculture.interface import ACTION_DIM, ARM_KEYS, EYE_KEYS, JOINTS_PER_ARM, STATE_DIM
-from .bimanual_contract import POLICY_VERSION, architecture_config
+from .bimanual_contract import DEMO_SCHEMA, MOBILE_SCHEMA, POLICY_VERSION, architecture_config
 from .bimanual_language import instruction_prompt, tokenize_instructions
 from .model import TransformerBlock
 
@@ -23,8 +23,12 @@ class BimanualTransformer(nn.Module):
     state_dim = STATE_DIM
     action_dim = ACTION_DIM
 
-    def __init__(self, joint_limits):
+    def __init__(self, joint_limits, *, schema=DEMO_SCHEMA):
         super().__init__()
+        self.schema = schema
+        config = architecture_config(schema)
+        self.state_dim = config["state_dim"]
+        self.architecture = config["name"]
         limits = torch.as_tensor(joint_limits, dtype=torch.float32)
         if (limits.shape != (self.action_dim, 2) or not torch.isfinite(limits).all()
                 or not (limits[:, 1] > limits[:, 0]).all()):
@@ -41,6 +45,10 @@ class BimanualTransformer(nn.Module):
         self.depth_projection = nn.Linear(2, width)
         self.instruction_projection = nn.Linear(self.text_dim, width)
         self.arm_projection = nn.Linear(2 * JOINTS_PER_ARM, width)
+        self.mobile_projection = None
+        if schema == MOBILE_SCHEMA:
+            self.mobile_projection = nn.Linear(self.state_dim - STATE_DIM, width)
+            self.context_tokens += 1
         self.memory_projection = nn.Linear(self.memory_dim, width)
         self.rgb_positions = nn.Parameter(torch.empty(self.vision_tokens, width))
         self.depth_positions = nn.Parameter(torch.empty(self.depth_tokens, width))
@@ -84,8 +92,8 @@ class BimanualTransformer(nn.Module):
                 or min(depth.shape[2:]) < self.depth_grid
                 or state.shape != (batch, self.state_dim) or memory.shape != (batch, self.memory_dim)):
             raise ValueError("Expected RGB tokens [B,100,512], text [B,384], two depth maps, "
-                             "angular state [B,120] and memory [B,256]")
-        q, dq = state.split(self.action_dim, dim=-1)
+                             f"state [B,{self.state_dim}] and memory [B,256]")
+        q, dq = state[:, :STATE_DIM].split(self.action_dim, dim=-1)
         q = (q - self.joint_offset) / self.joint_scale
         arms = torch.cat((q.reshape(batch, len(ARM_KEYS), JOINTS_PER_ARM),
                           torch.asinh(dq).reshape(batch, len(ARM_KEYS), JOINTS_PER_ARM)), dim=-1)
@@ -96,6 +104,11 @@ class BimanualTransformer(nn.Module):
             self.arm_projection(arms) + self.arm_identity,
             self.memory_projection(memory).unsqueeze(1),
         )
+        if self.mobile_projection is not None:
+            # Four wheel speeds, accelerometer, gyro and measured head angles in a rover token.
+            extra = state[:, STATE_DIM:]
+            features = torch.cat((torch.asinh(extra[:, :-2]), extra[:, -2:]), dim=-1)
+            context += (self.mobile_projection(features).unsqueeze(1),)
         queries = (self.action_queries + self.arm_identity).flatten(0, 1)
         tokens = torch.cat((*context, queries.expand(batch, -1, -1),
                             self.memory_query.expand(batch, -1, -1)), dim=1)
@@ -117,15 +130,15 @@ class BimanualActionPolicy(nn.Module):
     memory_dim = BimanualTransformer.memory_dim
     horizon = BimanualTransformer.horizon
 
-    def __init__(self, joint_limits, vision_encoder, text_encoder):
+    def __init__(self, joint_limits, vision_encoder, text_encoder, *, schema=DEMO_SCHEMA):
         super().__init__()
-        self.head = BimanualTransformer(joint_limits)
+        self.head = BimanualTransformer(joint_limits, schema=schema)
         self.backbone = vision_encoder.requires_grad_(False).eval()
         self.text_encoder = text_encoder.requires_grad_(False).eval()
 
     @property
     def architecture_config(self):
-        return architecture_config()
+        return architecture_config(self.head.schema)
 
     def train(self, mode=True):
         super().train(mode)

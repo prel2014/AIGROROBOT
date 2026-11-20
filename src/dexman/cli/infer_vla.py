@@ -33,10 +33,14 @@ def main():
             metadata = json.loads(episode.attrs["metadata"])
             instruction = args.instruction or episode.attrs["instruction"]
             if isinstance(predictor, BimanualVLAPredictor):
-                from dexman.vla.bimanual_contract import bimanual_contract
+                from dexman.vla.bimanual_contract import bimanual_contract, state_field
                 from dexman.vla.bimanual_data import episode_instructions
 
-                if bimanual_contract(metadata) != predictor.robot_contract:
+                single_observation = metadata.get("sample_kind") == "robot_observation"
+                expected = dict(predictor.robot_contract)
+                if single_observation:
+                    expected.pop("sample_hz", None)
+                if bimanual_contract(metadata) != expected:
                     raise ValueError("El episodio y el checkpoint difieren en su contrato agrícola")
                 if not 0 <= args.frame < len(episode["rgb"]):
                     raise ValueError("El fotograma no pertenece al episodio agrícola")
@@ -44,10 +48,14 @@ def main():
                            "instruction": instruction, "frame": args.frame}
                 memory = _read_memory(args.memory_in, context)
                 frame = args.frame
-                prompt, = episode_instructions(episode, [episode["phase"][frame]], override=instruction)
+                if single_observation:
+                    prompt = instruction
+                else:
+                    prompt, = episode_instructions(episode, [episode["phase"][frame]], override=instruction)
                 depth = np.where(episode["depth_valid"][frame], episode["depth_m"][frame], 0.)
+                key, _ = state_field(metadata["schema"])
                 joint_angles, memory = predictor.predict(episode["rgb"][frame], depth, prompt,
-                                                          episode["angular_state"][frame], memory)
+                                                          episode[key][frame], memory)
             else:
                 if contract_from_metadata(metadata) != predictor.robot_contract:
                     raise ValueError("episode and checkpoint robot/action contracts differ")
