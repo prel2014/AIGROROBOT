@@ -105,8 +105,7 @@ def configure(out,crop,versions,survey=False):
     route = g["route"]
     scene.rover.init_state.pos = (*route[0],g["start_z"])
     bearing = route[-1]-route[0]
-    initial_correction = 5. if crop=="berries" else 1.5
-    scene.rover.init_state.rot = yaw(np.degrees(np.arctan2(bearing[1],bearing[0]))+initial_correction)
+    scene.rover.init_state.rot = yaw(np.degrees(np.arctan2(bearing[1],bearing[0]))+1.5)
     scene.rover.spawn.articulation_props = {"":[PhysxArticulationCfg(enabled_self_collisions=True,
         solver_position_iteration_count=16,solver_velocity_iteration_count=4)]}
     scene.rover.spawn.collision_props = {"/(Left|Right)Arm/Hand/.*":[PhysxCollisionCfg(contact_offset=.001,rest_offset=0.)]}
@@ -408,7 +407,8 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg,survey=False,support_chec
             break
     rover.robot.set_joint_velocity_target_index(target=zeros,joint_ids=rover.wheels)
     if survey:
-        print("Error final de estacionamiento (m)",np.linalg.norm(local[:,:2]-route[-1],axis=1),flush=True)
+        print("Error final de estacionamiento (m)",np.linalg.norm(local[:,:2]-route[-1],axis=1),
+              "fruto en planta",stem.attached.tolist(),flush=True)
         return
     for tick in range(24):
         rec = step%2==0

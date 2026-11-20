@@ -70,10 +70,5 @@ def layout(crop):
     t = np.linspace(0,1,55)[:,None]
     field_path = (1-t)**3*controls[0]+3*t*(1-t)**2*controls[1]+3*t*t*(1-t)*controls[2]+t**3*controls[3]
     route = (field_path-offset) @ basis
-    if crop=="berries":
-        # The low outer tyre drops into the rut of the blueberry bed. Start
-        # uphill of the mark and taper the correction to zero at the bush.
-        route[:,1] += .20*(1-t[:,0]**2)
-        start = basis@route[0]+offset
     return dict(fruit=fruit,anchor=local_anchor,route=route,ground=ground,
                 start_z=field.height(*start)-ground+.06,rotation=-np.degrees(heading),translation=np.r_[-basis.T@offset,-ground])
