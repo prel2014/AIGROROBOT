@@ -86,8 +86,8 @@ def textures(rng):
     bump_image(relief + flecks*.1,1.65,directory/"leaf_normal.png")
 
 
-def material(stage, name, color, roughness, texture=None, normal=None):
-    path=ROOT+"/Looks/"+name
+def material(stage, name, color, roughness, texture=None, normal=None, root=ROOT):
+    path=root+"/Looks/"+name
     mat=UsdShade.Material.Define(stage,path)
     surface=UsdShade.Shader.Define(stage,path+"/Surface")
     surface.CreateIdAttr("UsdPreviewSurface")
@@ -104,7 +104,8 @@ def material(stage, name, color, roughness, texture=None, normal=None):
                 continue
             tex=UsdShade.Shader.Define(stage,path+"/"+channel)
             tex.CreateIdAttr("UsdUVTexture")
-            tex.CreateInput("file",Sdf.ValueTypeNames.Asset).Set(Sdf.AssetPath("./textures/"+filename))
+            asset = filename if filename.startswith(".") else "./textures/"+filename
+            tex.CreateInput("file",Sdf.ValueTypeNames.Asset).Set(Sdf.AssetPath(asset))
             tex.CreateInput("sourceColorSpace",Sdf.ValueTypeNames.Token).Set("raw" if channel=="normal" else "sRGB")
             tex.CreateInput("st",Sdf.ValueTypeNames.Float2).ConnectToSource(reader.ConnectableAPI(),"result")
             tex.CreateInput("wrapS",Sdf.ValueTypeNames.Token).Set("repeat")
@@ -223,10 +224,11 @@ def bunch(stage,path,tip,scale,yaw):
     fruit.AddTranslateOp().Set(-Gf.Vec3d(stem_tip))
 
 
-def build():
+def build(single_vine=False):
     rng=np.random.default_rng(SEED)
-    textures(rng)
-    stage=Usd.Stage.CreateNew(str(MODEL/"geometry.usdc"))
+    if not single_vine:
+        textures(rng)
+    stage=Usd.Stage.CreateNew(str(MODEL/("cepa.usdc" if single_vine else "geometry.usdc")))
     root=UsdGeom.Xform.Define(stage,ROOT)
     stage.SetDefaultPrim(root.GetPrim())
     UsdGeom.SetStageMetersPerUnit(stage,1.)
@@ -272,7 +274,7 @@ def build():
             wire=np.c_[-1.99+4.01*t,np.full(len(t),y),z-.016*np.sin(t*math.pi*2)**2]
             wires.tube(wire,.0027,6)
     n_bunch=0
-    for vi,center in enumerate((-1.34,.01,1.34)):
+    for vi,center in enumerate((0.,) if single_vine else (-1.34,.01,1.34)):
         phase=rng.uniform(-math.pi,math.pi)
         z=np.linspace(-.035,.98+rng.uniform(-.045,.055),20)
         trunk=np.c_[center+.053*np.sin(z*5+phase)+.023*np.sin(z*11),
@@ -281,7 +283,7 @@ def build():
         for side in (-1,1):
             t=np.linspace(0,1,16)
             origin=trunk[-1]
-            cordon=origin+np.c_[side*(.64*t),.036*np.sin(2*np.pi*t),
+            cordon=origin+np.c_[side*((.82 if single_vine else .64)*t),.036*np.sin(2*np.pi*t),
                                 .047*(np.sin(t*6+phase)-math.sin(phase))+rng.uniform(-.12,.035)*t]
             wood.tube(cordon,.033-.020*t,12,.10)
             for idx in range(4):
@@ -301,7 +303,7 @@ def build():
                 if idx in (0,2,3):
                     node=shoot[int(rng.choice((1,2,3)))]
                     tip=node+np.array([rng.uniform(-.069,.069),rng.choice([-1,1])*rng.uniform(.09,.18),rng.uniform(-.12,-.044)])
-                    main=vi==1 and side==1 and idx==0
+                    main=vi==(0 if single_vine else 1) and side==1 and idx==0
                     if main: tip=HARVEST
                     route=np.array([node,node+(tip-node)*.43+[.008,0,.022],tip])
                     petioles.tube(route,[.0035,.003,.0017],7)
@@ -337,6 +339,8 @@ def build():
     leaves.CreateScalesAttr(np.asarray(scales,dtype=np.float32))
     leaves.CreateExtentAttr(leaves.ComputeExtentAtTime(Usd.TimeCode.Default(),Usd.TimeCode.Default()))
     for surf,part,mat in [(wood,"oak",bark),(posts,"timber",timber),(wires,"steel",steel)]:
+        if single_vine and part!="oak":
+            continue
         name="vine_row_fruiting_"+part
         surf.write(stage,f"{ROOT}/{name}/{name}",mat,collider=True)
     for surf,name,mat in [(canes,"CurrentSeasonShoots",fresh),(petioles,"Petioles",fresh),(tendrils,"Tendrils",young)]:

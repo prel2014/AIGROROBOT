@@ -17,6 +17,7 @@ def unit(v):
 class Surface:
     def __init__(self):
         self.points, self.faces, self.colors = [], [], []
+        self.uv = []
 
     def add(self, points, faces, colors):
         base = len(self.points)
@@ -27,7 +28,10 @@ class Surface:
     def tube(self, curve, radii, rng, sides=7):
         points, colors, faces = [], [], []
         ridges = rng.uniform(.88, 1.13, sides)
+        distance = 0.
         for ring, center in enumerate(curve):
+            if ring:
+                distance += np.linalg.norm(center-curve[ring-1])
             direction = unit(curve[min(ring+1, len(curve)-1)] - curve[max(0, ring-1)])
             ref = np.array([1., 0., 0.]) if abs(direction[0]) < .8 else np.array([0., 1., 0.])
             side = unit(np.cross(direction, ref))
@@ -36,6 +40,7 @@ class Surface:
                 angle = 2*math.pi*i/sides
                 points.append(center + radii[ring]*ridges[i]*(math.cos(angle)*side + math.sin(angle)*normal))
                 colors.append(np.array([.19, .116, .062])*ridges[i]*rng.uniform(.78, 1.22))
+                self.uv.append((i/sides,distance/.32))
             if ring:
                 offset = (ring-1)*sides
                 for i in range(sides):
@@ -70,6 +75,8 @@ class Surface:
 
 def build():
     configure_usd()
+    from field_foliage import leaf_map
+    from build_grapevine import material
     from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade, Vt
 
     rng = np.random.default_rng(1811)
@@ -121,36 +128,49 @@ def build():
     root = UsdGeom.Xform.Define(stage, "/OrangeTree")
     stage.SetDefaultPrim(root.GetPrim())
 
-    def author(surface, name, roughness, leaf=False):
+    def author(surface, name, mat, leaf=False):
         mesh = UsdGeom.Mesh.Define(stage, f"/OrangeTree/{name}")
         points = Vt.Vec3fArray.FromNumpy(np.asarray(surface.points, dtype=np.float32))
         colors = Vt.Vec3fArray.FromNumpy(np.asarray(surface.colors, dtype=np.float32))
         mesh.CreatePointsAttr(points)
+        vertices = np.asarray(surface.points)
+        normals = np.zeros_like(vertices)
+        for face in surface.faces:
+            p = vertices[list(face)]
+            normals[list(face)] += np.cross(p[1]-p[0],p[-1]-p[0])
+        normals /= np.maximum(np.linalg.norm(normals,axis=1,keepdims=True),1.e-10)
+        mesh.CreateNormalsAttr(normals.astype("f"))
+        mesh.SetNormalsInterpolation("vertex")
         mesh.CreateFaceVertexCountsAttr([len(face) for face in surface.faces])
         mesh.CreateFaceVertexIndicesAttr([idx for face in surface.faces for idx in face])
         mesh.CreateExtentAttr(UsdGeom.PointBased.ComputeExtent(points))
         mesh.CreateSubdivisionSchemeAttr(UsdGeom.Tokens.none)
         mesh.CreateDoubleSidedAttr(leaf)
         mesh.CreateDisplayColorPrimvar(UsdGeom.Tokens.vertex).Set(colors)
-        mat_path = f"/OrangeTree/Materials/{name}"
-        mat = UsdShade.Material.Define(stage, mat_path)
-        shader = UsdShade.Shader.Define(stage, mat_path+"/Surface")
-        shader.CreateIdAttr("UsdPreviewSurface")
-        shader.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(roughness)
-        reader = UsdShade.Shader.Define(stage, mat_path+"/Color")
-        reader.CreateIdAttr("UsdPrimvarReader_float3")
-        reader.CreateInput("varname", Sdf.ValueTypeNames.Token).Set("displayColor")
-        reader.CreateOutput("result", Sdf.ValueTypeNames.Float3)
-        shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).ConnectToSource(reader.ConnectableAPI(), "result")
-        mat.CreateSurfaceOutput().ConnectToSource(shader.ConnectableAPI(), "surface")
         UsdShade.MaterialBindingAPI.Apply(mesh.GetPrim()).Bind(mat)
         return mesh.GetPrim()
 
     # Only woody parts are static physical obstacles. The leaf mesh is a visual occluder.
-    branches = author(wood, "Branches", .82)
+    bark = material(stage,"Corteza",(.19,.11,.06),.89,"../models/vineyard/textures/vine_bark.png",
+                    "../models/vineyard/textures/vine_bark_normal.png",root="/OrangeTree")
+    branches = author(wood, "Branches", bark)
+    uvs = []
+    for face in wood.faces:
+        ring_uv = [wood.uv[i] for i in face]
+        seam = max(u for u,v in ring_uv)-min(u for u,v in ring_uv)>.5
+        uvs.extend([(u+1 if seam and u==0 else u,v) for u,v in ring_uv])
+    UsdGeom.PrimvarsAPI(branches).CreatePrimvar("st",Sdf.ValueTypeNames.TexCoord2fArray,"faceVarying").Set(np.asarray(uvs,dtype="f"))
     UsdPhysics.CollisionAPI.Apply(branches)
     UsdPhysics.MeshCollisionAPI.Apply(branches).CreateApproximationAttr("none")
-    author(leaves, "Leaves", .34, leaf=True)
+    leaf_file = OUTPUT.parent.parent/"models/orange_tree/textures/hoja_huerto.png"
+    leaf_map(leaf_file, 1811, (61,111,40))
+    leaf_material = material(stage,"Hojas",(.11,.24,.04),.42,
+                             "../models/orange_tree/textures/hoja_huerto.png",root="/OrangeTree")
+    foliage = author(leaves, "Leaves", leaf_material, leaf=True)
+    # Blade vertices run along seven sections, left edge to right edge.
+    uv = np.tile([(u,i/6) for i in range(7) for u in (0,.5,1)], (len(leaves.points)//21,1))
+    UsdGeom.PrimvarsAPI(foliage).CreatePrimvar("st", Sdf.ValueTypeNames.TexCoord2fArray,
+                                               "vertex").Set(uv.astype("f"))
     UsdGeom.Xform.Define(stage, "/OrangeTree/Fruit")
     for i, top in enumerate(hanging):
         fruit = UsdGeom.Xform.Define(stage, f"/OrangeTree/Fruit/Orange{i:02d}")

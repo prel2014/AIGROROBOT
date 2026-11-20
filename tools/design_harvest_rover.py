@@ -99,38 +99,48 @@ def terrain(stage):
     UsdPhysics.CollisionAPI.Apply(subsoil.GetPrim())
     color(subsoil, (.23, .12, .06))
 
-    # Capa granular sobre un tramo, con fondo rígido bajo los granos.
-    system = stage.DefinePrim(WORLD + "/SueloGranular", "PhysxParticleSystem")
-    system.CreateRelationship("simulationOwner", False).SetTargets([WORLD + "/Physics"])
+    granular_patch(stage, WORLD, ground_z, 1.4, -.75, 41)
+
+
+def granular_patch(stage, root, height, x0, y0, seed, irregular=False):
+    """Up to three mobile particle layers over a 1.2 × 1.5 m patch of rigid subsoil."""
+    system = stage.DefinePrim(root + "/SueloGranular", "PhysxParticleSystem")
+    system.CreateRelationship("simulationOwner", False).SetTargets([root + "/Physics"])
     for name, value in (("restOffset", .012), ("solidRestOffset", .012),
                         ("contactOffset", .016), ("particleContactOffset", .016)):
         attr(system, name, T.Float, value)
-    mat = UsdShade.Material.Define(stage, WORLD + "/Materials/TierraSuelta")
+    mat = UsdShade.Material.Define(stage, root + "/Materials/TierraSuelta")
     schemas(mat.GetPrim(), "PhysxPBDMaterialAPI")
     attr(mat.GetPrim(), "physxPBDMaterial:friction", T.Float, .55)
     attr(system, "enableCCD", T.Bool, True)
     attr(system, "maxVelocity", T.Float, 2.5)
     attr(system, "solverPositionIterationCount", T.Int, 24)
     bind(system, mat)
-    grains = UsdGeom.Points.Define(stage, WORLD + "/Terrones")
+    grains = UsdGeom.Points.Define(stage, root + "/Terrones")
     prim = grains.GetPrim()
     schemas(prim, "PhysxParticleSetAPI")
     prim.CreateRelationship("physxParticle:particleSystem", False).SetTargets([system.GetPath()])
     attr(prim, "physxParticle:fluid", T.Bool, False)
     attr(prim, "physxParticle:selfCollision", T.Bool, True)
-    rng = random.Random(41)
+    rng = random.Random(seed)
     centers = []
     for k in range(3):
         for i in range(48):
             for j in range(60):
-                x = 1.4 + .025*i + rng.uniform(-.0004,.0004)
-                y = -.75 + .025*j + rng.uniform(-.0004,.0004)
-                centers.append((x, y, ground_z(x,y)+.018+.025*k))
+                if irregular:
+                    u,v = (i-23.5)/23.5,(j-29.5)/29.5
+                    edge = u*u+v*v+.11*math.sin(9*u+5*v)+.07*math.cos(12*v)
+                    if edge>1.-.24*k:
+                        continue
+                jitter = .003 if irregular else .0004
+                x = x0 + .025*i + rng.uniform(-jitter,jitter)
+                y = y0 + .025*j + rng.uniform(-jitter,jitter)
+                centers.append((x, y, height(x,y)+.018+.025*k))
     grains.CreatePointsAttr(centers)
     grains.CreateVelocitiesAttr([Gf.Vec3f(0.)] * len(centers))
     grains.CreateWidthsAttr([.024])
     grains.SetWidthsInterpolation(UsdGeom.Tokens.constant)
-    color(grains, (.35, .21, .09))
+    color(grains, (.17,.105,.059) if irregular else (.35,.21,.09))
     UsdPhysics.MassAPI.Apply(prim).CreateMassAttr(len(centers)*.009)
 
 

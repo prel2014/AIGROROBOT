@@ -2,6 +2,27 @@
 
 En Isaac Sim 6.2 abre el [surco con el robot](../assets/agriculture/robot/rover/surco.usdc) con **File → Open** y pulsa **Play** para ver la postura de marcha. También puedes inspeccionar el [rover ensamblado](../assets/agriculture/robot/rover/rover.usdc) y el [chasis STEP](../assets/agriculture/robot/rover/chasis.step). El STEP usa milímetros y el USD metros, con X hacia delante, Y hacia la izquierda y Z hacia arriba.
 
+## Parcelas de cultivo
+
+Cada USD incluye el rover en la entrada, tres hileras curvas de 24 m, dos calles, cabeceras de 5 m y cerca de postes y alambre. En el selector de cámara elige **General**, **Calle** o **Fruto** bajo `/Parcela/Vistas`. [Galería de Isaac Sim](../assets/agriculture/previews/parcelas/galeria.jpg) · [Capturas individuales](../assets/agriculture/previews/parcelas)
+
+| Abrir en Isaac Sim | Hileras × plantas | Entre hileras / plantas | Detalle del terreno y del cultivo |
+| --- | --- | --- | --- |
+| [Naranjal](../assets/agriculture/parcelas/naranjal.usdc) | 3 × 8 | 6 / 3 m | Ladera con roca, copa abierta, corteza, hojas nervadas y naranjas con piel porosa. |
+| [Platanal](../assets/agriculture/parcelas/platanal.usdc) | 3 × 8 | 4 / 3 m | Rodadas de hasta 8 cm, tierra granular y balde. Racimos verdes, flor, hojas rasgadas y pseudotallos. |
+| [Viñedo](../assets/agriculture/parcelas/vinedo.usdc) | 3 × 13 | 3 / 1,8 m | Espaldera sobre pendiente transversal, sarmientos y racimos. Un poste caído invade la calle. |
+| [Parcela de arándanos](../assets/agriculture/parcelas/arandanal.usdc) | 3 × 24 | 3 / 1 m | Camellones de 35 cm, tierra granular y rama caída. Bayas con cáliz y cuatro tonos de maduración. |
+
+La referencia geométrica de ida, giro y regreso está en `/Parcela/Navegacion`, atributo `ruta:centroNominal`, en metros locales. Las cabeceras y los obstáculos están disponibles para ensayar navegación. El teacher actual opera en el puesto de cosecha. Quedan por validar el recorrido autónomo y el desprendimiento de fruta en estas parcelas.
+
+Para fotografiar una parcela y comprobar con PhysX el suelo, una rodada, la cerca y el obstáculo, ejecuta desde la raíz del repositorio. Sustituye `citrus` por `banana`, `vineyard` o `berries` para las demás.
+
+```powershell
+..\isaac-sim-6.2.0\python.bat tools\render_crop_field.py --crop citrus
+```
+
+Las dimensiones y semillas están en [field_layout.py](../src/dexman/tasks/agriculture/field_layout.py). Regenera los cuatro USD con `..\isaac-sim-6.2.0\python.bat tools\build_crop_fields.py`. Referencias de trazado y plantación. [FAO, curvas de nivel](https://www.fao.org/4/u3160e/u3160e07.htm) · [UF/IFAS, cítricos](https://ask.ifas.ufl.edu/publication/HS1302) · [INIA, plátano](https://repositorio.inia.gob.pe/server/api/core/bitstreams/c15c824a-9483-4525-8c8b-eb465bc4930d/content) · [Oregon State, uva de mesa](https://extension.oregonstate.edu/catalog/ec-1639-growing-table-grapes) · [INIA, arándanos](https://biblioteca.inia.cl/server/api/core/bitstreams/6fd5c9f9-0d6d-43eb-ac11-9ae014bd8326/content)
+
 ## Mecánica y terreno
 
 - Cuatro ruedas motrices de radio 0,23 m, batalla de 1,10 m y vía de 1,02 m. Cada neumático tiene 18 pares de tacos en espiga con colisión, llanta cóncava de seis radios y seis pernos. Los guardabarros van unidos al chasis. La cubierta mide 1,48 × 0,89 m y la canasta ocupa el 60 % delantero.

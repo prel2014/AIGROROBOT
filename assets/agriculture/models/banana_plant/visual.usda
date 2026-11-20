@@ -14,6 +14,65 @@ def Xform "Asset"
         references = @./geometry.usdc@
     )
     {
+        over "Looks"
+        {
+            over "Green_bananas"
+            {
+                def Shader "Relieve"
+                {
+                    uniform token info:id = "UsdUVTexture"
+                    float4 inputs:bias = (-1, -1, -1, 0)
+                    asset inputs:file = @./textures/f8_banana_fruit_basecolor_relieve.png@
+                    float4 inputs:scale = (2, 2, 2, 1)
+                    token inputs:sourceColorSpace = "raw"
+                    float2 inputs:st.connect = </Asset/Geometry/Looks/Green_bananas/diffuseTex_UsdTransform2d.outputs:result>
+                    float3 outputs:rgb
+                }
+
+                over "Green_bananas"
+                {
+                    normal3f inputs:normal.connect = </Asset/Geometry/Looks/Green_bananas/Relieve.outputs:rgb>
+                }
+            }
+
+            over "Banana_leaf__5_mm_blade_"
+            {
+                def Shader "Relieve"
+                {
+                    uniform token info:id = "UsdUVTexture"
+                    float4 inputs:bias = (-1, -1, -1, 0)
+                    asset inputs:file = @./textures/f8_banana_leaf_basecolor_relieve.png@
+                    float4 inputs:scale = (2, 2, 2, 1)
+                    token inputs:sourceColorSpace = "raw"
+                    float2 inputs:st.connect = </Asset/Geometry/Looks/Banana_leaf__5_mm_blade_/diffuseTex_UsdTransform2d.outputs:result>
+                    float3 outputs:rgb
+                }
+
+                over "Banana_leaf__5_mm_blade_"
+                {
+                    normal3f inputs:normal.connect = </Asset/Geometry/Looks/Banana_leaf__5_mm_blade_/Relieve.outputs:rgb>
+                }
+            }
+
+            over "Pseudostem_and_petioles__mottled_leaf_sheaths"
+            {
+                def Shader "Relieve"
+                {
+                    uniform token info:id = "UsdUVTexture"
+                    float4 inputs:bias = (-1, -1, -1, 0)
+                    asset inputs:file = @./textures/f8_pseudostem_basecolor_relieve.png@
+                    float4 inputs:scale = (2, 2, 2, 1)
+                    token inputs:sourceColorSpace = "raw"
+                    float2 inputs:st.connect = </Asset/Geometry/Looks/Pseudostem_and_petioles__mottled_leaf_sheaths/diffuseTex_UsdTransform2d.outputs:result>
+                    float3 outputs:rgb
+                }
+
+                over "Pseudostem_and_petioles__mottled_leaf_sheaths"
+                {
+                    normal3f inputs:normal.connect = </Asset/Geometry/Looks/Pseudostem_and_petioles__mottled_leaf_sheaths/Relieve.outputs:rgb>
+                }
+            }
+        }
     }
 }
 

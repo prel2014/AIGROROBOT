@@ -4,6 +4,8 @@ Manipulación agrícola de fruta suelta con dos brazos UR10e, manos articuladas 
 
 El teacher y el estudiante del rover controlan los brazos y orientan ambos ojos RGB-D. Para usar este perfil en el puesto de cosecha, añade `--rover` al teacher y al recolector. [Validar los ojos, entrenar y capturar](docs/rover-cosechador.md#teacher-y-demostraciones-del-rover)
 
+Para inspeccionar el rover entre hileras curvas de naranjos, plátanos, vides y arándanos, abre una de las [cuatro parcelas en Isaac Sim](docs/rover-cosechador.md#parcelas-de-cultivo).
+
 ## Preparación
 
 En Windows coloca `isaac-sim-6.2.0`, `IsaacLab` (`release/3.0.0`) y este repositorio en la misma carpeta. Ejecuta desde la raíz del repo en PowerShell, sin conda ni venv. Los scripts usan el Python 3.12 de Isaac Sim. [Versiones fijadas](configs/runtime.lock.json)
