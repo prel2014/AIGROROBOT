@@ -105,6 +105,11 @@ El robot 000 usa la postura derecha calibrada y el 001 ensaya el acceso lateral 
 
 Cada rover guarda dos MP4 sincronizados, exterior y RGB-D de ambos ojos. `subpasos.json` registra oposición, deslizamiento, velocidad y altura a 120 Hz. `pixeles.json` cuenta los píxeles visibles del fruto en cada ojo a 15 fps.
 
+| Trayectoria de la mano derecha | Sostén por encima de 15 cm | Vista exterior | Ojos RGB-D |
+| --- | ---: | --- | --- |
+| Calibrada | 4,40 s | [Abrir MP4](videos/platano/derecha_calibrada/robot_000.mp4) | [Abrir MP4](videos/platano/derecha_calibrada/robot_000_ojos.mp4) |
+| Despejada | 4,43 s | [Abrir MP4](videos/platano/derecha_despejada/robot_000.mp4) | [Abrir MP4](videos/platano/derecha_despejada/robot_000_ojos.mp4) |
+
 ### Agarre y depósito en el surco de naranjos
 
 Para probar las tareas 1 y 3, ejecuta desde la raíz del repositorio con FFmpeg disponible. Elige una carpeta de salida nueva.
