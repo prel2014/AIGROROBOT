@@ -80,6 +80,19 @@ Los **132 valores** del [estado móvil](../src/dexman/tasks/agriculture/mobile_s
 
 ## Teacher y demostraciones del rover
 
+### Recorrido y cosecha en cuatro cultivos
+
+Desde la raíz, ejecuta este ejemplo con una carpeta de salida nueva. Usa `citrus`, `banana`, `vineyard` o `berries`. Cada ensayo recorre unos 3,3 m desde la calle hasta la planta y prueba dos aproximaciones con manos distintas. El controlador recoge el brazo inactivo y planifica el codo y la muñeca con respecto a la línea de visión de ambos ojos.
+
+```powershell
+..\isaac-sim-6.2.0\python.bat tools\film_field_cycle.py --viz none --crop berries --output captures\mi_cosecha\arandanal
+python tools\field_video_index.py captures\mi_cosecha
+```
+
+Abre `index.html` para comparar los dos MP4 sincronizados y saltar al cierre, sostén o depósito. Con `--extended-lift` se ensaya un recorrido de muñeca 7,5 cm mayor y un 12 % más de cierre articular.
+
+`resultado.json` registra el recorrido, el agarre con contacto, el sostén de 15 cm durante 0,5 s y el reposo en la canasta. `visibilidad.json` mide los obstáculos delante del fruto con la profundidad de cada ojo. `rayos.json` registra el primer colisionador identificado entre el ojo y el centro del fruto, incluida la mano. Las fuerzas de rotura del pedúnculo son parámetros del ensayo.
+
 ### Agarre y depósito en el surco de naranjos
 
 Para probar las tareas 1 y 3, ejecuta desde la raíz del repositorio con FFmpeg disponible. Elige una carpeta de salida nueva.

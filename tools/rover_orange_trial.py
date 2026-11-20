@@ -99,7 +99,9 @@ def matrix(pose):
     return m
 
 
-def make_path(env, index, side, approach, reference, fruit, offset, probe):
+def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
+              reference_fruit=(.30,-.12,.9355), sightline_solver=None, residuals=None,
+              clearance_cost=None, keep_fruit_heading=False, lift_margin_m=0.):
     from agriculture_grasp_geometry import _Kinematics, _solve_arm
     from dexman.tasks.agriculture.scene import arm
     group, = env.batch.groups
@@ -115,13 +117,19 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe):
     chassis[:3,3] -= origin
     seed_base = arm(-1).init_state
     old_base = matrix([*seed_base.pos,*seed_base.rot])
-    old_fruit = np.array([.30,-.12,.9355])
+    old_fruit = np.array(reference_fruit)
     a = old_fruit[:2]-old_base[:2,3]
     b = fruit[:2]-base[:2,3]
     turn = Rotation.from_rotvec([0,0,np.arctan2(b[1],b[0])-np.arctan2(a[1],a[0])]).as_matrix()
+    if keep_fruit_heading:
+        turn = np.eye(3)
     limits = env.batch.joint_limits[index,side*30:(side+1)*30].cpu().numpy()
     low, high = limits.T
     def solve(q,position,axes):
+        if sightline_solver is not None:
+            result,error = sightline_solver(kin,base,q,low,high,position,axes)
+            residuals.append(float(error))
+            return result
         result,error = _solve_arm(kin,base,q,low,high,position,axes)
         if error>.006:
             # The Shadow wrist adds two degrees of freedom close to the left shoulder limit.
@@ -129,10 +137,37 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe):
         if error>.014:
             raise ValueError(f"{owner} unreachable at {position.round(3)}, IK residual {error:.4f}")
         return result
+    def elbow_seed(q,lower):
+        if not lower:
+            return q
+        alternative = q.copy()
+        # The two UR10e arm links admit complementary elbow-up/down solutions.
+        delta = 2*np.arctan2(.572*np.sin(q[2]),.613+.572*np.cos(q[2]))
+        alternative[1:4] = (q[1]+delta,-q[2],q[3]+2*q[2]-delta)
+        return alternative
+    lower_elbow = False
+    if clearance_cost is not None:
+        # Different wrist approaches can reach the same fruit. Select one using both
+        # physical eye positions before committing to the close and lift trajectory.
+        seed = reference[2]
+        closed_frame = kin.fk(kin.arm,seed,old_base)
+        choices = []
+        angles = (0.,-8.,8.,-18.,18.) if keep_fruit_heading else (0.,-35.,35.,-65.,65.)
+        for angle in angles:
+            orientation = Rotation.from_euler("z",angle,degrees=True).as_matrix()@turn
+            position = fruit+orientation@(closed_frame[:3,3]-old_fruit+offset)
+            for lower in ((False,True) if low[2]<-1. else (False,)):
+                q,error = sightline_solver(kin,base,elbow_seed(seed,lower),low,high,position,orientation@closed_frame[:3,:3])
+                cost = clearance_cost(kin,base,q,fruit)
+                rank = 6.*error+np.linalg.norm(cost)+.000025*abs(angle)
+                choices.append((rank,orientation,lower))
+        _,turn,lower_elbow = min(choices,key=lambda item:item[0])
     aligned = []
-    for q in reference:
+    for k,q in enumerate(reference):
         old = kin.fk(kin.arm,q,old_base)
-        aligned.append(solve(q,fruit+turn@(old[:3,3]-old_fruit+offset),turn@old[:3,:3]))
+        goal = fruit+turn@(old[:3,3]-old_fruit+offset)
+        goal[2] += lift_margin_m*max(0.,(k-2)/(len(reference)-3))
+        aligned.append(solve(elbow_seed(q,lower_elbow),goal,turn@old[:3,:3]))
     pickup = kin.fk(kin.arm,aligned[0],base)
     beginning = solve(aligned[0],pickup[:3,3]+approach,pickup[:3,:3])
     knots = [(beginning,"aproximacion",1),(aligned[0],"aproximacion",30),
@@ -150,13 +185,20 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe):
         # The fingers keep their physical preload. Let the wrist tilt while the
         # estimated centre of the grasp follows the delivery path.
         centre_goal = palm_goal+top[:3,:3]@pivot
-        def residual(angles):
+        def residual(angles,clearance_weight=1.):
             pose = kin.fk(kin.arm,np.r_[angles,q[8:]],base)
             dv = pose[:3,3]+pose[:3,:3]@pivot-centre_goal
             dr = Rotation.from_matrix(top[:3,:3].T@pose[:3,:3]).as_rotvec()
-            return np.r_[dv,.022*dr,.002*(angles-q[:8])]
+            cost = np.r_[dv,.022*dr,.002*(angles-q[:8])]
+            if clearance_cost is not None:
+                cost = np.r_[cost,clearance_weight*clearance_cost(kin,base,np.r_[angles,q[8:]],centre_goal)]
+            return cost
         result = least_squares(residual,np.clip(q[:8],low[:8],high[:8]),bounds=(low[:8],high[:8]))
-        if np.linalg.norm(result.fun[:3])>.012:
+        if clearance_cost is not None and np.linalg.norm(result.fun[:3])>.009:
+            result = least_squares(residual,result.x,bounds=(low[:8],high[:8]),args=(.09,))
+        if residuals is not None:
+            residuals.append(float(np.linalg.norm(result.fun[:3])))
+        elif np.linalg.norm(result.fun[:3])>.012:
             raise ValueError(f"{owner} cannot carry fruit to {centre_goal}: {result.fun[:3]}")
         return np.r_[result.x,q[8:]]
     sign = 1 if side==0 else -1
@@ -178,9 +220,11 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe):
 
 
 class Film:
-    def __init__(self, folder, trials):
+    def __init__(self, folder, trials, *, record_obstructions=False):
         self.folder = folder
         self.trials = trials
+        self.record_obstructions = record_obstructions
+        self.live_frames = np.zeros((len(trials),2),dtype=int)
         self.frames = {f"robot_{i:03d}{suffix}": folder/f"fotogramas_{i:03d}{suffix}"
                        for i in range(len(trials)) for suffix in ("","_ojos")}
         self.index = 0
@@ -206,16 +250,22 @@ class Film:
             name = f"robot_{i:03d}"
             frame_path = f"{self.index:05d}.jpg"
             canvas.save(self.frames[name]/frame_path,quality=93)
-            self.eyes(eyes_rgb[i],eyes_depth[i],i,phase).save(self.frames[name+"_ojos"]/frame_path,quality=93)
+            valid = (np.isfinite(eyes_depth[i]) & (eyes_depth[i]>0)).any(axis=(1,2))
+            self.live_frames[i] += valid & (eyes_rgb[i].std(axis=(1,2,3))>2)
+            self.eyes(eyes_rgb[i],eyes_depth[i],i,phase,self.record_obstructions).save(self.frames[name+"_ojos"]/frame_path,quality=93)
         self.index += 1
+        return eyes_depth
 
     @staticmethod
-    def eyes(rgb, depth, index, phase):
+    def eyes(rgb, depth, index, phase, record_obstructions=False):
         from PIL import Image, ImageDraw
 
         h, w = rgb.shape[1:3]
         valid = np.isfinite(depth) & (depth > 0.)
-        if any(view.std() < 2 for view in rgb) or not valid.any(axis=(1,2)).all():
+        # A near surface directly over a lens can legitimately produce a black RGB frame.
+        covered = ((depth<.30)&valid).mean(axis=(1,2))>.55
+        if not record_obstructions and (any(view.std()<2 and not occluded for view,occluded in zip(rgb,covered))
+                                        or not valid.any(axis=(1,2)).all()):
             raise RuntimeError(f"Falta RGB o profundidad en un ojo del robot {index}")
         gray = np.zeros(depth.shape, dtype=np.uint8)
         gray[valid] = (255 * np.clip((2.5-depth[valid])/(2.5-.055),0,1)).astype(np.uint8)
@@ -231,6 +281,8 @@ class Film:
         return canvas
 
     def encode(self,ffmpeg):
+        if (self.live_frames==0).any():
+            raise RuntimeError(f"Faltan muestras RGB-D por ojo: {self.live_frames.tolist()}")
         for name,directory in self.frames.items():
             dest = self.folder/f"{name}.mp4"
             subprocess.run([ffmpeg,"-hide_banner","-loglevel","error","-framerate","15","-i",
