@@ -120,7 +120,29 @@ Para reproducir las poses de la trayectoria calibrada en Isaac Sim desde la raí
 
 ### Agarre y depósito en el surco de naranjos
 
-Para probar las tareas 1 y 3, ejecuta desde la raíz del repositorio con FFmpeg disponible. Elige una carpeta de salida nueva.
+Para ejecutar las tres situaciones con la misma semilla, desde la raíz del repositorio y con FFmpeg disponible, elige una carpeta nueva.
+
+```powershell
+.\scripts\naranjal.ps1 -Salida captures\naranjal_01
+```
+
+| Ensayo | Orden y comprobación |
+|---|---|
+| `estacionada` | «Recoge la naranja exterior por el costado». La base empieza en la estación y se mide su deriva. |
+| `roca` | «Avanza por el surco. Si ves obstáculos, esquívalos». El planificador usa la posición de la roca en el mapa y mide el margen del chasis durante el recorrido. El rover se detiene si pierde el margen. |
+| `izquierda` y `derecha` | «De las dos naranjas, recoge la de la izquierda» o «recoge la de la derecha». Se conserva la disposición física, se interpreta el lado desde el rover y se miden contacto, desplazamiento y desprendimiento de la vecina. |
+
+Todas continúan con «Elévala 15 cm, sostenla medio segundo y déjala en la canasta». Cada orden guarda un MP4 exterior y otro con el RGB y la profundidad de ambos ojos. `resultado.json` distingue agarre, sostén y depósito. Son trayectorias guiadas por un controlador. Para repetir una orden, añade por ejemplo `-Tarea derecha`. Para medir sin vídeo, añade `-SoloFisica`. [Ensayos registrados](../simulaciones/naranjal)
+
+Con la roca, el cierre progresivo consiguió la mayor elevación. En las tareas estacionadas se conserva la consigna de los motores cuando PhysX mide oposición. La selección izquierda usa el brazo izquierdo y la derecha, el derecho.
+
+También se puede pasar directamente una de las órdenes de selección en español.
+
+```powershell
+..\isaac-sim-6.2.0\python.bat tools\film_field_cycle.py --viz none --crop citrus --orden "Recoge la naranja de la izquierda" --output captures\seleccion_izquierda_01
+```
+
+El banco anterior permite comparar tres trayectorias de aproximación con el rover estacionado.
 
 ```powershell
 ..\isaac-sim-6.2.0\python.bat tools\rover_orange_trial.py --viz none --output captures\surco_naranjal_01
@@ -131,6 +153,20 @@ El rover queda estacionado frente al tercer árbol de la segunda hilera. Una ram
 Cada robot guarda dos MP4 sincronizados a 15 fps. `robot_NNN.mp4` muestra las vistas exterior y superior con la elevación desde la posición inicial del fruto. `robot_NNN_ojos.mp4` muestra el RGB de ambos ojos en la fila superior y su profundidad en la inferior. En la escala de 0,055 a 2,5 m, lo cercano aparece claro.
 
 `resultado.json` separa el agarre, el sostén a 15 cm durante 0,5 s y el depósito con la mano retirada. PhysX mide el contacto del pulgar y dos dedos, el deslizamiento, la altura y el contacto con la canasta. `mediciones.json` conserva esas señales por paso. Las trayectorias son guiadas por cinemática inversa.
+
+### Plan de ensayos para naranja, uva y arándano
+
+El siguiente bloque propone nueve situaciones de cosecha guiada en Isaac Sim. Primero se aísla el agarre con el rover estacionado. Después se incorpora el recorrido por el surco y, por último, la selección de fruto o la coordinación de ambas manos.
+
+| Cultivo | 1. Agarre en estación | 2. Recorrido y obstáculos | 3. Tarea de mayor dificultad |
+| --- | --- | --- | --- |
+| Naranja | Tomar una naranja exterior desde un costado, oponer el pulgar a dos dedos y desprenderla con tracción progresiva. | Seguir la curva del naranjal, rodear una roca y estacionarse del lado que dé acceso a la rama. | Colocar dos naranjas físicas en la misma escena. Alternar las órdenes «recoge la de la izquierda» y «recoge la de la derecha», medidas desde el rover estacionado. Comprobar cuál llega a la canasta. |
+| Racimo de uvas | Entrar por el lado libre de la espaldera, sostener el racimo desde abajo, desprenderlo y frenar el balanceo antes de trasladarlo. | Recorrer el viñedo con pendiente transversal. Ante el poste caído, usar un paso con anchura suficiente o detenerse. Situar la base para mantener el brazo separado del alambre. | Comparar con un agarre bimanual. Una mano sostiene el racimo y la otra estabiliza su parte superior. Medir los contactos de cada mano y comprobar que el racimo queda sujeto tras el desprendimiento. |
+| Arándano | Centrar una baya en ambos ojos y tomarla con pulgar e índice. Subir primero 3 cm para calibrar la pinza y después completar la elevación y el depósito. | Mantener las ruedas en la calle, bordear la rama caída y buscar otro ángulo si una hoja oculta la baya. | Colocar bayas vecinas con física. Recoger dos bayas de una en una, con órdenes distintas y cambio de iluminación entre recogidas. Medir el desplazamiento de cada vecina y verificar cada depósito por separado. |
+
+Las naranjas de selección tienen identificadores, colisiones y poses registradas. En el ensayo bimanual de uva se comprobará que la zona superior tenga un colisionador que la mano pueda sujetar. El pedúnculo actual se desprende por carga.
+
+Cada cosecha completa exige que el punto inferior del fruto suba al menos 15 cm desde su altura inicial durante 0,5 s continuos. Se comprobarán el agarre hasta la apertura sobre la canasta, el reposo dentro de ella durante 0,5 s con los dedos retirados y los contactos con obstáculos. Se registrarán la semilla, las órdenes y subtareas en español, el deslizamiento y la visibilidad en cada ojo. Cada robot tendrá dos MP4 sincronizados, exterior y RGB-D. En las variantes con oclusión inicial, se medirá cuánto tarda en recuperar la vista del fruto antes de cerrar la mano.
 
 ### Política móvil y adquisición
 

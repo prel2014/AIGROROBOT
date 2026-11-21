@@ -102,7 +102,7 @@ def matrix(pose):
 def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
               reference_fruit=(.30,-.12,.9355), sightline_solver=None, residuals=None,
               clearance_cost=None, keep_fruit_heading=False, lift_margin_m=0., controlled_delivery=False,
-              pickup_seed=None, basket_target=None):
+              pickup_seed=None, basket_target=None, pluck_vector=None, open_offset=None):
     from agriculture_grasp_geometry import _Kinematics, _solve_arm
     from dexman.tasks.agriculture.scene import arm
     group, = env.batch.groups
@@ -180,7 +180,8 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
     for k in order:
         q = reference[k]
         old = kin.fk(kin.arm,q,old_base)
-        goal = fruit+turn@(old[:3,3]-old_fruit+offset)
+        hand_offset = open_offset if open_offset is not None and k<2 else offset
+        goal = fruit+turn@(old[:3,3]-old_fruit+hand_offset)
         goal[2] += lift_margin_m*max(0.,(k-2)/(len(reference)-3))
         axes = turn@old[:3,:3]
         seed = elbow_seed(q,lower_elbow).copy()
@@ -192,6 +193,10 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
     beginning = solve(aligned[0],pickup[:3,3]+approach,pickup[:3,:3])
     knots = [(beginning,"aproximacion",1),(aligned[0],"aproximacion",30),
              (aligned[1],"aproximacion",36),(aligned[2],"cierre",52),(aligned[2],"cierre",24)]
+    if pluck_vector is not None:
+        closed = kin.fk(kin.arm,aligned[2],base)
+        pull = solve(aligned[2],closed[:3,3]+pluck_vector,closed[:3,:3],continuous=True)
+        knots.extend(((pull,"traccion",52),(aligned[2],"recuperacion",38)))
     knots.extend((q,"elevacion",8) for q in aligned[3:])
     knots.append((aligned[-1],"sosten",70))
     if probe:
@@ -269,10 +274,16 @@ class Film:
     def frame(self, batch, camera, detail, phase, lift, held):
         from isaaclab.sensors import Camera
         from PIL import Image,ImageDraw
+        for attempt in range(6 if self.index==0 else 1):
+            if attempt:
+                # Initialize RTX at the same physical time as the first sample.
+                batch.sim.render()
+            Camera.update_batch([camera,detail],0.)
+            rgb = camera.data.output["rgb"].torch[...,:3].cpu().numpy()
+            overhead = detail.data.output["rgb"].torch[...,:3].cpu().numpy()
+            if all(view.std(axis=(1,2,3)).min()>=2 for view in (rgb,overhead)):
+                break
         eyes_rgb, eyes_depth = (v.cpu().numpy() for v in batch.rgbd())
-        Camera.update_batch([camera,detail],0.)
-        rgb = camera.data.output["rgb"].torch[...,:3].cpu().numpy()
-        overhead = detail.data.output["rgb"].torch[...,:3].cpu().numpy()
         h, w = rgb.shape[1:3]
         for i,(name,side,_,_) in enumerate(self.trials):
             number = self.robot_indices[i]

@@ -1,0 +1,82 @@
+#usda 1.0
+(
+    defaultPrim = "Produce"
+)
+
+def Xform "Produce"
+{
+    def Xform "Fruit0" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysxContactReportAPI", "MaterialBindingAPI"]
+        prepend references = @../../../assets/agriculture/props/orange.usda@
+    )
+    {
+        rel material:binding:physics = </Produce/Piel>
+        float physics:mass = 0.16
+        float physxContactReport:threshold = 0
+        quatf xformOp:orient = (0.9945219, 0, 0, 0.104528464)
+        double3 xformOp:translate = (0.1292230088962149, -0.015625207825158017, 0.9161539322522166)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+        over "Placement"
+        {
+            over "Model"
+            {
+                over "Geometry"
+                {
+                    over "Orange_seated_green_calyx"
+                    {
+                        over "Orange_seated_green_calyx" (
+                            prepend apiSchemas = ["PhysxCollisionAPI"]
+                        )
+                        {
+                            float physxCollision:contactOffset = 0.0006
+                            float physxCollision:restOffset = 0
+                        }
+                    }
+
+                    over "Short_clipped_orange_stalk"
+                    {
+                        over "Short_clipped_orange_stalk" (
+                            prepend apiSchemas = ["PhysxCollisionAPI"]
+                        )
+                        {
+                            float physxCollision:contactOffset = 0.0006
+                            float physxCollision:restOffset = 0
+                        }
+                    }
+
+                    over "Slightly_oblate_orange_rind"
+                    {
+                        over "Slightly_oblate_orange_rind" (
+                            prepend apiSchemas = ["PhysxCollisionAPI"]
+                        )
+                        {
+                            float physxCollision:contactOffset = 0.0006
+                            float physxCollision:restOffset = 0
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    def Material "Piel" (
+        prepend apiSchemas = ["PhysicsMaterialAPI"]
+    )
+    {
+        float physics:dynamicFriction = 0.48
+        float physics:restitution = 0.03
+        float physics:staticFriction = 0.6
+    }
+
+    def BasisCurves "Pedunculo0"
+    {
+        int[] curveVertexCounts = [4]
+        point3f[] points = [(0.30408537, 0.27705187, 1.1419939), (0.23096952, 0.15439008, 1.1039939), (0.13, -0.015, 1.026994), (0.13, -0.015, 0.9919939)]
+        color3f[] primvars:displayColor = [(0.12, 0.19, 0.042)]
+        uniform token type = "linear"
+        float[] widths = [0.012, 0.00936, 0.0054, 0.00336] (
+            interpolation = "vertex"
+        )
+    }
+}

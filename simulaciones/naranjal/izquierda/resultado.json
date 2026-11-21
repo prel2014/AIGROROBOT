@@ -1,0 +1,191 @@
+{
+  "crop": "citrus",
+  "scene": "naranjal.usdc",
+  "seed": 751,
+  "simulation": "Isaac Sim 6.2 / PhysX",
+  "profile": "Traslado continuo",
+  "contract": "agriculture-mobile-v2",
+  "control_hz": 30.0,
+  "physics_hz": 120.0,
+  "frames": 61,
+  "fps": 15,
+  "columns": {
+    "recorrido": [
+      "base_x_m",
+      "base_y_m",
+      "base_z_m"
+    ],
+    "manipulacion": [
+      "lift_m",
+      "held",
+      "steady",
+      "speed_m_s",
+      "basket_x_m",
+      "basket_y_m",
+      "basket_z_m",
+      "basket_force_n",
+      "finger_gap_m",
+      "touching",
+      "base_drift_m",
+      "forbidden_force_n",
+      "stem_attached"
+    ]
+  },
+  "orange_task": "izquierda",
+  "instruction": "De las dos naranjas, recoge la de la izquierda y deja la otra en la rama. Elévala 15 cm, sostenla medio segundo y déjala en la canasta.",
+  "subtasks": [
+    "Desde el rover estacionado, localiza la naranja izquierda y conserva la derecha en la rama.",
+    "Entra de costado y cierra el pulgar frente a dos dedos.",
+    "Tira gradualmente hasta desprender la naranja.",
+    "Elévala 15 cm y sostenla medio segundo.",
+    "Llévala sobre la canasta con el agarre cerrado.",
+    "Abre la mano, retírala y espera a que la fruta repose."
+  ],
+  "initial_fruit_positions_m": [
+    [
+      0.1292230088962149,
+      0.07937479217484199,
+      0.9161539322522166
+    ],
+    [
+      0.1292230088962149,
+      -0.11062520782515801,
+      0.9161539322522166
+    ]
+  ],
+  "field_seed": 731,
+  "target_plant": "Hileras/Fila2/Planta03",
+  "stem_break_n": 4.0,
+  "grasp_evidence": "tres dedos y par antipodal Coulomb mu=0.60",
+  "arguments": [
+    "--viz",
+    "none",
+    "--crop",
+    "citrus",
+    "--orange-task",
+    "izquierda",
+    "--seed",
+    "751",
+    "--output",
+    "simulaciones/naranjal/izquierda"
+  ],
+  "source_sha256": {
+    "film_field_cycle.py": "067be953ebcc37a9ab7abe2cb85a211df9d215c4f43ec7e4f91eae54951bf48f",
+    "rover_orange_trial.py": "9cd0ae3d237862c89165914a09ee6e73aeb7566bacda9fa4afd68d360f60cc06",
+    "harvest_route.py": "c1be57b14bcc14ec9b4e6d1e56021bd492a6ad232756113292af4acd803a1b32",
+    "field_contact_trace.py": "9104332651f181465e9de97d400e03d2547b5c82fd8edba86e0f5112f2d5367d",
+    "field_lift_control.py": "7f32bb236f3437c04bdcd3b31a4e1cc93d56664217a845f4e2b786123eb6b386",
+    "batch.py": "b0968ed46b50be3f2a4debb3db481f261b2ce79cee3e7b680cc8e056b8c979d0",
+    "orange_tasks.py": "e4733c01d5b3abfc504cc98fc41817b26017a385c0975dcc7b0bde35c7378956",
+    "contact_quality.py": "f84cf0d9eb5b85fbd58b77b7b3a28b7c4f1faf9ec68cb6d20427595f855edb25",
+    "rover_basket_task.py": "8251c6aaf631bf73a9535ef519b530c6bed0f3240e0ecfcf3de14ce3fa4d97ee",
+    "naranjal.usdc": "8d940de8cd33ca9ea419023ea0a6241fd2050cf50f627a73765e7996ae98e63b",
+    "orange.usda": "453ca096ddb1311a26d96029e946b1de79043febfcbb90ea2c64ad37901753a3",
+    "citrus.json": "84729946a707fabd9f10c86e3be45363660b564640cfd7ecaf301d5c457d9597"
+  },
+  "robots": [
+    {
+      "robot": 0,
+      "version": "Naranja 1",
+      "hand": "izquierda",
+      "travel_m": 0.0,
+      "motor_spring_relief": 0.0,
+      "motion_stop_reason": "La naranja se desprendió antes de asegurar la pinza",
+      "parking_error_m": 0.025,
+      "started_attached": true,
+      "detached": true,
+      "max_ik_residual_m": 0.005,
+      "free_depth_fraction_left_right": [
+        1.0,
+        1.0
+      ],
+      "arm_block_fraction_of_identified_hits": [
+        0.02,
+        1.0
+      ],
+      "ray_hit_fraction_left_right": [
+        1.0,
+        1.0
+      ],
+      "grasp": false,
+      "hold_15cm": false,
+      "deposit": false,
+      "held_delivery_ticks": 0,
+      "delivery_ticks": 0,
+      "opened_over_basket": null,
+      "release_position_m": null,
+      "peak_lift_m": 0.0,
+      "stable_hold_s": 0.0,
+      "final_basket_rest_s": 0.0,
+      "max_base_drift_m": 0.024886567145586014,
+      "max_forbidden_force_n": 0.0,
+      "lost_in_transit": false,
+      "success": false,
+      "surface_audit": {
+        "grasp": false,
+        "hold_15cm": false,
+        "deposit": false,
+        "held_delivery_ticks": 0,
+        "delivery_ticks": 0,
+        "opened_over_basket": null,
+        "release_position_m": null,
+        "peak_lift_m": 0.0,
+        "stable_hold_s": 0.0,
+        "final_basket_rest_s": 0.0,
+        "max_base_drift_m": 0.024886567145586014,
+        "max_forbidden_force_n": 0.0,
+        "lost_in_transit": false,
+        "success": false
+      },
+      "target_prim": "Fruit0",
+      "hand_offset_m": [
+        -0.008,
+        0.02,
+        0.003
+      ],
+      "closure_latched": false,
+      "neighbor": {
+        "prim": "Fruit1",
+        "attached": true,
+        "max_displacement_m": 0.0169113427400589,
+        "peak_fingertip_n": 0.0,
+        "untouched": false
+      },
+      "binocular_visibility": {
+        "estacionamiento": {
+          "frames": 12,
+          "both_visible": 12,
+          "eyes": [
+            {
+              "fruit_visible_frames": 12,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 75
+            },
+            {
+              "fruit_visible_frames": 12,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 76
+            }
+          ]
+        },
+        "aproximacion": {
+          "frames": 49,
+          "both_visible": 49,
+          "eyes": [
+            {
+              "fruit_visible_frames": 49,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 55
+            },
+            {
+              "fruit_visible_frames": 49,
+              "covered_lens_frames": 0,
+              "min_fruit_pixels": 32
+            }
+          ]
+        }
+      },
+      "pickup_visible_in_both_eyes": false
+    }
+  ]
+}

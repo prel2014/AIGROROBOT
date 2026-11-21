@@ -1,0 +1,55 @@
+{
+  "crop": "citrus",
+  "orange_task": "roca",
+  "instruction": "Avanza por el surco. Si ves obstáculos, esquívalos. Estaciónate y recoge la naranja exterior. Elévala 15 cm, sostenla medio segundo y déjala en la canasta.",
+  "subtasks": [
+    "Recorre el surco y rodea la roca si hay espacio.",
+    "Estaciónate frente a la rama.",
+    "Entra de costado y cierra el pulgar frente a dos dedos.",
+    "Tira gradualmente hasta desprender la naranja.",
+    "Elévala 15 cm y sostenla medio segundo.",
+    "Llévala sobre la canasta con el agarre cerrado.",
+    "Abre la mano, retírala y espera a que la fruta repose."
+  ],
+  "scene": "naranjal.usdc",
+  "simulation": "Isaac Sim 6.2 / PhysX",
+  "seed": 751,
+  "contract": "agriculture-mobile-v2",
+  "control_hz": 30.0,
+  "physics_hz": 120.0,
+  "frames": 53,
+  "fps": 15,
+  "arguments": [
+    "--viz",
+    "none",
+    "--crop",
+    "citrus",
+    "--orange-task",
+    "roca",
+    "--seed",
+    "751",
+    "--output",
+    "simulaciones/naranjal/roca_frenado"
+  ],
+  "source_sha256": {
+    "film_field_cycle.py": "f7a8fd04f5178fd1308595bc2c36b4ffa6d7b2747cf3f7e02d5031eb81924e3e",
+    "rover_orange_trial.py": "730ebc3d527c9f41f012e578435ffdc422ff65d69e98bdb7b9750a6107275246",
+    "harvest_route.py": "c1be57b14bcc14ec9b4e6d1e56021bd492a6ad232756113292af4acd803a1b32",
+    "field_contact_trace.py": "9104332651f181465e9de97d400e03d2547b5c82fd8edba86e0f5112f2d5367d",
+    "field_lift_control.py": "7f32bb236f3437c04bdcd3b31a4e1cc93d56664217a845f4e2b786123eb6b386",
+    "batch.py": "b0968ed46b50be3f2a4debb3db481f261b2ce79cee3e7b680cc8e056b8c979d0",
+    "orange_tasks.py": "527471b4dae2d950713712fcad9d8ad6d6bd7944c6fcaf3048e1b579151df975",
+    "contact_quality.py": "f84cf0d9eb5b85fbd58b77b7b3a28b7c4f1faf9ec68cb6d20427595f855edb25",
+    "rover_basket_task.py": "8251c6aaf631bf73a9535ef519b530c6bed0f3240e0ecfcf3de14ce3fa4d97ee"
+  },
+  "robots": [
+    {
+      "robot": 0,
+      "version": "Naranja 1",
+      "hand": "derecha",
+      "success": false,
+      "travel_m": 0.3716738801449537,
+      "motion_stop_reason": "Margen de frenado agotado junto a la roca"
+    }
+  ]
+}

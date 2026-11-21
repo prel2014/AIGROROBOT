@@ -16,7 +16,7 @@ def render(env,source,out,index,ffmpeg):
     report = json.loads((source/"resultado.json").read_text(encoding="utf-8"))
     recorded = np.load(source/"poses_fisicas.npz",allow_pickle=False)
     rows = {step:values[index] for step,phase,values in json.loads((source/"mediciones.json").read_text())
-            if phase!="recorrido"}
+            if phase not in ("recorrido","detenido")}
     trial = report["robots"][index]
     group, = env.batch.groups
     rover = group.rover.robot
@@ -29,6 +29,7 @@ def render(env,source,out,index,ffmpeg):
     sim = env.batch.sim
     overview,detail = group.scene["witness"],group.scene["detail"]
     labels = recorded["executed_phases"][:,index] if "executed_phases" in recorded else recorded["phases"]
+    neighbor_poses = recorded.get("neighbor")
     for frame,(step,phase,state) in enumerate(zip(recorded["step"],recorded["phases"],recorded["poses"][:,index],strict=True)):
         q = torch.as_tensor(state.copy(),device=env.device)[None]
         root,angles,object_pose = q[:,:7].clone(),q[:,7:-7].contiguous(),q[:,-7:].clone()
@@ -37,6 +38,10 @@ def render(env,source,out,index,ffmpeg):
         rover.write_root_pose_to_sim_index(root_pose=root)
         rover.write_joint_position_to_sim_index(position=angles)
         fruit.write_root_pose_to_sim_index(root_pose=object_pose)
+        if neighbor_poses is not None:
+            pose = torch.as_tensor(neighbor_poses[frame,index].copy(),device=env.device)[None]
+            pose[:,:3] += group.origins
+            group.scene["neighbor"].write_root_pose_to_sim_index(root_pose=pose)
         sim.forward()
         group.scene.update(1./report["fps"])
         pos = root[:,:3]
@@ -45,7 +50,7 @@ def render(env,source,out,index,ffmpeg):
             return pos.new_tensor([x,y,z])
         focus = pos+offset(.26,0.,.46)
         overview.set_world_poses_from_view(pos+offset(-1.72,-1.45,2.95),focus)
-        if phase=="recorrido":
+        if phase in ("recorrido","detenido"):
             detail.set_world_poses_from_view(pos+offset(1.92,.50,1.82),focus)
         else:
             detail.set_world_poses_from_view(center+offset(.38,-.70,.43),center+offset(-.06,0.,-.04))
@@ -84,7 +89,9 @@ if __name__=="__main__":
     report = json.loads((source/"resultado.json").read_text(encoding="utf-8"))
     if not 0<=args.robot<len(report["robots"]):
         parser.error("Índice de robot fuera del registro")
-    cfg,_,_ = configure(source,report["crop"],[report["robots"][args.robot]["version"]],verify_eyes=True)
+    cfg,_,_ = configure(source,report["crop"],[report["robots"][args.robot]["version"]],verify_eyes=True,
+                        orange_task=report.get("orange_task"),order=report.get("instruction"),
+                        rock_offset=report.get("rock_offset_m",.70))
     scene = getattr(cfg.scenes,report["crop"])
     for camera in (scene.left_eye,scene.right_eye):
         camera.height = camera.width = args.eye_size

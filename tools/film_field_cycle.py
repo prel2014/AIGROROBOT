@@ -13,11 +13,12 @@ from scipy.spatial.transform import Rotation
 from rover_orange_trial import Film, ROOT, aim_active_eye, encoder_path, make_path, matrix
 from dexman.tasks.agriculture.field_layout import FIELDS
 from dexman.tasks.agriculture.harvest_route import ATTACHMENT_M, SITES, arm_occlusion, binocular_visibility, layout
+from dexman.tasks.agriculture.orange_tasks import ORDERS, MIN_GAP, ROCK_SCALE, anchor_grasp, clearance, order_task, plan_rock, subtasks, target_index
 
 SOURCE_DIGESTS = {path.name:hashlib.sha256(path.read_bytes()).hexdigest() for path in (
     Path(__file__),ROOT/"tools/rover_orange_trial.py",ROOT/"src/dexman/tasks/agriculture/harvest_route.py",
     ROOT/"tools/field_contact_trace.py",ROOT/"src/dexman/tasks/agriculture/field_lift_control.py",
-    ROOT/"src/dexman/tasks/agriculture/batch.py",
+    ROOT/"src/dexman/tasks/agriculture/batch.py",ROOT/"src/dexman/tasks/agriculture/orange_tasks.py",
     ROOT/"src/dexman/tasks/agriculture/contact_quality.py",ROOT/"src/dexman/tasks/agriculture/rover_basket_task.py")}
 
 
@@ -68,24 +69,30 @@ def scene_files(out,crop,site,geometry,orientation):
             p.AddAppliedSchema("PhysxCollisionAPI")
             p.CreateAttribute("physxCollision:contactOffset",Sdf.ValueTypeNames.Float).Set(.0006)
             p.CreateAttribute("physxCollision:restOffset",Sdf.ValueTypeNames.Float).Set(0.)
-    dynamic.AddTranslateOp().Set(Gf.Vec3d(*geometry["fruit"]))
+    positions = geometry.get("positions", [geometry["fruit"]])
+    dynamic.AddTranslateOp().Set(Gf.Vec3d(*positions[0]))
     dynamic.AddOrientOp().Set(Gf.Quatf(float(orientation[3]),Gf.Vec3f(*orientation[:3])))
-    start = geometry["anchor"]
-    end = geometry["branch_end"]
-    branch = UsdGeom.BasisCurves.Define(fruit,"/Produce/Pedunculo")
-    branch.CreateTypeAttr("linear")
-    branch.CreateCurveVertexCountsAttr([4])
-    branch.CreatePointsAttr([Gf.Vec3f(*p) for p in [start,.58*start+.42*end+[0.,0.,.025],
-                                                      end+[0.,0.,.035],end]])
-    width = .004 if crop=="berries" else .012
-    branch.CreateWidthsAttr([width,width*.78,width*.45,width*.28])
-    branch.SetWidthsInterpolation("vertex")
-    branch.CreateDisplayColorAttr([(.12,.19,.042)])
+    for i,position in enumerate(positions):
+        if i:
+            path = f"/Produce/Fruit{i}"
+            Sdf.CopySpec(fruit.GetRootLayer(),prim.GetPath(),fruit.GetRootLayer(),Sdf.Path(path))
+            fruit.GetPrimAtPath(path).GetAttribute("xformOp:translate").Set(Gf.Vec3d(*position))
+        start = geometry["anchor"]
+        end = geometry["branch_end"]+(position-geometry["fruit"])
+        branch = UsdGeom.BasisCurves.Define(fruit,f"/Produce/Pedunculo{i}")
+        branch.CreateTypeAttr("linear")
+        branch.CreateCurveVertexCountsAttr([4])
+        branch.CreatePointsAttr([Gf.Vec3f(*p) for p in [start,.58*start+.42*end+[0.,0.,.025],
+                                                          end+[0.,0.,.035],end]])
+        width = .004 if crop=="berries" else .012
+        branch.CreateWidthsAttr([width,width*.78,width*.45,width*.28])
+        branch.SetWidthsInterpolation("vertex")
+        branch.CreateDisplayColorAttr([(.12,.19,.042)])
     fruit.GetRootLayer().Save()
     return parcel,model
 
 
-def configure(out,crop,versions,survey=False,substeps=4,verify_eyes=False):
+def configure(out,crop,versions,survey=False,substeps=4,verify_eyes=False,orange_task=None,order=None,rock_offset=.82):
     from isaaclab.assets import AssetBaseCfg
     from isaaclab.sim import UsdFileCfg
     from isaaclab.sensors import ContactSensorCfg
@@ -119,6 +126,50 @@ def configure(out,crop,versions,survey=False,substeps=4,verify_eyes=False):
     scene.rover.init_state.pos = (*route[0],g["start_z"])
     bearing = route[-1]-route[0]
     scene.rover.init_state.rot = yaw(np.degrees(np.arctan2(bearing[1],bearing[0]))+1.5)
+    if orange_task:
+        if crop!="citrus":
+            raise ValueError("Estas órdenes requieren el naranjal")
+        g["orange_task"] = orange_task
+        g["closure_mode"] = "trayectoria" if orange_task=="roca" else "contacto"
+        g["order"] = order or ORDERS[orange_task]
+        positions = [g["fruit"]]
+        if orange_task in ("izquierda","derecha"):
+            positions = [g["fruit"]+np.array([0.,offset,0.]) for offset in (.095,-.095)]
+        i = target_index(g["order"],positions,[0.,1.,0.])
+        target_path = NS+f"/Produce/Fruit{i}"
+        g.update(positions=positions,target_id=i,fruit=positions[i],
+                 branch_end=positions[i]+Rotation.from_quat(orient).apply(g["attachment"]))
+        scene.fruit_0.prim_path = target_path
+        scene.fruit_0.init_state.pos = tuple(positions[i])
+        if len(positions)==2:
+            other_path = NS+f"/Produce/Fruit{1-i}"
+            from dexman.robot.joints import FINGERTIPS
+            scene.neighbor = scene.fruit_0.copy()
+            scene.neighbor.prim_path = other_path
+            scene.neighbor.init_state.pos = tuple(positions[1-i])
+            for arm in ("left_arm","right_arm"):
+                for tip in FINGERTIPS:
+                    sensor = getattr(scene,f"{arm}_{tip}")
+                    paths = sensor.filter_prim_paths_expr
+                    sensor.filter_prim_paths_expr = [target_path,*paths[1:],other_path]
+            scene.fruit_obstacle_contact.prim_path = target_path
+        if orange_task=="roca":
+            rock_xy = route[len(route)//2]+[0.,rock_offset]
+            angle = np.radians(g["rotation"])
+            field_xy = Rotation.from_euler("z",-angle).apply(np.r_[rock_xy-g["translation"][:2],0.])[:2]
+            ground_z = FIELDS[crop].height(*field_xy)-g["ground"]
+            scene.row_rock = AssetBaseCfg(prim_path=NS+"/Roca",spawn=UsdFileCfg(
+                usd_path=str(ROOT/"assets/agriculture/props/field_rock.usda"),scale=(ROCK_SCALE,)*3),
+                init_state=AssetBaseCfg.InitialStateCfg(pos=(*rock_xy,ground_z)))
+            g["rock_xy"] = rock_xy
+            g["rock_offset_m"] = rock_offset
+            g["route"] = plan_rock(route,rock_xy)
+            if len(g["route"]):
+                bearing = g["route"][7]-g["route"][0]
+                scene.rover.init_state.rot = yaw(np.degrees(np.arctan2(bearing[1],bearing[0])))
+        else:
+            scene.rover.init_state.pos = (*route[-1],.06)
+            scene.rover.init_state.rot = yaw(0.)
     scene.rover.spawn.articulation_props = {"":[PhysxArticulationCfg(enabled_self_collisions=True,
         solver_position_iteration_count=16,solver_velocity_iteration_count=4)]}
     scene.rover.spawn.collision_props = {"/(Left|Right)Arm/Hand/.*":[PhysxCollisionCfg(contact_offset=.001,rest_offset=0.)]}
@@ -142,14 +193,14 @@ def configure(out,crop,versions,survey=False,substeps=4,verify_eyes=False):
         for cam in (scene.left_eye,scene.right_eye):
             cam.data_types = [*cam.data_types,"instance_id_segmentation_fast"]
             cam.renderer_cfg.colorize_instance_id_segmentation = False
-    scene.basket_contact = ContactSensorCfg(prim_path=NS+"/Produce/Fruit0",filter_prim_paths_expr=[NS+"/Rover/Base"])
+    scene.basket_contact = ContactSensorCfg(prim_path=scene.fruit_0.prim_path,filter_prim_paths_expr=[NS+"/Rover/Base"])
     return cfg,g,orient
 
 
 class Stem:
-    def __init__(self,group,site,g,orient):
+    def __init__(self,group,site,g,orient,key="fruit_0"):
         import torch
-        self.fruit = group.scene["fruit_0"]
+        self.fruit = group.scene[key]
         origin = group.origins
         self.point = origin.new_tensor(g["attachment"]).expand_as(origin)
         self.anchor = origin+origin.new_tensor(g["branch_end"])
@@ -187,7 +238,7 @@ class Stem:
         self.fruit.permanent_wrench_composer.set_forces_and_torques_index(forces=f[:,None],torques=moment[:,None],is_global=True)
 
 
-def sightline_solver(eyes,target,chassis,side):
+def sightline_solver(eyes,target,chassis,side,neighbor_center=None):
     def clearance(kin,base,q,focus):
         directions = focus-eyes
         frame,links = base,[]
@@ -209,8 +260,13 @@ def sightline_solver(eyes,target,chassis,side):
         high_inboard = np.maximum(0.,local[:,2]-1.16)*np.clip((.85-lateral)/.40,0.,1.)
         over_basket = (abs(local[:,1])<.49)&(local[:,0]>-.25)&(local[:,0]<.79)
         basket = np.maximum(0.,.86-local[:,2])*over_basket
-        return np.r_[.84*np.maximum(0.,clearance_radius[:,None]-gap).ravel(),1.4*np.maximum(0.,.26-near_lens).ravel(),
+        cost = np.r_[.84*np.maximum(0.,clearance_radius[:,None]-gap).ravel(),1.4*np.maximum(0.,.26-near_lens).ravel(),
                      .32*high_inboard,1.5*basket]
+        if neighbor_center is not None:
+            palm_center = frame[:3,3]+frame[:3,:3]@np.array([.015,-.03,.085])
+            cost = np.r_[cost,2.*np.maximum(0.,clearance_radius+.055-np.linalg.norm(samples-neighbor_center,axis=1)),
+                         3.*max(0.,.15-np.linalg.norm(palm_center-neighbor_center))]
+        return cost
     def solve(kin,base,seed,low,high,pos,axes,focus=None):
         chain = kin.arm
         focus = target if focus is None else focus
@@ -296,7 +352,7 @@ def first_blockers(group,centers,query):
                 label = "mano"
             elif "/LeftArm/" in path or "/RightArm/" in path:
                 label = "brazo"
-            elif "/Fruit0" in path:
+            elif group.scene["fruit_0"].cfg.prim_path.split("/")[-1] in path:
                 label = "fruto"
             elif path:
                 label = "otra_superficie"
@@ -317,7 +373,7 @@ def eye_pixels(group,centers=None):
         fruit_ids,arm_ids = [],[]
         for key,path in labels.items():
             name = str(path)
-            if "/Produce/Fruit0" in name:
+            if "/Produce/"+group.scene["fruit_0"].cfg.prim_path.split("/")[-1] in name:
                 fruit_ids.append(int(key))
             elif ("/LeftArm/" in name or "/RightArm/" in name) and (
                 "/Hand/" not in name or "/robot0_forearm" in name or "/robot0_wrist" in name
@@ -361,6 +417,21 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
     ids = torch.arange(n,device=env.device)
     sides = ids.new_tensor([v[1] for v in versions])
     stem = Stem(group,site,g,orient)
+    task = g.get("orange_task")
+    neighbor = None
+    neighbor_states = []
+    if task in ("izquierda","derecha"):
+        delta = g["positions"][1-g["target_id"]]-g["fruit"]
+        neighbor = Stem(group,site,{**g,"branch_end":g["branch_end"]+delta},orient,"neighbor")
+        neighbor_start = neighbor.fruit.data.root_com_pos_w.torch.clone()
+        neighbor_motion = origin.new_zeros(n)
+        neighbor_peak_force = origin.new_zeros(n)
+    def apply_stems():
+        nonlocal neighbor_motion
+        stem.apply()
+        if neighbor:
+            neighbor.apply()
+            neighbor_motion = torch.maximum(neighbor_motion,(neighbor.fruit.data.root_com_pos_w.torch-neighbor_start).norm(dim=-1))
     film = None if survey or physics_only else Film(out,versions,record_obstructions=True)
     contacts = []
     pairs = []
@@ -375,7 +446,7 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
     for t in range(54):
         target_world = stem.fruit.data.root_com_pos_w.torch
         look = .5*(aim_active_eye(group,torch.zeros_like(sides),target_world)+aim_active_eye(group,torch.ones_like(sides),target_world))
-        batch.step(nominal.lerp(stowed,min(1.,(t+1)/42)),head_targets=look,before_physics_step=stem.apply)
+        batch.step(nominal.lerp(stowed,min(1.,(t+1)/42)),head_targets=look,before_physics_step=apply_stems)
         if support_check and t in (0,1,2,5,12,30,53):
             print("pedunculo",t,stem.attached.tolist(),(stem.fruit.data.root_link_pos_w.torch-origin).cpu().numpy().round(3).tolist(),flush=True)
     if support_check:
@@ -402,6 +473,10 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
                                d.joint_pos.torch,stem.fruit.data.root_link_pos_w.torch-origin,
                                stem.fruit.data.root_link_quat_w.torch),dim=-1)
             recorded_states.append(state.cpu().numpy().copy())
+            if neighbor:
+                pose = neighbor.fruit.data.root_link_pose_w.torch.clone()
+                pose[:,:3] -= origin
+                neighbor_states.append(pose.cpu().numpy())
             recorded_phases.append(phase)
             executed_phases.append([phase if stops is None or stops[i] is None else "detenido" for i in range(n)])
     reference_z = env._measure()[-1].clone()
@@ -413,12 +488,20 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
     # Two real approach arcs converge to the same physical harvesting station.
     for name,side,_,_ in versions:
         curve = route.copy()
-        curve[:,1] += (.045 if side==0 else -.04)*np.sin(np.linspace(0,np.pi,len(curve)))**2
+        if not task:
+            curve[:,1] += (.045 if side==0 else -.04)*np.sin(np.linspace(0,np.pi,len(curve)))**2
         routes.append(curve)
     indices = np.zeros(n,dtype=int)
     reached = np.zeros(n,dtype=bool)
     path_lengths = np.zeros(n)
     prev_xy = start[:,:2]
+    closest_rock = np.full(n,np.inf)
+    yaw_integral = np.zeros(n)
+    route_safety = []
+    stationary = task in ("estacionada","izquierda","derecha")
+    local = start
+    if stationary:
+        reached[:] = True
     def render_frame(phase,lift,held,labels=None):
         witness,detail = group.scene["witness"],group.scene["detail"]
         depth = film.frame(batch,witness,detail,phase if labels is None else labels,lift,held)
@@ -445,15 +528,56 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
         if target is None:
             target = stem.fruit.data.root_com_pos_w.torch
         return .5*(aim_active_eye(group,torch.zeros_like(sides),target)+aim_active_eye(group,torch.ones_like(sides),target))
-    for tick in range(600):
+    def halt(reason):
+        nonlocal step
+        rover.robot.set_joint_velocity_target_index(target=zeros,joint_ids=rover.wheels)
+        for _ in range(30):
+            rec = film is not None and step%2==0
+            if rec:
+                cameras(True)
+            batch.step(stowed,head_targets=stereo_gaze(),render=rec,before_physics_step=apply_stems)
+            if rec:
+                render_frame("detenido",np.zeros(n),np.zeros(n))
+            save_state("detenido")
+            report_rows.append([step,"detenido",(d.root_link_pos_w.torch-origin).cpu().tolist()])
+            step += 1
+        robots = [dict(robot=i,version=name,hand=("izquierda","derecha")[side],success=False,
+                       travel_m=float(path_lengths[i]),motion_stop_reason=reason) for i,(name,side,_,_) in enumerate(versions)]
+        report = dict(crop=crop,orange_task=task,instruction=g["order"],subtasks=subtasks(task),scene=files[0].name,
+                      simulation="Isaac Sim 6.2 / PhysX",seed=batch.seed,contract=VERSION,control_hz=1/env.dt,
+                      physics_hz=1/batch.sim.get_physics_dt(),frames=film.index if film else 0,fps=15,
+                      arguments=sys.argv[1:],source_sha256=SOURCE_DIGESTS,robots=robots,rock_offset_m=g.get("rock_offset_m"))
+        (out/"resultado.json").write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding="utf-8")
+        (out/"mediciones.json").write_text(json.dumps(report_rows),encoding="utf-8")
+        if task=="roca":
+            (out/"ruta.json").write_text(json.dumps(dict(rock_xy_m=g["rock_xy"].tolist(),route_xy_m=route.tolist(),
+                                                         clearance_m=route_safety)),encoding="utf-8")
+        if recorded_states:
+            np.savez_compressed(out/"poses_fisicas.npz",poses=np.stack(recorded_states),joints=rover.robot.joint_names,
+                phases=recorded_phases,executed_phases=executed_phases,step=np.arange(len(recorded_states))*2,
+                **({"neighbor":np.stack(neighbor_states)} if neighbor_states else {}))
+        if film and film.index:
+            film.encode(ffmpeg)
+    if task=="roca" and not len(route):
+        halt("Sin corredor seguro para los cuatro neumáticos")
+        return
+    for tick in range(0 if stationary else 600):
         local = (d.root_link_pos_w.torch-origin).cpu().numpy()
         heading = Rotation.from_quat(d.root_link_quat_w.torch.cpu().numpy()).as_euler("xyz")[:,2]
+        if task=="roca":
+            gaps = clearance(local[:,:2],heading,g["rock_xy"])
+            closest_rock = np.minimum(closest_rock,gaps)
+            route_safety.append([step,gaps.tolist()])
+            if (gaps<MIN_GAP).any():
+                halt("Margen de frenado agotado junto a la roca")
+                return
         speed = []
         for i,curve in enumerate(routes):
             xy = local[i,:2]
             nearest = indices[i]+np.argmin(np.linalg.norm(curve[indices[i]:]-xy,axis=1))
             indices[i] = nearest
-            vec = curve[min(len(curve)-1,nearest+12)]-xy
+            lookahead = 6 if task=="roca" else 12
+            vec = curve[min(len(curve)-1,nearest+lookahead)]-xy
             distance = np.linalg.norm(curve[-1]-xy)
             err = np.arctan2(vec[1],vec[0])-heading[i]
             err = np.arctan2(np.sin(err),np.cos(err))
@@ -467,13 +591,20 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
                 v = min(.55,max(.095,1.8*distance))*max(.25,np.cos(err))
                 # Keep all tyres rolling while approaching the parking mark.
                 w = np.clip(1.10*err,-.94*v,.94*v)
+                if task=="roca":
+                    # Static lateral tyre friction on soil can consume a small
+                    # differential command. Integrate measured heading error.
+                    yaw_integral[i] = np.clip(yaw_integral[i]+env.dt*err,-1.4,1.4)
+                    if abs(err)<.035:
+                        yaw_integral[i] *= .8
+                    w = np.clip(2.8*err+1.6*yaw_integral[i],-.94*v,.94*v)
             speed.append([(v-.59*w)/.222,(v+.59*w)/.222]*2)
         rover.robot.set_joint_velocity_target_index(target=origin.new_tensor(speed),joint_ids=rover.wheels)
         record_now = film is not None and step%2==0
         if record_now:
             cameras(True)
         gaze = stereo_gaze()
-        batch.step(stowed,head_targets=gaze,render=record_now,before_physics_step=stem.apply)
+        batch.step(stowed,head_targets=gaze,render=record_now,before_physics_step=apply_stems)
         if record_now:
             render_frame("recorrido del surco",np.zeros(n),np.zeros(n))
         save_state("recorrido")
@@ -496,7 +627,7 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
         if rec:
             cameras(False)
         batch.step(stowed,head_targets=stereo_gaze(),
-                   render=rec,before_physics_step=stem.apply)
+                   render=rec,before_physics_step=apply_stems)
         if rec:
             render_frame("estacionamiento",np.zeros(n),np.zeros(n))
         save_state("estacionamiento")
@@ -506,11 +637,23 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
     print("estacionado",park_local.round(3).tolist(),"distancia",path_lengths.round(2).tolist(),flush=True)
     m = env._measure()
     ready = stem.attached.clone()
+    if task=="roca" and (not reached.all() or (np.linalg.norm(park_local[:,:2]-route[-1],axis=1)>=.38).any()):
+        halt("Estación de cosecha fuera de alcance")
+        return
+    if neighbor:
+        actual = [None,None]
+        actual[g["target_id"]] = stem.fruit.data.root_com_pos_w.torch.cpu().numpy()
+        actual[1-g["target_id"]] = neighbor.fruit.data.root_com_pos_w.torch.cpu().numpy()
+        axes = Rotation.from_quat(d.root_link_quat_w.torch.cpu().numpy()).apply([0.,1.,0.])
+        for i in range(n):
+            if target_index(g["order"],[p[i] for p in actual],axes[i])!=g["target_id"]:
+                halt("La orden y las posiciones medidas desde la estación discrepan")
+                return
     seedfile = ROOT/"assets/agriculture/grasps"/(crop+".json")
     sources = [*files,seedfile]
     reference = np.array(json.loads(seedfile.read_text())["waypoints_rad"])
     right_seed = None
-    if any(name in RIGHT_PROFILES for name,_,_,_ in versions):
+    if any(name in RIGHT_PROFILES or (task and side==1) for name,side,_,_ in versions):
         from dexman.robot.joints import JOINT_NAMES
         seed_asset = seedfile.parent/"banana_rover_right.json"
         calibration = json.loads(seed_asset.read_text(encoding="utf-8"))
@@ -525,18 +668,28 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
         # and actuator effort limits stay in effect. Allow for compliance during lifting.
         reference[2:,8:] += .12*(reference[2,8:]-reference[1,8:])
     paths,errors = [],[[] for _ in versions]
+    pluck = None
+    if task:
+        away = g["branch_end"][:2]-g["anchor"][:2]
+        pluck = np.r_[.016*away/np.linalg.norm(away),-.036]
     for i,(name,side,approach,offset) in enumerate(versions):
         tilt = d.body_link_pose_w.torch[i,rover.tilt_body]
         eyes = (tilt[:3]-origin[i]+quat_apply(tilt[3:].expand(2,4),rover.eye_offsets)).cpu().numpy()
         fruit = np.array(g["fruit"])
         chassis = matrix(d.root_link_pose_w.torch[i].cpu().numpy())
         chassis[:3,3] -= origin[i].cpu().numpy()
-        solver,clearance = sightline_solver(eyes,fruit,chassis,side)
+        neighbor_center = None
+        if neighbor:
+            neighbor_center = (neighbor.fruit.data.root_com_pos_w.torch[i]-origin[i]).cpu().numpy()
+            approach = np.array([-.09,.14 if task=="izquierda" else -.14,.09])
+        solver,clearance_cost = sightline_solver(eyes,fruit,chassis,side,neighbor_center)
         paths.append(make_path(env,i,side,approach,reference,fruit,offset,False,
-                     reference_fruit=site.reference,sightline_solver=solver,residuals=errors[i],clearance_cost=clearance,
-                     keep_fruit_heading=crop in ("banana","vineyard"),lift_margin_m=lift_reserve if lift_reserve is not None else (.075 if extended_lift else 0.),
-                     controlled_delivery=controlled,pickup_seed=right_seed if name in RIGHT_PROFILES else None,
-                     basket_target=calibration["basket_targets_m"][name] if controlled and name in RIGHT_PROFILES else None))
+                     reference_fruit=site.reference,sightline_solver=solver,residuals=errors[i],clearance_cost=clearance_cost,
+                     keep_fruit_heading=bool(task) or crop in ("banana","vineyard"),lift_margin_m=lift_reserve if lift_reserve is not None else (.075 if extended_lift else 0.),
+                     controlled_delivery=controlled,pickup_seed=right_seed if side==1 and (task or name in RIGHT_PROFILES) else None,
+                     basket_target=calibration["basket_targets_m"]["derecha_despejada" if task else name]
+                     if controlled and side==1 and (task or name in RIGHT_PROFILES) else None,pluck_vector=pluck,
+                     open_offset=VERSIONS[0][3] if task else None))
     print("IK max residuals m",[round(max(e),3) for e in errors],flush=True)
     tests = [BasketTrial(require_continuous_grip=controlled) for _ in versions]
     surface_tests = [BasketTrial(require_continuous_grip=True) for _ in versions]
@@ -555,6 +708,8 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
     finger_deflection = torch.zeros_like(stowed)
     relief = np.zeros(n)
     stopped = [None]*n
+    pluck_complete = np.zeros(n,dtype=bool)
+    grasp_commands = [None]*n
     last_command = stowed.clone()
     for k in range(len(paths[0])):
         _,phase,ticks = paths[0][k]
@@ -587,6 +742,22 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
                 drive = (3.*error_body[:,0]/.222).clamp(-.6,.6)
                 rover.robot.actuators.target_command.set_velocity_index(value=drive[:,None].expand(-1,4).contiguous(),joint_ids=rover.wheels)
             command = previous.lerp(target,u*u*(3-2*u))
+            if task and phase=="cierre":
+                for i,closed in enumerate(grasp_commands):
+                    if closed is not None:
+                        command[i] = closed
+            if task and phase in ("traccion","recuperacion"):
+                for i in range(n):
+                    if phase=="traccion" and tick==0 and not (tests[i].acquired and data[i,1]):
+                        stopped[i] = "Falta oposición del pulgar y dos dedos antes de tirar"
+                    if phase=="traccion" and tick==0 and not bool(stem.attached[i]):
+                        stopped[i] = "La naranja se desprendió antes de la tracción"
+                    if phase=="traccion" and not bool(stem.attached[i]):
+                        pluck_complete[i] = True
+                    if phase=="recuperacion" and tick==0 and bool(stem.attached[i]):
+                        stopped[i] = "El pedúnculo resistió la tracción"
+                    if stopped[i] or (phase=="traccion" and pluck_complete[i]):
+                        command[i] = last_command[i]
             if height_control and phase in ("elevacion","sosten","traslado"):
                 height_control.apply(command,phase,data[:,0],env.dt)
             if force_servo and phase in ("sosten","traslado","apertura"):
@@ -629,10 +800,14 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
                             stopped[i] = "fruto fuera de la boca de la canasta"
                     if stopped[i] is not None:
                         command[i] = last_command[i]
-            tracing = trace is not None and phase in ("cierre","elevacion","sosten","traslado")
+            tracing = trace is not None and phase in ("cierre","traccion","recuperacion","elevacion","sosten","traslado")
+            if task:
+                for i,reason in enumerate(stopped):
+                    if reason:
+                        command[i] = last_command[i]
             if tracing:
                 trace.begin()
-            batch.step(command,head_targets=gaze,render=rec,before_physics_step=stem.apply,
+            batch.step(command,head_targets=gaze,render=rec,before_physics_step=apply_stems,
                        after_physics_step=trace.sample if tracing else None)
             last_command = command
             if tracing:
@@ -646,15 +821,18 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
             relative = quat_apply_inverse(palm[:,3:],m[8]+origin-palm[:,:3])
             samples = torch.cat((m[10][ids,sides],m[11][ids,sides],relative),dim=1).cpu().tolist()
             contacts.append([step,phase,[[v if np.isfinite(v) else None for v in row] for row in samples]])
-            if controlled and crop=="banana":
+            if controlled and (crop=="banana" or task):
                 measurements = []
                 for sensors in tip_sensors:
+                    if neighbor:
+                        loads = torch.stack([sensor.data.normal_force_matrix_w.torch[:,0,-1].norm(dim=-1) for sensor in sensors])
+                        neighbor_peak_force = torch.maximum(neighbor_peak_force,loads.amax(0))
                     f = torch.stack([sensor.data.normal_force_matrix_w.torch[:,0,0] for sensor in sensors],dim=1)
                     p = torch.stack([sensor.data.contact_pos_w.torch[:,0,0] for sensor in sensors],dim=1)
                     measurements.append(torch.cat((f,p-stem.fruit.data.root_com_pos_w.torch[:,None]),dim=-1))
                 vectors = torch.stack(measurements,dim=1)[ids,sides]
                 held = antipodal_power_grasp(vectors[:,:,:3],vectors[:,:,3:],m[5][ids,sides],.60)
-                if phase in ("cierre","elevacion","sosten","traslado"):
+                if tracing or phase in ("cierre","elevacion","sosten","traslado"):
                     raw = vectors.cpu().numpy()
                     pairs.append([step,phase,np.where(np.isfinite(raw),raw,None).tolist()])
             lift = m[-1]-reference_z
@@ -678,6 +856,17 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
                     surface_tests[i].observe(phase=executed_phase,lift=height,held=bool(h),steady=bool(s) and not attached,
                         speed=vel,basket_position=(x,y,z),basket_contact=force>.04,finger_clearance=gap,
                         touching=bool(touch),drift=drift,impact=impact,dt=env.dt)
+                if task and not attached and stopped[i] is None:
+                    if phase in ("aproximacion","cierre") and not h:
+                        stopped[i] = ("La naranja se soltó durante el cierre" if grasp_commands[i] is not None
+                                      else "La naranja se desprendió antes de asegurar la pinza")
+                    elif phase in ("traccion","recuperacion","elevacion") and not h:
+                        stopped[i] = "Pérdida de oposición tras desprender la naranja"
+                if g.get("closure_mode")=="contacto" and phase=="cierre" and attached and h and surface_tests[i].acquired and grasp_commands[i] is None:
+                    grasp_commands[i] = command[i].clone()
+                    side = versions[i][1]
+                    angles = command[i,30*side:30*(side+1)].cpu().numpy()
+                    height_control.paths[i] += anchor_grasp(paths[i],k,angles)
             if rec:
                 render_frame(phase,data[:,0],data[:,1],[phase if reason is None else "detenido" for reason in stopped])
             save_state(phase,stopped)
@@ -687,14 +876,16 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
             if force_servo and phase=="sosten" and all(test.retained or not bool(ready[i]) or data[i,0]<.08
                                                       for i,test in enumerate(active_tests)) and tick>=30:
                 break
-        previous = target
+        previous = last_command.clone() if task and phase in ("cierre","traccion") else target
+        if task and all(reason is not None for reason in stopped):
+            break
         if k+1==len(paths[0]) or paths[0][k+1][1]!=phase:
             print(phase,step,"altura / sostén / traslado con agarre / en canasta",
                   [(round(float(row[0]),3),round(test.longest_hold*env.dt,2),
                     f"{test.held_delivery_ticks}/{test.delivery_ticks}",round(test.basket_ticks*env.dt,2))
                    for row,test in zip(data,tests,strict=True)],flush=True)
     robots = []
-    for i,(name,side,_,_) in enumerate(versions):
+    for i,(name,side,_,offset) in enumerate(versions):
         distance = float(np.linalg.norm(park_local[i,:2]-route[-1]))
         valid_run = bool(ready[i]) and bool(reached[i]) and distance<.38 and stopped[i] is None
         observed = [v[i] for _,phase,v in view_rows if phase in ("aproximacion","cierre")]
@@ -710,10 +901,27 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
         if surface_audit:
             robots[-1]["surface_audit"] = surface_tests[i].result(env.dt,valid_start=valid_run)
             robots[-1]["success"] &= robots[-1]["surface_audit"]["success"]
+        if task:
+            robots[-1]["target_prim"] = f"Fruit{g['target_id']}"
+            robots[-1]["hand_offset_m"] = list(offset)
+            robots[-1]["closure_latched"] = grasp_commands[i] is not None
+            robots[-1]["success"] &= robots[-1]["detached"]
+        if task=="roca":
+            robots[-1]["min_rock_clearance_m"] = float(closest_rock[i])
+        if neighbor:
+            untouched = bool(neighbor.attached[i]) and float(neighbor_motion[i])<.015 and float(neighbor_peak_force[i])<.04
+            robots[-1]["neighbor"] = dict(prim=f"Fruit{1-g['target_id']}",attached=bool(neighbor.attached[i]),
+                max_displacement_m=float(neighbor_motion[i]),peak_fingertip_n=float(neighbor_peak_force[i]),untouched=untouched)
+            robots[-1]["success"] &= untouched
         if pixel_rows:
             robots[-1]["binocular_visibility"] = binocular_visibility(
                 [(step,phase,rows[i]) for step,phase,rows in pixel_rows],
                 [(step,phase,rows[i]) for step,phase,rows in view_rows])
+            if task:
+                pickup = [robots[-1]["binocular_visibility"].get(phase) for phase in ("aproximacion","cierre")]
+                robots[-1]["pickup_visible_in_both_eyes"] = all(
+                    result and result["both_visible"]==result["frames"] and
+                    all(eye["covered_lens_frames"]==0 for eye in result["eyes"]) for result in pickup)
     def write(name,value):
         (out/name).write_text(json.dumps(value,ensure_ascii=False,indent=2 if name=="resultado.json" else None),encoding="utf-8")
     write("resultado.json",dict(crop=crop,scene=files[0].name,seed=batch.seed,simulation="Isaac Sim 6.2 / PhysX",
@@ -721,18 +929,23 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
          contract=VERSION,control_hz=1/env.dt,physics_hz=1/batch.sim.get_physics_dt(),frames=film.index if film else 0,fps=15,
          columns=dict(recorrido=["base_x_m","base_y_m","base_z_m"],manipulacion=["lift_m","held","steady","speed_m_s",
              "basket_x_m","basket_y_m","basket_z_m","basket_force_n","finger_gap_m","touching","base_drift_m","forbidden_force_n","stem_attached"]),
-         instruction=f"Recorre el surco y estaciónate frente a la planta. Toma {site.fruit}. Eleva la fruta 15 cm, sostenla medio segundo y déjala en la canasta.",
+         orange_task=task,instruction=g["order"] if task else f"Recorre el surco y estaciónate frente a la planta. Toma {site.fruit}. Eleva la fruta 15 cm, sostenla medio segundo y déjala en la canasta.",
+         **(dict(subtasks=subtasks(task),closure_mode=g["closure_mode"],
+                 initial_fruit_positions_m=[p.tolist() for p in g["positions"]]) if task else {}),
+         **(dict(rock_offset_m=g["rock_offset_m"]) if task=="roca" else {}),
          field_seed=FIELDS[crop].seed,target_plant="Hileras/Fila2/Planta03",stem_break_n=site.break_n,
-         grasp_evidence="tres dedos y par antipodal Coulomb mu=0.60" if controlled and crop=="banana" else "oposición centrada",
+         grasp_evidence="tres dedos y par antipodal Coulomb mu=0.60" if controlled and (crop=="banana" or task) else "oposición centrada",
          arguments=sys.argv[1:],source_sha256={**SOURCE_DIGESTS,**{p.name:sha256(p) for p in sources}},robots=robots))
     write("mediciones.json",report_rows)
+    if task=="roca":
+        write("ruta.json",dict(rock_xy_m=g["rock_xy"].tolist(),route_xy_m=route.tolist(),clearance_m=route_safety))
     if substeps:
         write("subpasos.json",dict(columns=["antipodal","surface_slip_max_m_s","fruit_com_speed_m_s","lowest_lift_m"],samples=substeps))
     if recorded_states:
         np.savez_compressed(out/"poses_fisicas.npz",poses=np.stack(recorded_states),
                             joints=np.array(rover.robot.joint_names),phases=np.array(recorded_phases),
                             executed_phases=np.array(executed_phases),
-                            step=np.arange(len(recorded_states))*2)
+                            step=np.arange(len(recorded_states))*2,**({"neighbor":np.stack(neighbor_states)} if neighbor_states else {}))
     write("contactos.json",dict(columns=["normal_n_5","slip_m_s_5","fruit_in_palm_m_xyz"],samples=contacts))
     write("pares.json",dict(columns=["force_on_finger_w_n_xyz","point_from_fruit_com_w_m_xyz"],samples=pairs))
     write("visibilidad.json",view_rows)
@@ -748,6 +961,25 @@ def record(env,crop,out,versions,g,files,orient,ffmpeg, *, survey=False,support_
 def resolve_grasps(args):
     """Resolve the physical demonstration and its control settings before starting Kit."""
     versions = VERSIONS
+    if args.orden:
+        requested = order_task(args.orden)
+        if args.orange_task and args.orange_task!=requested:
+            raise ValueError("La orden en español contradice el escenario seleccionado")
+        args.orange_task = requested
+    if args.orange_task:
+        if args.crop!="citrus" or args.banana_grasps:
+            raise ValueError("--orange-task requiere --crop citrus")
+        if args.rock_offset_m is not None and (args.orange_task!="roca" or not np.isfinite(args.rock_offset_m)):
+            raise ValueError("--rock-offset-m requiere la tarea roca y una distancia finita")
+        args.controlled_delivery = args.extended_lift = True
+        args.height_servo = args.force_servo = args.surface_audit = True
+        offsets = args.orange_offset_m or [(-.008,.020,.003)]
+        if not np.isfinite(offsets).all() or np.abs(offsets).max()>.06:
+            raise ValueError("El ajuste de agarre debe estar dentro de 6 cm por eje.")
+        side = 0 if args.orange_task=="izquierda" else 1
+        return [(f"Naranja {i+1}",side,VERSIONS[0][2],offset) for i,offset in enumerate(offsets)]
+    if args.orange_offset_m or args.orange_closure or args.rock_offset_m is not None:
+        raise ValueError("Los ajustes del naranjal requieren --orange-task")
     if args.crop=="banana" and args.banana_grasps is None:
         args.banana_grasps = ("derecha_calibrada","lateral")
     if args.banana_grasps:
@@ -768,6 +1000,13 @@ if __name__=="__main__":
     from isaaclab.app import add_launcher_args,launch_simulation
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--crop",required=True,choices=SITES)
+    parser.add_argument("--orange-task",choices=ORDERS,help="Orden guiada del naranjal")
+    parser.add_argument("--orden",help="Orden en español, por ejemplo «Recoge la naranja de la izquierda»")
+    parser.add_argument("--orange-closure",choices=("trayectoria","contacto"),
+                        help="Completa el cierre previsto o conserva la consigna al medir oposición")
+    parser.add_argument("--rock-offset-m",type=float,help="Posición lateral de la roca desde el eje de la ruta (m)")
+    parser.add_argument("--orange-offset-m",nargs=3,type=float,action="append",metavar=("X","Y","Z"),
+                        help="Ajuste de la palma en el marco de agarre. Repetir para comparar trayectorias.")
     parser.add_argument("--output",required=True,type=Path)
     parser.add_argument("--seed",type=int,default=751)
     parser.add_argument("--ffmpeg",default="ffmpeg")
@@ -793,7 +1032,10 @@ if __name__=="__main__":
     out.mkdir(parents=True,exist_ok=False)
     survey = args.survey or args.support_check
     cfg,g,orient = configure(out,args.crop,versions,survey or args.physics_only,args.physics_substeps,
-                             verify_eyes=args.controlled_delivery)
+                             verify_eyes=args.controlled_delivery,orange_task=args.orange_task,order=args.orden,
+                             rock_offset=.82 if args.rock_offset_m is None else args.rock_offset_m)
+    if args.orange_closure:
+        g["closure_mode"] = args.orange_closure
     with launch_simulation(cfg,args):
         import torch
         from isaaclab.sim import SimulationContext
