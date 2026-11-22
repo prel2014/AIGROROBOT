@@ -10,6 +10,27 @@ def over_basket(position):
     return -.10 < x < .69 and abs(y) < .39 and .45 < z < .86
 
 
+def complete_field_cycle(robot):
+    """Check published physics and binocular evidence for a mobile demonstration."""
+    if not (robot.get("started_attached") and robot.get("detached") and robot.get("travel_m",0.)>0):
+        return False
+    for result in (robot,robot.get("surface_audit",{})):
+        if not (result.get("success") and result.get("grasp") and result.get("hold_15cm")
+                and result.get("deposit") and result.get("opened_over_basket") and not result["lost_in_transit"]
+                and result["delivery_ticks"]>0 and result["held_delivery_ticks"]==result["delivery_ticks"]
+                and result["stable_hold_s"]>=MIN_STABLE_HOLD_S and result["final_basket_rest_s"]>=.5):
+            return False
+    views = robot.get("binocular_visibility",{})
+    if any(eye["covered_lens_frames"] for phase in views.values() for eye in phase["eyes"]):
+        return False
+    for phase in ("aproximacion","cierre"):
+        sample = views.get(phase,{})
+        if not (sample.get("frames") and sample["both_visible"]==sample["frames"] and
+                len(sample["eyes"])==2 and all(eye["covered_lens_frames"]==0 for eye in sample["eyes"])):
+            return False
+    return True
+
+
 @dataclass
 class BasketTrial:
     grip_ticks: int = 0

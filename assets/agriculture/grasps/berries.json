@@ -1,6 +1,8 @@
 {
   "crop": "berries",
   "side": 1,
+  "fruit_root_in_palm_m": {"pregrasp": [0.05339, -0.07045, 0.10482], "closed": [0.04830, -0.06943, 0.10286]},
+  "palm_reference_source": "berries_orders01/lift/berries/replica_000/episode_000001.h5",
   "seed": 42,
   "reference_fruit": [
     0.3199958801269531,

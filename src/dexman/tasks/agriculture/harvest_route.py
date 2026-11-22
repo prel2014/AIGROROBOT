@@ -23,7 +23,9 @@ class HarvestSite:
 SITES = {
     "citrus": HarvestSite("la naranja",(7.9493,.05068,1.39921),.34,.15,.071,.16,4.,.045,(.30,-.12,.9355)),
     "banana": HarvestSite("el plátano",(7.43023,-.14834,2.04996),.34,.37,.086,.12,3.8,.11,(.30,-.115,.9355)),
-    "vineyard": HarvestSite("el racimo de uvas",(4.87463,-.02316,1.25749),.24,.11,.079,.20,4.5,.10,(.252,-.092,1.00349)),
+    # Surveyed in Fila2/Planta03/CurrentSeasonShoots. The outer shoot brings
+    # the hanging fruit above the rim and out to the drivable side of the trellis.
+    "vineyard": HarvestSite("el racimo de uvas",(4.86516,.21799,1.43228),.48115,.11,.079,.20,4.5,.10,(.252,-.092,1.00349)),
     "berries": HarvestSite("el arándano",(2.55173,-.26025,1.19166),.15,.09,.015,.002,.065,.012,(.319996,-.080029,.934462)),
 }
 
@@ -32,6 +34,46 @@ ATTACHMENT_M = {
     "banana": (.06325,.08812,.01234), "vineyard": (.00682,.00026,.12694),
     "citrus": (.00089,.00045,.07584), "berries": (-.00089,.00012,.01573),
 }
+
+
+@dataclass(frozen=True)
+class FieldSituation:
+    # Lateral bend at mid-route, branch-tip height offset, dome/sun intensities and sunlight temperature.
+    bend_m: float
+    branch_height_m: float
+    dome: float
+    sun: float
+    temperature_k: float
+
+
+SITUATIONS = {
+    "base": FieldSituation(0., 0., 400., 1750., 6500.),
+    "amanecer": FieldSituation(-.09, .012, 260., 1100., 4100.),
+    "tarde": FieldSituation(.10, -.015, 330., 1350., 4900.),
+}
+
+FIELD_PHASE_INSTRUCTIONS = {
+    "recorrido": "Recorre el surco y esquiva los obstáculos.",
+    "estacionamiento": "Frena frente al fruto y orienta los ojos hacia él.",
+    "aproximacion": "Acerca la mano al fruto indicado.",
+    "cierre": "Rodea el fruto y opón el pulgar a los dedos.",
+    "traccion": "Separa el fruto del pedúnculo manteniendo el agarre.",
+    "recuperacion": "Estabiliza el fruto después de desprenderlo.",
+    "elevacion": "Levanta el fruto quince centímetros.",
+    "sosten": "Sostén el fruto inmóvil durante medio segundo.",
+    "traslado": "Lleva el fruto sobre la canasta sin soltarlo.",
+    "apertura": "Abre los dedos dentro de la boca de la canasta.",
+    "retirada": "Retira la mano y deja el fruto en reposo.",
+}
+
+
+def field_instruction(crop, situation):
+    fruit = SITES[crop].fruit
+    return {
+        "base": f"Recorre el surco y estaciónate frente a la planta. Toma {fruit}. Eleva la fruta 15 cm, sostenla medio segundo y déjala en la canasta.",
+        "amanecer": f"Sigue la hilera hasta {fruit}. Si ves obstáculos, esquívalos. Frena, recoge el fruto y levántalo quince centímetros. Mantenlo así medio segundo y deposítalo en la canasta.",
+        "tarde": f"Avanza por el surco y detente junto a la planta. Sin golpear las ramas, sujeta {fruit}. Desprende el fruto y elévalo 15 cm. Sostén la carga medio segundo y suéltala dentro de la canasta.",
+    }[situation]
 
 
 def arm_occlusion(observations):
@@ -89,5 +131,10 @@ def layout(crop):
     t = np.linspace(0,1,55)[:,None]
     field_path = (1-t)**3*controls[0]+3*t*(1-t)**2*controls[1]+3*t*t*(1-t)*controls[2]+t**3*controls[3]
     route = (field_path-offset) @ basis
+    if crop=="berries":
+        # At the old terminal pose the front-left tyre climbed a 36 cm planting bed.
+        # Keep all four wheels in the aisle; the left hand can reach across its edge.
+        progress = t*t*(3.-2.*t)
+        route += progress*np.array([-.06,-.48])
     return dict(fruit=fruit,anchor=local_anchor,route=route,ground=ground,
                 start_z=field.height(*start)-ground+.06,rotation=-np.degrees(heading),translation=np.r_[-basis.T@offset,-ground])

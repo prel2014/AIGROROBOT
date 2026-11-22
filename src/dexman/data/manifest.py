@@ -76,6 +76,8 @@ def resolve_manifest(manifest, root=None):
 
 def read_manifest(path, root=None):
     manifest = json.loads(Path(path).read_text(encoding="utf-8"))
+    if root is None and not Path(manifest["dataset_root"]).is_absolute():
+        root = Path(path).resolve().parent/manifest["dataset_root"]
     return manifest, resolve_manifest(manifest, root)
 
 

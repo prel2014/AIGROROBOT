@@ -81,7 +81,7 @@ if __name__=="__main__":
     parser.add_argument("--output",required=True,type=Path)
     parser.add_argument("--robot",required=True,type=int)
     parser.add_argument("--ffmpeg",default="ffmpeg")
-    parser.add_argument("--eye-size",type=int,choices=(320,512,640),default=320,
+    parser.add_argument("--eye-size",type=int,choices=(224,320,512,640),default=320,
                         help="Resolución cuadrada por ojo, conservando las ópticas y el campo de visión del rover")
     add_launcher_args(parser)
     args = parser.parse_args()
@@ -91,7 +91,7 @@ if __name__=="__main__":
         parser.error("Índice de robot fuera del registro")
     cfg,_,_ = configure(source,report["crop"],[report["robots"][args.robot]["version"]],verify_eyes=True,
                         orange_task=report.get("orange_task"),order=report.get("instruction"),
-                        rock_offset=report.get("rock_offset_m",.70))
+                        rock_offset=report.get("rock_offset_m",.70),situation=report.get("situation","base"))
     scene = getattr(cfg.scenes,report["crop"])
     for camera in (scene.left_eye,scene.right_eye):
         camera.height = camera.width = args.eye_size

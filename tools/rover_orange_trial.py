@@ -102,7 +102,8 @@ def matrix(pose):
 def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
               reference_fruit=(.30,-.12,.9355), sightline_solver=None, residuals=None,
               clearance_cost=None, keep_fruit_heading=False, lift_margin_m=0., controlled_delivery=False,
-              pickup_seed=None, basket_target=None, pluck_vector=None, open_offset=None):
+              pickup_seed=None, basket_target=None, pluck_vector=None, open_offset=None,
+              minimum_wrist_lift_m=None, field_pickup=None):
     from agriculture_grasp_geometry import _Kinematics, _solve_arm
     from dexman.tasks.agriculture.scene import arm
     group, = env.batch.groups
@@ -118,6 +119,9 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
     chassis[:3,3] -= origin
     seed_base = arm(-1).init_state
     old_base = matrix([*seed_base.pos,*seed_base.rot])
+    if minimum_wrist_lift_m is not None:
+        nominal_lift = kin.fk(kin.arm,reference[-1],old_base)[2,3]-kin.fk(kin.arm,reference[2],old_base)[2,3]
+        lift_margin_m = max(lift_margin_m,minimum_wrist_lift_m-nominal_lift)
     old_fruit = np.array(reference_fruit)
     a = old_fruit[:2]-old_base[:2,3]
     b = fruit[:2]-base[:2,3]
@@ -156,7 +160,7 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
         alternative[1:4] = (q[1]+delta,-q[2],q[3]+2*q[2]-delta)
         return alternative
     lower_elbow = False
-    if clearance_cost is not None:
+    if clearance_cost is not None and field_pickup is None:
         # Different wrist approaches can reach the same fruit. Select one using both
         # physical eye positions before committing to the close and lift trajectory.
         seed = reference[2]
@@ -176,14 +180,22 @@ def make_path(env, index, side, approach, reference, fruit, offset, probe, *,
                 choices.append((rank,orientation,lower))
         _,turn,lower_elbow = min(choices,key=lambda item:item[0])
     aligned = [None]*len(reference)
+    bench_closed = kin.fk(kin.arm,reference[2],old_base)
     order = [2,1,0,*range(3,len(reference))] if pickup_seed is not None else range(len(reference))
     for k in order:
         q = reference[k]
         old = kin.fk(kin.arm,q,old_base)
         hand_offset = open_offset if open_offset is not None and k<2 else offset
         goal = fruit+turn@(old[:3,3]-old_fruit+hand_offset)
-        goal[2] += lift_margin_m*max(0.,(k-2)/(len(reference)-3))
         axes = turn@old[:3,:3]
+        if field_pickup is not None:
+            field = field_pickup[min(2,k)]
+            goal = field[:3,3].copy()
+            axes = field[:3,:3]
+            if k>2:
+                goal += old[:3,3]-bench_closed[:3,3]
+                axes = axes@bench_closed[:3,:3].T@old[:3,:3]
+        goal[2] += lift_margin_m*max(0.,(k-2)/(len(reference)-3))
         seed = elbow_seed(q,lower_elbow).copy()
         if pickup_seed is not None:
             parent = (k+1) if k<2 else (k-1)

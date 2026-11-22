@@ -86,7 +86,10 @@ def inspect_bimanual_episode(path, episode, metadata):
     if metadata.get("seed") is not None and all(key in episode.attrs for key in ("replica_id", "episode_id")):
         reset = [str(episode.attrs["crop"]), int(metadata["seed"]), int(episode.attrs["replica_id"]),
                  int(episode.attrs["episode_id"])]
-    return {"sha256": sha256(path), "samples": length, "success": bool(episode.attrs["success"]),
+    # A writer may validate its still-open staging file before the atomic rename.
+    # Windows locks that file for writing; only a closed, published episode has a stable digest.
+    digest = None if Path(path).suffix==".partial" else sha256(path)
+    return {"sha256": digest, "samples": length, "success": bool(episode.attrs["success"]),
             "scene_reset": reset, "exercise": metadata.get("exercise", "default"),
             "sample_kind": "teacher_demonstration", "seed": metadata.get("seed"),
             "teacher_sha256": metadata.get("teacher", {}).get("sha256"), "contract": contract,
@@ -104,13 +107,14 @@ def dataset_contract(files):
 
 
 class BimanualDemonstrations(Dataset):
-    def __init__(self, files, horizon=8, sequence_length=8, *, prompts="guided"):
+    def __init__(self, files, horizon=8, sequence_length=8, *, prompts="guided", wheel_targets=False):
         if horizon < 1 or sequence_length < 2:
             raise ValueError("Se requiere un horizonte positivo y al menos dos pasos para entrenar memoria")
         self.horizon, self.sequence_length = horizon, sequence_length
         if prompts not in ("guided", "global", "both"):
             raise ValueError("Modo de órdenes agrícolas desconocido")
         self.prompts = prompts
+        self.wheel_targets = wheel_targets
         self.index = []
         contract = None
         for path in map(Path, files):
@@ -124,6 +128,9 @@ class BimanualDemonstrations(Dataset):
                 contract = episode_contract
                 schema = contract["schema"]
                 length = _episode_shape(episode, schema)
+                if wheel_targets and ("wheel_command_rad_s" not in episode or
+                                      episode["wheel_command_rad_s"].shape!=(length,4)):
+                    raise ValueError(f"El episodio carece de consignas sincronizadas de las cuatro ruedas: {path}")
             key, _ = state_field(schema)
             self.index.extend((path, start, length, key) for start in range(0, length, sequence_length))
 
@@ -153,7 +160,9 @@ class BimanualDemonstrations(Dataset):
                     "text": (episode_instructions(episode, phases[:valid]) if guided else
                              [instruction_prompt(episode.attrs["instruction"])] * valid),
                     "state": np.pad(state, ((0, self.sequence_length - valid), (0, 0))),
-                    "joint_angles": target[clipped], "mask": mask}
+                    "joint_angles": target[clipped], "mask": mask,
+                    **({"wheel_command_rad_s": episode["wheel_command_rad_s"][start:target_stop][clipped]}
+                       if self.wheel_targets else {})}
 
 
 def collate(samples, processor, tokenizer):
@@ -161,9 +170,12 @@ def collate(samples, processor, tokenizer):
     prompts = [prompt for sample in samples for prompt in sample["text"]]
     unique = list(dict.fromkeys(prompts))
     index = {prompt: i for i, prompt in enumerate(unique)}
+    keys = ("state","joint_angles","mask")
+    if "wheel_command_rad_s" in samples[0]:
+        keys += ("wheel_command_rad_s",)
     return {"pixels": processor(images=images, return_tensors="pt")["pixel_values"],
             "text": tokenize_instructions(tokenizer, unique),
             "text_index": torch.tensor([index[prompt] for prompt in prompts]),
             "depth": torch.from_numpy(np.concatenate([sample["depth"] for sample in samples])),
             **{key: torch.from_numpy(np.stack([sample[key] for sample in samples]))
-               for key in ("state", "joint_angles", "mask")}}
+               for key in keys}}

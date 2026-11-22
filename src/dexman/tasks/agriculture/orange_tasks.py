@@ -12,6 +12,11 @@ ORDERS = {
     "derecha": "De las dos naranjas, recoge la de la derecha y deja la otra en la rama.",
 }
 ORDERS = {name: f"{order} {FINISH}" for name, order in ORDERS.items()}
+ROCK_INSTRUCTIONS = {
+    "base": ORDERS["roca"],
+    "amanecer": f"Sigue el surco del naranjal y rodea la roca. Detente junto al árbol y recoge la naranja exterior. {FINISH}",
+    "tarde": "Avanza hasta el naranjo. Si un obstáculo corta el paso, bordéalo antes de estacionarte. Sujeta la naranja exterior, despréndela y elévala quince centímetros. Sostenla medio segundo y deposítala en la canasta.",
+}
 ROCK_SCALE = 2.4
 # The convex hull of field_rock.usda fits in this horizontal bounding circle.
 ROCK_RADIUS = .10 * ROCK_SCALE
@@ -37,6 +42,8 @@ def order_task(order):
         return " ".join(re.findall(r"\w+",text.casefold()))
     for name,full in ORDERS.items():
         variants = [full,full.removesuffix(FINISH)]
+        if name=="roca":
+            variants.extend(ROCK_INSTRUCTIONS.values())
         if name in ("izquierda","derecha"):
             variants.extend((f"Recoge la de la {name}",f"Recoge la naranja de la {name}"))
         if any(words(order)==words(v) for v in variants):

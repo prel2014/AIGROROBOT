@@ -7,6 +7,7 @@ import platform
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
+from uuid import uuid4
 
 from dexman.paths import ROOT
 
@@ -22,9 +23,12 @@ def sha256(path):
 def write_json(path, value):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
-    os.replace(temporary, path)
+    temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
+    try:
+        temporary.write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def provenance():

@@ -9,10 +9,11 @@ from dexman.experiments import write_json
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["audit", "split", "add-corrections"])
+    parser.add_argument("action", choices=["audit", "split", "field-release", "field-snapshot", "add-corrections"])
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--manifest")
+    parser.add_argument("--evidence",type=Path,help="Directorio de ensayos de cosecha en Isaac Sim")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
     if Path(args.output).exists():
@@ -21,6 +22,11 @@ def main():
         result = audit_dataset(args.dataset)
     elif args.action == "split":
         result = create_manifest(args.dataset, args.seed)
+    elif args.action in ("field-release", "field-snapshot"):
+        from dexman.data.field_release import field_manifest
+        if not args.evidence:
+            parser.error("field-release requiere --evidence")
+        result = field_manifest(args.dataset,args.evidence,snapshot=args.action=="field-snapshot")
     else:
         if not args.manifest:
             parser.error("add-corrections requires --manifest")
