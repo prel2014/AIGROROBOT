@@ -1,5 +1,15 @@
 # Texturas de los escenarios Xavier
 
+## Superficies fotográficas de la revisión
+
+El asfalto utiliza [Asphalt 04](https://polyhaven.com/a/asphalt_04) y la madera utiliza [Wood Planks Dirt](https://polyhaven.com/a/wood_planks_dirt). Los seis JPG 2K provienen de Poly Haven bajo [CC0](https://polyhaven.com/license). Cada juego incluye color en sRGB, normales tangentes OpenGL y rugosidad en espacio lineal. El motivo se repite cada 4 m en el asfalto y cada 2 m en la madera.
+
+## Modelos 3D
+
+Los modelos 3D de esta revisión están en `../objetos/`. La planta utiliza [Potted Plant 02, de Rico Cilliers](https://polyhaven.com/a/potted_plant_02) y el banco utiliza [Painted Wooden Bench, de Kirill Sannikov](https://polyhaven.com/a/painted_wooden_bench). Se distribuyen el USD original y sus mapas 1K bajo la misma licencia CC0. El tiesto tiene un cilindro de contacto independiente. El banco utiliza su malla estática como colisionador.
+
+## Atlas y panorama originales
+
 Las seis superficies, los cuatro escaparates y el panorama costero son imágenes originales generadas en modo texto a imagen. El atlas de 1536 × 1024 se dividió en seis muestras de 512 × 512. El generador USD define su repetición en metros, su rugosidad y su metalicidad. El panorama es una imagen LDR de iluminación ambiental. Los escaparates se recortan del segundo atlas y los letreros se dibujan por separado para conservar el texto legible.
 
 ## Prompt del atlas

@@ -199,7 +199,33 @@ Las tres escenas usan el mismo humanoide y la misma política. El mobiliario pri
 
 La evaluación del campus usó la política guardada en la iteración 331, en etapa de cruce y con semilla 101. El informe contiene las llegadas, las caídas, los choques y los máximos de carga plantar por robot durante ese episodio. [Resultado del campus](isaac/escenarios/evaluacion_campus.json)
 
-Para regenerar las capas USD se usa `isaac/escenarios_marcha.py` con el Python de Isaac Sim. La cámara `/World/Escenario/Vista` muestra el entorno arquitectónico y `isaac/vistas_escenarios.py` renderiza la lámina en RTX. Los materiales de roble, terrazo, asfalto, ladrillo, hormigón y tapicería usan texturas de color generadas y repetidas a escala métrica. [Origen de las texturas](isaac/escenarios/texturas/origen.md)
+Para regenerar las capas USD se usa `isaac/escenarios_marcha.py` con el Python de Isaac Sim. La cámara `/World/Escenario/Vista` muestra el entorno arquitectónico y `isaac/vistas_escenarios.py` renderiza la lámina en RTX. La madera y el asfalto utilizan juegos fotográficos PBR 2K. La planta de interior y el banco referencian modelos USD con sus propios materiales. Los cojines tienen normales continuas y los vehículos incorporan pasos de rueda, espejos y llantas. [Vista RTX](isaac/escenarios/vistas.jpg) · [Modelos y licencias](isaac/escenarios/texturas/origen.md)
+
+### Entrenamiento con cuatro situaciones
+
+La etapa `situaciones` asigna cuatro Xavier por tarea en cada episodio. Una semilla determina el robot, el lado y la flexión solicitada entre 28° y 48°. Las tareas consisten en flexionar y extender un codo, alternar los brazos, flexionar y extender ambos codos juntos, y caminar entre 0,38 y 0,72 m para detenerse, levantar un antebrazo y bajarlo.
+
+Una postura requiere 0,35 s continuos con error máximo de 8° en ambos codos, velocidad horizontal inferior a 0,16 m/s, pelvis erguida y carga plantar superior al 55 % del peso. La llegada a pie también exige dos alternancias de apoyo. Cada robot termina al completar su secuencia, caer o chocar. El informe conserva tarea, ángulo, lado, fases y motivo del desenlace por robot.
+
+PPO ajusta nueve salidas sobre referencias articulares, seis para las piernas, una para la cadencia y dos para los codos. Recibe la imagen RGB, 47 valores de estado y consignas, y trabaja con las medidas de PhysX. Los dedos permanecen en la configuración de marcha. El ejercicio de brazos mide posturas y todavía queda por entrenar el agarre de un fruto.
+
+Desde `Hacking`, estos comandos muestran la política entrenada y permiten continuar desde los pesos de esta revisión. Cada entorno admite `--escenario vivienda`, `calle` o `campus`.
+
+```powershell
+.\isaac-sim-6.2.0\python.bat .\humanoide-173\isaac\entrenar_marcha.py --etapa situaciones --escenario campus --evaluar 1 --semilla 197 --visible
+.\isaac-sim-6.2.0\python.bat .\humanoide-173\isaac\entrenar_marcha.py --etapa situaciones --escenario calle --reanudar --iteraciones 10 --semilla 251
+```
+
+El entrenamiento inicial transfirió la política plantar a una red ampliada. Ejecutó 10 actualizaciones en vivienda con semilla 37, 10 en campus con 48 y 16 en calle con 59, con 32 decisiones por robot y actualización. Se calibró el frenado durante este proceso. La política final está en [situaciones.pt](isaac/situaciones.pt). Los informes de evaluación usan los mismos pesos y tres episodios por escenario. [Vivienda](isaac/escenarios/situaciones_vivienda.json) · [Calle](isaac/escenarios/situaciones_calle.json) · [Campus](isaac/escenarios/situaciones_campus.json)
+
+La evaluación obtuvo 107 secuencias completas en 144 intentos individuales, con 37 caídas y cero choques registrados. Hubo 39 éxitos de 48 en vivienda, 34 de 48 en calle y 34 de 48 en campus. La maniobra que requiere más trabajo es frenar y señalar después de caminar. [Demostración de cuatro robots en el campus](isaac/escenarios/situaciones.gif)
+
+| Tarea | Secuencias completas / intentos |
+| --- | ---: |
+| Flexionar y extender un codo | 36 / 36 |
+| Alternar los brazos | 36 / 36 |
+| Flexionar y extender los dos codos | 27 / 36 |
+| Caminar, parar, señalar y bajar el brazo | 8 / 36 |
 
 ## Interior del torso con Jetson AGX Xavier y un banco extraíble
 

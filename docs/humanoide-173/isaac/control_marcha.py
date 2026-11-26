@@ -10,6 +10,17 @@ GANANCIAS_MARCHA = ([745., 350., 248.], [13.8, 17.6, 7.9])
 GANANCIAS_REPOSO = ([1000., 900., 600.], [10., 8., 4.])
 
 
+def frenar_con_apoyo(inicial, q, separacion, velocidad, segundos):
+    """Flexiona cadera y rodilla y regula el tobillo respecto al centro de los dos pies."""
+    postura = inicial.copy()
+    postura[:, 0::3] = .32
+    postura[:, 1::3] = .384
+    correccion = np.clip(1.4 * (separacion + .023) + .38 * velocidad, -.20, .20)
+    postura[:, 2::3] = q[:, 2::3] - .10 - 2 * correccion[:, None]
+    mezcla = np.minimum(segundos / .08, 1.)[:, None]
+    return inicial + mezcla * (postura - inicial)
+
+
 def corregir_apoyos(consigna, fase, amplitud, posicion, velocidad):
     """Corrige el lugar del próximo apoyo según el movimiento respecto a ambos pies."""
     centro, ritmo, kp_pie, kv_pie, kp_tobillo, kv_tobillo, kp_apoyo, kv_apoyo = CAPTURA

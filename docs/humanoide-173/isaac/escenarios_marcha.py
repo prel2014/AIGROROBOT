@@ -169,7 +169,19 @@ def palmera(t, p, pos, altura=4.8):
             for signo in (-1, 1):
                 largo = .09 + .36 * math.sin(math.pi * s)
                 punta = base + signo * lateral * largo + d * (.10 + .13 * s) - [0, 0, largo * .56]
-                caras[i % 2].append([base, t0, punta])
+                # Foliolos arqueados con una nervadura central y una punta colgante.
+                ancho = .032 * math.sin(math.pi * s) + .008
+                filas = []
+                for u in np.linspace(0., 1., 8):
+                    centro = (1. - u) * base + u * punta
+                    centro[2] += .14 * math.sin(math.pi * u)
+                    mitad = ancho * (.35 + .65 * math.sin(math.pi * u)) * (1. - u)
+                    filas.append((centro - d * mitad, centro + [0, 0, mitad * .35], centro + d * mitad))
+                for inferior, superior in zip(filas[:-2], filas[1:-1]):
+                    for k in (0, 1):
+                        caras[i % 2].append([inferior[k], inferior[k+1], superior[k+1], superior[k]])
+                for k in (0, 1):
+                    caras[i % 2].append([filas[-2][k], filas[-2][k+1], punta])
     for hojas, acabado in zip(caras, ("hoja", "brote")):
         t.malla(g, "Corona", hojas, acabado)
 
@@ -197,8 +209,28 @@ def local(t, p, pos, giro, acabado, letrero):
 
 
 def automovil(t, p, pos, giro, color):
+    from scipy.interpolate import PchipInterpolator
     g = t.grupo(p, "AutomovilEstacionado", pos, giro)
-    t.caja(g, "Carroceria", (0, 0, .56), (3.89, 1.62, .59), color, True, .13)
+    proxy = t.caja(g, "ColisionCarroceria", (0, 0, .56), (3.89, 1.62, .59), color, True)
+    UsdGeom.Imageable(proxy).MakeInvisible()
+    # Secciones transversales de la chapa. Los arcos recortan el faldón sobre cada neumático.
+    estaciones = [-1.95, -1.75, -1.25, -.76, .70, 1.30, 1.77, 1.95]
+    manga = PchipInterpolator(estaciones, [.57, .76, .82, .83, .83, .82, .77, .64])
+    altura = PchipInterpolator(estaciones, [.64, .73, .81, .88, .88, .84, .81, .72])
+    anillos = []
+    for x in np.linspace(estaciones[0], estaciones[-1], 81):
+        dx = min(abs(x + 1.24), abs(x - 1.23))
+        base = .29 if dx >= .36 else .33 + math.sqrt(.36**2 - dx**2)
+        alto, ancho = float(altura(x)), float(manga(x))
+        perfil = [(ancho * .91, base), (ancho, base + .32 * (alto - base)),
+                  (ancho, alto - .05), (ancho * .91, alto), (ancho * .67, alto + .025)]
+        anillos.append([(x, y, z) for y, z in perfil] + [(x, -y, z) for y, z in reversed(perfil)])
+    caras = [anillos[0], anillos[-1][::-1]]
+    for a, b in zip(anillos, anillos[1:]):
+        for k in range(len(a)):
+            j = (k + 1) % len(a)
+            caras.append([a[k], a[j], b[j], b[k]])
+    t.malla(g, "Chapa", caras, color)
     # Silueta longitudinal, capó, parabrisas, techo y luneta.
     perfil = [(-1.21, .81), (-.63, 1.38), (.58, 1.40), (1.24, .82)]
     lados = [[(x, y, z) for x, z in perfil] for y in (-.70, .70)]
@@ -210,6 +242,19 @@ def automovil(t, p, pos, giro, color):
     for x, y in product((-1.24, 1.23), (-.79, .79)):
         t.disco(g, "Neumatico", (x, y, .33), .32, .20, "grafito", False, "Y")
         t.disco(g, "Llanta", (x, y * 1.135, .33), .19, .018, "aluminio", False, "Y")
+        lado = math.copysign(1., y)
+        cara = lado * .909
+        t.disco(g, "DiscoFreno", (x, cara, .33), .155, .009, "grafito", eje="Y")
+        for ang in np.arange(8) * math.tau / 8:
+            dx, dz = math.cos(ang), math.sin(ang)
+            t.varilla(g, "RadioLlanta", (x + dx * .042, cara + lado * .007, .33 + dz * .042),
+                      (x + dx * .168, cara + lado * .007, .33 + dz * .168), .016, "aluminio")
+        t.disco(g, "Buje", (x, cara + lado * .015, .33), .055, .022, "aluminio", eje="Y")
+    for lado in (-1, 1):
+        t.varilla(g, "PilarB", (0, lado * .705, .85), (0, lado * .705, 1.39), .032, "grafito")
+        for x in (-.39, .65):
+            t.caja(g, "Tirador", (x, lado * .83, .785), (.13, .026, .026), "aluminio", bisel=.01)
+        t.caja(g, "Espejo", (-.75, lado * .84, 1.02), (.21, .17, .10), color, bisel=.034)
     for y in (-.57, .57):
         t.caja(g, "Faro", (-1.934, y, .65), (.04, .36, .14), "ceramica", False, .015)
         t.caja(g, "Piloto", (1.934, y, .65), (.04, .34, .13), "oxido")

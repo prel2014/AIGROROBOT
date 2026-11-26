@@ -1,0 +1,2154 @@
+{
+  "semilla": 173,
+  "iteracion": 36,
+  "escenario": "vivienda",
+  "pies": [
+    "izq",
+    "der"
+  ],
+  "zonas_por_pie": [
+    "TalonInterior",
+    "TalonExterior",
+    "AntepieInterior",
+    "AntepieExterior"
+  ],
+  "perfil": {
+    "semilla": 173,
+    "escenario": "vivienda",
+    "solver": "cpu",
+    "rgb": [
+      256,
+      256,
+      3
+    ],
+    "periodo_control_s": 0.05,
+    "contrato": "xavier-situaciones-v1",
+    "observaciones_adicionales": [
+      "objetivo_izq_rad",
+      "objetivo_der_rad",
+      "codo_izq_rad",
+      "codo_der_rad",
+      "orden_marcha",
+      "residuo_previo_izq",
+      "residuo_previo_der"
+    ],
+    "acciones_adicionales": [
+      "residuo_codo_izq",
+      "residuo_codo_der"
+    ]
+  },
+  "episodios": [
+    {
+      "etapa": "situaciones",
+      "episodio": 1,
+      "segundos": 4.5,
+      "aprobados": 13,
+      "caidas": 3,
+      "robots_con_choque": 0,
+      "choques_con_entorno": 0,
+      "llegadas": 13,
+      "eventos": [
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 1.7,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 1.7,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 1.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 1.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 1.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 2.3,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 2.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 2.4,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 2.4,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 2.45,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 2.55,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 3.25,
+          "fase_completada": 0
+        },
+        {
+          "segundos": 3.75,
+          "tipo": "caida",
+          "robot": 13,
+          "marcha_s": 1.75
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 3.8,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 3.85,
+          "tipo": "caida",
+          "robot": 14,
+          "marcha_s": 1.85
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 4.4,
+          "fase_completada": 2
+        },
+        {
+          "segundos": 4.5,
+          "tipo": "caida",
+          "robot": 0,
+          "marcha_s": 2.65
+        }
+      ],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.592,
+          "angulo_objetivo_grados": 42.52,
+          "lado_inicial": "izq",
+          "avance_m": 0.516,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              107.03,
+              184.32,
+              84.66,
+              83.81
+            ],
+            [
+              135.27,
+              148.22,
+              69.26,
+              129.11
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.965,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 1,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 33.12,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              86.19,
+              11.65,
+              28.77,
+              39.83
+            ],
+            [
+              11.3,
+              59.75,
+              30.04,
+              27.57
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.965,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 2,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 42.89,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.61,
+              10.13,
+              21.11,
+              39.89
+            ],
+            [
+              9.39,
+              59.46,
+              29.97,
+              20.4
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.041,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 3,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 34.21,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              86.33,
+              11.81,
+              28.88,
+              39.9
+            ],
+            [
+              11.46,
+              59.8,
+              29.98,
+              27.83
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.041,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 4,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 35.21,
+          "lado_inicial": "der",
+          "avance_m": 0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              79.13,
+              10.11,
+              19.01,
+              39.9
+            ],
+            [
+              9.27,
+              59.56,
+              29.92,
+              18.28
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.042,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 5,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 38.72,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.58,
+              10.14,
+              20.18,
+              39.91
+            ],
+            [
+              9.49,
+              59.51,
+              29.94,
+              19.44
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.043,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 6,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 32.85,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.12,
+              10.17,
+              18.03,
+              39.93
+            ],
+            [
+              9.32,
+              59.41,
+              29.94,
+              17.28
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.052,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 7,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 32.75,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.12,
+              10.2,
+              18.03,
+              39.96
+            ],
+            [
+              9.35,
+              59.73,
+              29.96,
+              17.28
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.052,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 8,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 42.88,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              82.11,
+              10.29,
+              21.12,
+              39.91
+            ],
+            [
+              9.98,
+              58.87,
+              29.95,
+              20.51
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.04,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 9,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 32.86,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              86.11,
+              11.67,
+              28.77,
+              39.87
+            ],
+            [
+              11.32,
+              59.55,
+              29.94,
+              27.59
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.04,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 10,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 3,
+          "distancia_objetivo_m": 0.468,
+          "angulo_objetivo_grados": 31.18,
+          "lado_inicial": "der",
+          "avance_m": 0.399,
+          "alternancias": 3,
+          "maximos_plantares_N": [
+            [
+              114.8,
+              129.68,
+              93.4,
+              130.42
+            ],
+            [
+              137.69,
+              139.83,
+              82.07,
+              87.36
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.976,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 11,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 37.68,
+          "lado_inicial": "der",
+          "avance_m": 0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.32,
+              10.19,
+              19.88,
+              39.94
+            ],
+            [
+              9.39,
+              59.43,
+              29.96,
+              19.14
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.976,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 12,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 37.46,
+          "lado_inicial": "izq",
+          "avance_m": 0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.5,
+              10.24,
+              19.26,
+              39.84
+            ],
+            [
+              9.4,
+              58.65,
+              29.96,
+              18.47
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.016,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 13,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.416,
+          "angulo_objetivo_grados": 39.59,
+          "lado_inicial": "izq",
+          "avance_m": 0.344,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              105.94,
+              131.26,
+              98.32,
+              89.41
+            ],
+            [
+              153.84,
+              145.8,
+              69.35,
+              87.45
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.016,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 14,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.405,
+          "angulo_objetivo_grados": 32.7,
+          "lado_inicial": "izq",
+          "avance_m": 0.353,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              116.12,
+              130.42,
+              82.57,
+              110.78
+            ],
+            [
+              184.25,
+              146.36,
+              82.72,
+              90.67
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.966,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 15,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 41.61,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              86.68,
+              53.26,
+              29.51,
+              39.9
+            ],
+            [
+              53.47,
+              60.17,
+              30.04,
+              28.24
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.966,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        }
+      ]
+    },
+    {
+      "etapa": "situaciones",
+      "episodio": 2,
+      "segundos": 5.75,
+      "aprobados": 13,
+      "caidas": 3,
+      "robots_con_choque": 0,
+      "choques_con_entorno": 0,
+      "llegadas": 13,
+      "eventos": [
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 1.55,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 1.6,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 1.6,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 1.6,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 1.7,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 1.7,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 1.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 1.8,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 2.25,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 2.3,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 2.4,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 2.5,
+          "fase_completada": 0
+        },
+        {
+          "segundos": 2.6,
+          "tipo": "caida",
+          "robot": 9,
+          "marcha_s": 0.0
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 2.65,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 2.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 3.2,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 3.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 3.7,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 4.05,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 4.4,
+          "tipo": "caida",
+          "robot": 11,
+          "marcha_s": 2.6
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 4.4,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 4.95,
+          "fase_completada": 2
+        },
+        {
+          "segundos": 5.75,
+          "tipo": "caida",
+          "robot": 15,
+          "marcha_s": 2.75
+        }
+      ],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 44.69,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              81.28,
+              10.29,
+              22.04,
+              39.92
+            ],
+            [
+              9.58,
+              59.11,
+              30.02,
+              21.53
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.04,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 1,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 28.1,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              85.52,
+              11.64,
+              27.12,
+              39.85
+            ],
+            [
+              11.29,
+              59.51,
+              29.93,
+              26.3
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.04,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 2,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 39.33,
+          "lado_inicial": "der",
+          "avance_m": 0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.65,
+              10.12,
+              20.38,
+              39.91
+            ],
+            [
+              9.49,
+              59.82,
+              29.92,
+              19.64
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.049,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 3,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 43.89,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.91,
+              10.29,
+              21.68,
+              39.93
+            ],
+            [
+              9.74,
+              58.74,
+              29.94,
+              21.17
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.05,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 4,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 3,
+          "distancia_objetivo_m": 0.58,
+          "angulo_objetivo_grados": 46.28,
+          "lado_inicial": "der",
+          "avance_m": 0.486,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              121.35,
+              209.64,
+              80.96,
+              85.89
+            ],
+            [
+              133.78,
+              174.69,
+              74.58,
+              84.51
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.986,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 5,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 30.17,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              79.67,
+              10.12,
+              16.87,
+              39.91
+            ],
+            [
+              9.27,
+              59.46,
+              29.93,
+              16.12
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.986,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 6,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 35.58,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              86.16,
+              11.58,
+              29.04,
+              39.85
+            ],
+            [
+              11.23,
+              59.8,
+              29.99,
+              27.82
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.059,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 7,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 35.62,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.34,
+              10.21,
+              19.18,
+              39.97
+            ],
+            [
+              9.35,
+              59.82,
+              29.99,
+              18.44
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.059,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 8,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 31.52,
+          "lado_inicial": "der",
+          "avance_m": 0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              77.29,
+              10.18,
+              17.49,
+              39.95
+            ],
+            [
+              9.33,
+              59.45,
+              29.95,
+              16.74
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.04,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 9,
+          "aprobado": false,
+          "tarea": "flexion_bilateral",
+          "fases": 1,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 45.93,
+          "lado_inicial": "der",
+          "avance_m": -0.004,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              75.63,
+              22.78,
+              57.37,
+              59.6
+            ],
+            [
+              10.98,
+              59.75,
+              59.7,
+              62.12
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.04,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 10,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 32.51,
+          "lado_inicial": "izq",
+          "avance_m": 0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              78.78,
+              10.18,
+              17.29,
+              39.84
+            ],
+            [
+              9.34,
+              58.88,
+              29.9,
+              16.05
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.037,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 11,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.608,
+          "angulo_objetivo_grados": 39.5,
+          "lado_inicial": "der",
+          "avance_m": 0.548,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              104.53,
+              177.34,
+              97.05,
+              88.22
+            ],
+            [
+              153.47,
+              183.52,
+              75.08,
+              87.66
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.037,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 12,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 34.96,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              86.29,
+              11.64,
+              29.01,
+              39.9
+            ],
+            [
+              11.3,
+              59.94,
+              30.02,
+              27.79
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.026,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 13,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 3,
+          "distancia_objetivo_m": 0.442,
+          "angulo_objetivo_grados": 39.78,
+          "lado_inicial": "der",
+          "avance_m": 0.367,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              107.04,
+              133.35,
+              83.4,
+              88.65
+            ],
+            [
+              151.83,
+              147.92,
+              69.41,
+              89.38
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.026,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 14,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 47.04,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              82.69,
+              10.47,
+              22.98,
+              39.92
+            ],
+            [
+              10.17,
+              58.91,
+              29.89,
+              22.5
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.025,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 15,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.627,
+          "angulo_objetivo_grados": 32.95,
+          "lado_inicial": "izq",
+          "avance_m": 0.476,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              111.87,
+              194.58,
+              74.35,
+              83.63
+            ],
+            [
+              190.52,
+              157.5,
+              69.23,
+              101.77
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.025,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        }
+      ]
+    },
+    {
+      "etapa": "situaciones",
+      "episodio": 3,
+      "segundos": 5.45,
+      "aprobados": 13,
+      "caidas": 3,
+      "robots_con_choque": 0,
+      "choques_con_entorno": 0,
+      "llegadas": 13,
+      "eventos": [
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 0.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 1.6,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 1.6,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 1.6,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 1.65,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 1.7,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 1.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 1.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 1.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 1.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 1.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 1.8,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 2.25,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 2.45,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 2.55,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "segundos": 2.6,
+          "tipo": "caida",
+          "robot": 11,
+          "marcha_s": 0.0
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 2.6,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 2.85,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 3.0,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 3.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 3.75,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 4.05,
+          "tipo": "caida",
+          "robot": 1,
+          "marcha_s": 2.25
+        },
+        {
+          "segundos": 4.35,
+          "tipo": "caida",
+          "robot": 2,
+          "marcha_s": 2.4
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 4.5,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 4.9,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 5.45,
+          "fase_completada": 2
+        }
+      ],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 30.04,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              79.67,
+              10.26,
+              16.63,
+              39.96
+            ],
+            [
+              9.41,
+              59.93,
+              30.01,
+              16.07
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.025,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 1,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.501,
+          "angulo_objetivo_grados": 40.2,
+          "lado_inicial": "der",
+          "avance_m": 0.455,
+          "alternancias": 3,
+          "maximos_plantares_N": [
+            [
+              107.62,
+              173.75,
+              145.29,
+              95.89
+            ],
+            [
+              178.47,
+              141.08,
+              70.03,
+              101.67
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.025,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 2,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.578,
+          "angulo_objetivo_grados": 30.6,
+          "lado_inicial": "izq",
+          "avance_m": 0.512,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              105.31,
+              174.48,
+              117.95,
+              83.38
+            ],
+            [
+              146.39,
+              145.19,
+              73.92,
+              102.92
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.97,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 3,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 44.16,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              75.73,
+              22.23,
+              55.59,
+              52.26
+            ],
+            [
+              10.79,
+              60.14,
+              51.76,
+              64.19
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.97,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 4,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 40.35,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              81.58,
+              10.32,
+              20.32,
+              39.93
+            ],
+            [
+              9.69,
+              59.01,
+              29.95,
+              19.58
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.065,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 5,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 44.73,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              81.24,
+              10.27,
+              22.12,
+              39.9
+            ],
+            [
+              9.71,
+              58.84,
+              29.95,
+              21.6
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.067,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 6,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 29.69,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              85.74,
+              11.53,
+              27.82,
+              39.81
+            ],
+            [
+              11.18,
+              59.68,
+              29.94,
+              26.92
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.045,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 7,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 31.1,
+          "lado_inicial": "der",
+          "avance_m": 0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              77.15,
+              10.22,
+              17.31,
+              39.97
+            ],
+            [
+              9.37,
+              59.84,
+              29.99,
+              16.56
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.045,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 8,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 43.77,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              82.19,
+              10.29,
+              21.59,
+              39.94
+            ],
+            [
+              9.92,
+              59.0,
+              29.95,
+              21.02
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.046,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 9,
+          "aprobado": true,
+          "tarea": "alternar_brazos",
+          "fases": 3,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 45.52,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              82.21,
+              10.46,
+              21.39,
+              39.88
+            ],
+            [
+              10.16,
+              59.35,
+              29.93,
+              20.73
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.046,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 10,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 43.85,
+          "lado_inicial": "der",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              80.65,
+              10.13,
+              21.3,
+              39.9
+            ],
+            [
+              9.37,
+              59.34,
+              29.96,
+              20.62
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.04,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 11,
+          "aprobado": false,
+          "tarea": "flexion_bilateral",
+          "fases": 1,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 45.77,
+          "lado_inicial": "izq",
+          "avance_m": -0.003,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              75.62,
+              21.63,
+              85.91,
+              58.53
+            ],
+            [
+              11.12,
+              59.58,
+              58.63,
+              76.24
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.04,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 12,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 3,
+          "distancia_objetivo_m": 0.481,
+          "angulo_objetivo_grados": 44.74,
+          "lado_inicial": "der",
+          "avance_m": 0.42,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              112.47,
+              136.64,
+              87.31,
+              85.53
+            ],
+            [
+              133.8,
+              152.87,
+              80.61,
+              123.91
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.022,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 13,
+          "aprobado": true,
+          "tarea": "flexion_bilateral",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 35.3,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              86.13,
+              11.57,
+              28.87,
+              39.86
+            ],
+            [
+              11.23,
+              59.5,
+              29.95,
+              27.87
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.022,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 14,
+          "aprobado": true,
+          "tarea": "flexionar_y_extender",
+          "fases": 2,
+          "distancia_objetivo_m": 0.0,
+          "angulo_objetivo_grados": 47.44,
+          "lado_inicial": "izq",
+          "avance_m": -0.0,
+          "alternancias": 0,
+          "maximos_plantares_N": [
+            [
+              82.36,
+              10.34,
+              23.54,
+              39.91
+            ],
+            [
+              10.05,
+              59.01,
+              29.94,
+              23.02
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.027,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 15,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 3,
+          "distancia_objetivo_m": 0.639,
+          "angulo_objetivo_grados": 29.38,
+          "lado_inicial": "izq",
+          "avance_m": 0.479,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              119.51,
+              212.49,
+              83.21,
+              87.25
+            ],
+            [
+              136.83,
+              150.14,
+              69.41,
+              108.87
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.027,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        }
+      ]
+    }
+  ]
+}

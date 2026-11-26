@@ -7,8 +7,9 @@ import traceback
 from time import perf_counter
 
 import numpy as np
-from control_marcha import GANANCIAS_MARCHA, GANANCIAS_REPOSO, MARCHA, referencias, corregir_apoyos
+from control_marcha import GANANCIAS_MARCHA, GANANCIAS_REPOSO, MARCHA, referencias, corregir_apoyos, frenar_con_apoyo
 from cargas_plantares import LADOS, ZONAS, integrar_contactos
+from situaciones import Secuencias
 
 HERE = Path(__file__).resolve().parent
 PISTA = HERE / "pista_marcha_16.usda"
@@ -95,6 +96,9 @@ class Pista:
         self.rest = self.robot.get_root_transforms().copy()
         self.limits = self.robot.get_dof_limits()[0, self.joints]
         self.speeds = self.robot.get_dof_max_velocities()[0, self.joints]
+        self.codos = [self.robot.shared_metatype.dof_names.index("codo_" + lado) for lado in LADOS]
+        self.limites_codo = self.robot.get_dof_limits()[0, self.codos]
+        self.vel_codo = self.robot.get_dof_max_velocities()[0, self.codos]
         self.kp = self.robot.get_dof_stiffnesses().copy()
         self.kd = self.robot.get_dof_dampings().copy()
         self.parametros = np.tile(MARCHA, (N, 1))
@@ -166,6 +170,9 @@ class Pista:
             self.heading = np.tile((0., 1.), (16, 1))
             self.goal = self.start + self.heading * (1.3 if self.etapa == "marcha" else 0.)
         root[:, :2] = self.start + self.heading * self.rng.uniform(-.14, .14, (16, 1))
+        self.secuencia = Secuencias(self.rng, len(self.ids)) if self.etapa == "situaciones" else None
+        if self.secuencia:
+            self.goal = root[:, :2] + self.heading * self.secuencia.recorrido[:, None]
         root[:, 3:] = Rotation.from_rotvec(np.column_stack((np.zeros((16, 2)),
                                       -np.arctan2(self.heading[:, 0], self.heading[:, 1])))).as_quat()
         root[:, 2] = 1.173
@@ -184,6 +191,8 @@ class Pista:
         self.cargas_maximas = self.cargas.copy()
         self.phase = np.zeros(16)
         self.en_marcha = np.zeros(16)
+        self.tiempo_freno = np.zeros(16)
+        self.inicio_freno = self.neutral[:, self.joints].copy()
         self.eventos = []
         self.parejas = set()
         self.en_meta = np.zeros(16, bool)
@@ -192,10 +201,10 @@ class Pista:
         self.chocado_entorno = np.zeros(16, bool)
         self.prioridad = self.rng.integers(0, 2, 4)
         self.liberado = np.zeros(4, bool)
-        self.prev_action = np.zeros((16, 7), np.float32)
+        self.prev_action = np.zeros((16, 9 if self.secuencia else 7), np.float32)
         self.active = np.ones(16, bool)
         self.time = 0.
-        self.horizonte = {"equilibrio": 12., "marcha": 24., "cruce": 65.}[self.etapa]
+        self.horizonte = {"equilibrio": 12., "marcha": 24., "cruce": 65., "situaciones": 14.}[self.etapa]
         self.contactos.clear()
         self.contactos_entorno.clear()
         self.distance = self.distancia()
@@ -229,6 +238,8 @@ class Pista:
         self.modo_movil = movil.copy()
 
     def permiso(self, pose):
+        if self.secuencia:
+            return self.secuencia.caminar()
         if self.etapa == "equilibrio":
             return np.zeros(16, bool)
         if self.etapa == "marcha":
@@ -288,7 +299,7 @@ class Pista:
         root[b, :3] += Rotation.from_quat(root[a, 3:]).apply([.51, 0., 0.])
         self.robot.set_root_transforms(root, self.ids)
         self.distance = self.distancia()
-        _, reward = self.step(np.zeros((16, 7), np.float32))
+        _, reward = self.step(np.zeros_like(self.prev_action))
         if self.active.sum() != 14 or self.active[[a, b]].any() or not (reward[[a, b]] < -6).all():
             raise RuntimeError(f"Fallo al atribuir el contacto de prueba: {self.contactos}, {reward}")
         print("MARCHA prueba: 16 imágenes distintas, 16 IMU en reposo y contacto entre Xavier_00 y "
@@ -312,7 +323,7 @@ class Pista:
         pose = self.robot.get_root_transforms().copy()
         pose[i,:2] = tuple(limites.GetMidpoint())[:2]
         self.robot.set_root_transforms(pose, self.ids)
-        _, reward = self.step(np.zeros((16, 7), np.float32))
+        _, reward = self.step(np.zeros_like(self.prev_action))
         if self.chocado_entorno.sum() != 1 or not self.chocado_entorno[i] or reward[i] > -6:
             raise RuntimeError(f"No se atribuyó el contacto con {ruta} al Xavier de prueba.")
         print(f"MARCHA prueba de obstáculo: Xavier_{self.numeros[i]:02} en contacto con {ruta}.", flush=True)
@@ -348,8 +359,11 @@ class Pista:
         local = orientation.inv().apply(np.c_[direction, np.zeros(16)])
         q = self.robot.get_dof_positions()[:, self.joints]
         dq = self.robot.get_dof_velocities()[:, self.joints]
-        state = np.column_stack((self.imu, self.vertical, q, dq, self.prev_action, np.sin(self.phase),
+        state = np.column_stack((self.imu, self.vertical, q, dq, self.prev_action[:, :7], np.sin(self.phase),
                                  np.cos(self.phase), local[:, :2], self.cargas.reshape(16, 8)/self.peso[:, None]))
+        if self.secuencia:
+            state = np.column_stack((state, self.secuencia.consignas(), self.robot.get_dof_positions()[:, self.codos],
+                                     self.secuencia.caminar(), self.prev_action[:, 7:]))
         if not np.isfinite(state).all():
             raise RuntimeError("Estado físico o sensorial no finito.")
         return self.rgb, np.clip(state, -10, 10).astype(np.float32)
@@ -372,11 +386,26 @@ class Pista:
         corregir_apoyos(desired, self.phase, amplitud, separacion, velocidad)
         desired += np.deg2rad(.14 * ajuste[:, None] * action[:, :6])
         desired[~mover] = np.deg2rad(.04 * action[~mover, :6]) if self.etapa == 'equilibrio' else 0.
+        if self.secuencia:
+            frenar = (self.secuencia.tipo == 3) & ~mover & (self.en_marcha > 0.) & self.active
+            inicio = frenar & (self.tiempo_freno == 0.)
+            self.inicio_freno[inicio] = q[inicio]
+            self.tiempo_freno += intervalo * frenar
+            desired[frenar] = frenar_con_apoyo(self.inicio_freno[frenar], q[frenar], separacion[frenar],
+                                               velocidad[frenar], self.tiempo_freno[frenar])
+            desired[frenar] += np.deg2rad(2.) * action[frenar, :6]
         self.en_marcha += mover*intervalo
         desired = np.clip(desired, self.limits[:, 0], self.limits[:, 1])
         desired[~self.active] = 0.
         previous = self.target[:, self.joints]
         self.target[:, self.joints] = previous + np.clip(desired - previous, -self.speeds * intervalo, self.speeds * intervalo)
+        if self.secuencia:
+            previa = self.target[:, self.codos]
+            meta = self.secuencia.consignas() + np.deg2rad(18.) * action[:, 7:]
+            meta[~self.active] = 0.
+            meta = np.clip(meta, self.limites_codo[:, 0], self.limites_codo[:, 1])
+            delta = np.minimum(self.vel_codo, np.deg2rad(85.)) * intervalo
+            self.target[:, self.codos] = previa + np.clip(meta - previa, -delta, delta)
         self.robot.set_dof_position_targets(self.target, self.ids)
 
     def step(self, action):
@@ -387,7 +416,7 @@ class Pista:
         self.contactos_entorno.clear()
         self.impulso_plantar.fill(0.)
         inicio = perf_counter()
-        bloque = SUBPASOS_EQUILIBRIO if mover.any() else SUBPASOS
+        bloque = SUBPASOS_EQUILIBRIO if mover.any() or self.secuencia else SUBPASOS
         for _ in range(SUBPASOS // bloque):
             self.motores(action, mover, DT * bloque)
             self.avanzar(bloque)
@@ -403,9 +432,15 @@ class Pista:
         gain = (self.distance - distance) * ~self.en_meta
         self.distance = distance
         fallen = (pose[:, 2] < .85) | (upright < .69)
+        if self.secuencia:
+            fallen &= self.active
         hit = np.zeros(16, bool)
         for a, b in self.contactos:
             indices = [self.contact_index[a], self.contact_index[b]]
+            if self.secuencia:
+                indices = [i for i in indices if self.active[i]]
+                if not indices:
+                    continue
             hit[indices] = True
             if (a,b) not in self.parejas:
                 self.parejas.add((a,b))
@@ -413,6 +448,8 @@ class Pista:
                     robots=self.numeros[indices].tolist(), xy=pose[indices, :2].round(3).tolist()))
         for robot, obstaculo in sorted(self.contactos_entorno):
             i = self.contact_index[robot]
+            if self.secuencia and not self.active[i]:
+                continue
             hit[i] = True
             if not self.chocado_entorno[i]:
                 self.eventos.append(dict(segundos=round(self.time + PERIODO, 2), tipo="obstaculo",
@@ -424,20 +461,31 @@ class Pista:
         lateral = np.abs(desplazamiento[:, 0]*self.heading[:, 1] - desplazamiento[:, 1]*self.heading[:, 0])
         arrived = ((self.etapa != 'equilibrio') & (restante <= 0.) & (lateral < .35)
                    & (upright > .96) & (self.steps >= 2) & self.active & ~self.en_meta & ~fallen & ~hit)
-        self.en_meta |= arrived
         distances = np.linalg.norm(pose[:, None, :2] - pose[None, :, :2], axis=2)
         np.fill_diagonal(distances, np.inf)
         vecino = distances.min(axis=1)
-        self.separacion_minima = np.minimum(self.separacion_minima, vecino)
+        self.separacion_minima = np.where(self.active, np.minimum(self.separacion_minima, vecino), self.separacion_minima)
         near = np.clip((.78 - vecino) / .38, 0, 1)
         izq, der = (self.cargas.sum(axis=2) / self.peso[:, None]).T
         support = np.where((izq > .20) & (der < .04), 1, np.where((der > .20) & (izq < .04), -1, 0))
         alternated = (support != 0) & (support == -self.last_support)
         self.last_support = np.where(support, support, self.last_support)
         self.steps += alternated & self.active
+        premio_tarea = 0.
+        if self.secuencia:
+            fase_antes = self.secuencia.fase.copy()
+            arrived, premio_tarea = self.secuencia.actualizar(
+                PERIODO, self.active & ~hit & ~fallen & (self.time >= .6),
+                (restante <= .06) & (distance < .22), self.steps, feet[:, :, :2].mean(axis=1), upright,
+                np.linalg.norm(self.robot.get_root_velocities()[:, :2], axis=1),
+                self.robot.get_dof_positions()[:, self.codos], izq + der)
+            for i in np.flatnonzero(self.secuencia.fase != fase_antes):
+                self.eventos.append(dict(tipo="fase", robot=int(self.numeros[i]), segundos=round(self.time + PERIODO, 2),
+                                         fase_completada=int(fase_antes[i])))
+        self.en_meta |= arrived
         reward = (12 * gain * mover + .04 * upright - .15*(1.-upright) - .035 * near
                   - .009 * np.square(action - self.prev_action).mean(axis=1)
-                  + .08 * alternated * (gain > 0) + 8 * arrived)
+                  + .08 * alternated * (gain > 0) + 8 * arrived + premio_tarea)
         reward[fallen] = -4.
         reward[hit] = -7.
         self.prev_action = action.copy()
@@ -449,10 +497,14 @@ class Pista:
         self.arrivals = int(self.en_meta.sum())
         reward *= self.active
         self.active &= ~(hit | fallen)
+        if self.secuencia:
+            self.active &= ~arrived
         self.time += PERIODO
         return self.observar(), reward.astype(np.float32)
 
     def resultado(self):
+        if self.secuencia:
+            return self.en_meta.copy()
         exito = self.active if self.etapa == "equilibrio" else (self.en_meta & (self.steps >= 2))
         return exito & ~self.caido & ~self.chocado
 
@@ -473,8 +525,9 @@ if __name__ == "__main__":
     parser.add_argument("--iteraciones", type=int, default=300)
     parser.add_argument("--pasos", type=int, default=64, help="Decisiones por robot y actualización PPO.")
     parser.add_argument("--semilla", type=int, default=17)
-    parser.add_argument("--modelo", type=Path, default=HERE / "marcha_cargas.pt")
-    parser.add_argument("--etapa", choices=("equilibrio", "marcha", "cruce"))
+    parser.add_argument("--modelo", type=Path)
+    parser.add_argument("--inicial", type=Path, help="Política de marcha para inicializar un entrenamiento de situaciones.")
+    parser.add_argument("--etapa", choices=("equilibrio", "marcha", "cruce", "situaciones"))
     parser.add_argument("--escenario", choices=("campus", "calle", "vivienda", "pista"), default="campus",
                         help="Entorno físico y visual compartido por los 16 robots (por defecto, campus).")
     parser.add_argument("--reanudar", action="store_true")
@@ -485,6 +538,11 @@ if __name__ == "__main__":
     parser.add_argument("--verificar", action="store_true", help="Prueba las cámaras, las IMU y un choque controlado antes de empezar.")
     parser.add_argument("--captura", type=Path, help="Mosaico PNG de las 16 cámaras al empezar.")
     args, kit_args = parser.parse_known_args()
+    if args.modelo is None:
+        args.modelo = HERE / ("situaciones.pt" if args.etapa == "situaciones" else "marcha_cargas.pt")
+    if args.inicial and (args.evaluar or args.reanudar or args.etapa != "situaciones" or
+                         not args.inicial.is_file() or args.inicial.resolve() == args.modelo.resolve()):
+        parser.error("--inicial requiere una política existente, una salida distinta y una ejecución nueva de situaciones.")
     if args.iteraciones < 1 or args.pasos < 2 or (args.evaluar is not None and args.evaluar < 1):
         parser.error("Se requieren iteraciones y episodios positivos y al menos dos pasos por actualización.")
     if (args.reanudar or args.evaluar) and not args.modelo.is_file():

@@ -4,7 +4,7 @@ import math
 import random
 
 import numpy as np
-from pxr import Gf, Sdf, UsdGeom, UsdPhysics, UsdShade
+from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade
 
 # Color lineal, rugosidad y metalicidad. Las superficies texturizadas usan albedo sRGB.
 ACABADOS = {
@@ -35,13 +35,27 @@ ACABADOS = {
 }
 # Anchura y altura reales del motivo repetido.
 REPETICION = {
-    "roble": (1.65, 1.05),
+    "roble": (2., 2.),
     "terrazo": (.60, .60),
-    "asfalto": (.80, .80),
+    "asfalto": (4., 4.),
     "ladrillo": (.89, .69),
     "hormigon": (1.70, 1.70),
     "tejido": (.15, .15)
 }
+
+
+SUPERFICIES_PBR = {"roble": "wood_planks_dirt", "asfalto": "asphalt_04"}
+
+
+def mapa(stage, mat, nombre, archivo, lector, espacio):
+    tex = UsdShade.Shader.Define(stage, mat.GetPath().AppendChild(nombre))
+    tex.CreateIdAttr("UsdUVTexture")
+    tex.CreateInput("file", Sdf.ValueTypeNames.Asset).Set(Sdf.AssetPath("./texturas/" + archivo))
+    tex.CreateInput("sourceColorSpace", Sdf.ValueTypeNames.Token).Set(espacio)
+    for eje in ("wrapS", "wrapT"):
+        tex.CreateInput(eje, Sdf.ValueTypeNames.Token).Set("repeat")
+    tex.CreateInput("st", Sdf.ValueTypeNames.Float2).ConnectToSource(lector.ConnectableAPI(), "result")
+    return tex
 
 
 def material(stage, raiz, nombre, archivo=None):
@@ -57,13 +71,19 @@ def material(stage, raiz, nombre, archivo=None):
         lector = UsdShade.Shader.Define(stage, str(mat.GetPath()) + "/Coordenadas")
         lector.CreateIdAttr("UsdPrimvarReader_float2")
         lector.CreateInput("varname", Sdf.ValueTypeNames.Token).Set("st")
-        tex = UsdShade.Shader.Define(stage, str(mat.GetPath()) + "/Albedo")
-        tex.CreateIdAttr("UsdUVTexture")
-        tex.CreateInput("file", Sdf.ValueTypeNames.Asset).Set(Sdf.AssetPath("./texturas/" + archivo))
-        tex.CreateInput("sourceColorSpace", Sdf.ValueTypeNames.Token).Set("sRGB")
-        for eje in ("wrapS", "wrapT"):
-            tex.CreateInput(eje, Sdf.ValueTypeNames.Token).Set("repeat")
-        tex.CreateInput("st", Sdf.ValueTypeNames.Float2).ConnectToSource(lector.ConnectableAPI(), "result")
+        lector.CreateOutput("result", Sdf.ValueTypeNames.Float2)
+        if nombre in SUPERFICIES_PBR:
+            base = SUPERFICIES_PBR[nombre]
+            archivo = base + "_diffuse.jpg"
+            relieve = mapa(stage, mat, "Normal", base + "_nor_gl.jpg", lector, "raw")
+            relieve.CreateInput("scale", Sdf.ValueTypeNames.Float4).Set((2., 2., 2., 1.))
+            relieve.CreateInput("bias", Sdf.ValueTypeNames.Float4).Set((-1., -1., -1., 0.))
+            shader.CreateInput("normal", Sdf.ValueTypeNames.Normal3f).ConnectToSource(
+                relieve.CreateOutput("rgb", Sdf.ValueTypeNames.Float3))
+            rough = mapa(stage, mat, "Rugosidad", base + "_rough.jpg", lector, "raw")
+            shader.GetInput("roughness").ConnectToSource(rough.CreateOutput("r", Sdf.ValueTypeNames.Float))
+        tex = mapa(stage, mat, "Albedo", archivo, lector, "sRGB")
+        tex.CreateOutput("rgb", Sdf.ValueTypeNames.Float3)
         diffuse.ConnectToSource(tex.ConnectableAPI(), "rgb")
     mat.CreateSurfaceOutput().ConnectToSource(shader.ConnectableAPI(), "surface")
     return mat
@@ -212,18 +232,25 @@ def cojin(t, p, nombre, pos, medidas, acabado, inclinacion=0):
 
     a, b, c = np.array(medidas) * .5
     anillos = []
-    for lat in np.linspace(-math.pi / 2, math.pi / 2, 13)[1:-1]:
+    segmentos = 48
+    for lat in np.linspace(-math.pi / 2, math.pi / 2, 25)[1:-1]:
         r = potencia(math.cos(lat))
         anillos.append([(a * r * potencia(math.cos(lon)), b * r * potencia(math.sin(lon)),
-                         c * potencia(math.sin(lat))) for lon in np.arange(24) * math.tau / 24])
+                         c * potencia(math.sin(lat))) for lon in np.arange(segmentos) * math.tau / segmentos])
     caras = []
-    for i in range(24):
-        j = (i + 1) % 24
+    for i in range(segmentos):
+        j = (i + 1) % segmentos
         caras.extend([[(0, 0, -c), anillos[0][j], anillos[0][i]], [anillos[-1][i], anillos[-1][j],
                                                                    (0, 0, c)]])
         for inferior, superior in zip(anillos, anillos[1:]):
             caras.append([inferior[i], inferior[j], superior[j], superior[i]])
     forma = t.malla(p, nombre, caras, acabado, pos)
+    # Gradiente de la superficie implícita de la superelipsoide, continuo en las costuras UV.
+    xyz = np.concatenate(caras) / (a, b, c)
+    gradiente = np.sign(xyz) * np.abs(xyz)**(2 / .48 - 1) / (a, b, c)
+    normales = gradiente / np.linalg.norm(gradiente, axis=1, keepdims=True)
+    forma.CreateNormalsAttr(normales.astype("float32"))
+    forma.SetNormalsInterpolation(UsdGeom.Tokens.faceVarying)
     if inclinacion:
         forma.AddRotateXOp().Set(float(inclinacion))
 
@@ -264,48 +291,26 @@ def estante(t, p, pos, giro=0):
             x += ancho / 2 + .012
 
 
+def objeto_usd(t, grupo, identificador):
+    visual = UsdGeom.Xform.Define(t.stage, grupo + "/Visual")
+    visual.GetPrim().GetReferences().AddReference(
+        f"./objetos/{identificador}/{identificador}_1k.usdc")
+    return visual
+
+
 def planta(t, p, pos, escala=1.):
-    g = t.grupo(p, "Planta", pos)
-    s = escala
-    t.disco(g, "Tiesto", (0, 0, .16 * s), .21 * s, .32 * s, "oxido", True)
-    t.disco(g, "Borde", (0, 0, .31 * s), .225 * s, .057 * s, "oxido")
-    t.disco(g, "Sustrato", (0, 0, .341 * s), .198 * s, .012 * s, "tierra")
-    for i in range(14):
-        ang = i * 2.4 + t.rng.uniform(-.15, .15)
-        largo = t.rng.uniform(.30, .56) * s
-        alto = t.rng.uniform(.35, .87) * s
-        d = np.array((math.cos(ang), math.sin(ang), 0))
-        w = np.array((-d[1], d[0], 0))
-        base = d * .018 * s + [0, 0, .32 * s]
-        tallo = base + d * .13 * largo + [0, 0, alto * .42]
-        t.varilla(g, "Peciolo", base, tallo, .006 * s, "oliva")
-        franjas = []
-        anterior = None
-        for paso in range(11):
-            f = paso / 10.
-            nervio = tallo + d * largo * (.15 * f + .85 * f * f) + [0, 0, alto * (1.37 * f - 1.05 * f * f)]
-            ancho = s * .079 * math.sin(math.pi * f)**.8
-            borde = nervio - [0, 0, .22 * ancho]
-            fila = (borde - w * ancho, nervio, borde + w * ancho)
-            if anterior is not None:
-                for k in range(2):
-                    if paso == 1:
-                        franjas.append([anterior[1], fila[k + 1], fila[k]])
-                    elif paso == 10:
-                        franjas.append([anterior[k], anterior[k + 1], fila[1]])
-                    else:
-                        franjas.append([anterior[k], anterior[k + 1], fila[k + 1], fila[k]])
-            anterior = fila
-        t.malla(g, "Hoja", franjas, "brote" if i % 3 else "hoja")
+    g = t.grupo(p, "Planta", pos, t.rng.uniform(-180., 180.))
+    visual = objeto_usd(t, g, "potted_plant_02")
+    visual.GetPrim().SetInstanceable(True)
+    UsdGeom.Xformable(t.stage.GetPrimAtPath(g)).AddScaleOp().Set((escala, escala, escala))
+    tiesto = t.disco(g, "ColisionTiesto", (0, 0, .168), .237, .336, "oxido", True)
+    UsdGeom.Imageable(tiesto).MakeInvisible()
 
 
 def banco(t, p, pos, giro=0):
     g = t.grupo(p, "Banco", pos, giro)
-    for x in (-.72, .72):
-        t.caja(g, "Soporte", (x, 0, .21), (.13, .52, .42), "hormigon", True, .018)
-    for i in range(5):
-        t.caja(g, "Liston", (0, (i - 2) * .098, .45), (1.92, .085, .06), "roble", True, .008)
-    for x in (-.73, .73):
-        t.varilla(g, "Montante", (x, .20, .38), (x, .26, .86), .024, "grafito")
-    for z in (.69, .82):
-        t.caja(g, "Respaldo", (0, .25, z), (1.92, .045, .10), "roble", True, .01)
+    visual = objeto_usd(t, g, "painted_wooden_bench")
+    # La malla estática de 374 caras conserva los huecos entre las patas y el respaldo.
+    for prim in Usd.PrimRange(visual.GetPrim()):
+        if prim.IsA(UsdGeom.Mesh):
+            t.colision(prim, "obstaculo", "none")
