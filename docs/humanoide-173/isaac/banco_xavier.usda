@@ -1,0 +1,83 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary cameraSettings = {
+            dictionary Perspective = {
+                double3 position = (1.7, 2.9, 1.72)
+                double3 target = (0, 0, 0.98)
+            }
+        }
+    }
+    defaultPrim = "World"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def PhysicsScene "Fisica" (
+        prepend apiSchemas = ["PhysxSceneAPI"]
+    )
+    {
+        vector3f physics:gravityDirection = (0, 0, -1)
+        float physics:gravityMagnitude = 9.81
+        uniform token physxScene:broadphaseType = "MBP"
+        bool physxScene:enableGPUDynamics = 0
+        token physxScene:solverType = "TGS"
+        uint physxScene:timeStepsPerSecond = 240
+    }
+
+    def Cube "Suelo" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI"]
+    )
+    {
+        float physxCollision:contactOffset = 0.001
+        float physxCollision:restOffset = 0
+        color3f[] primvars:displayColor = [(0.16, 0.18, 0.2)]
+        uniform token purpose = "default"
+        double size = 1
+        float3 xformOp:scale = (4, 4, 0.07)
+        double3 xformOp:translate = (0, 0, -0.035)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def DomeLight "Luz"
+    {
+        float inputs:intensity = 750
+    }
+
+    def DistantLight "LuzPrincipal"
+    {
+        float inputs:intensity = 2000
+        float3 xformOp:rotateXYZ = (35, -40, 0)
+        uniform token[] xformOpOrder = ["xformOp:rotateXYZ"]
+    }
+
+    def Xform "Humanoide" (
+        prepend references = @./humanoide_xavier_isaac.usd@
+    )
+    {
+        double3 xformOp:translate = (0, 0, 0.12)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def PhysicsFixedJoint "Anclaje" (
+            prepend apiSchemas = ["PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+        )
+        {
+            rel physics:body1 = </World/Humanoide/pelvis>
+            point3f physics:localPos0 = (0, 0, 1.29)
+            point3f physics:localPos1 = (0, 0, 0)
+            bool physxArticulation:enabledSelfCollisions = 1
+            int physxArticulation:solverPositionIterationCount = 64
+            int physxArticulation:solverVelocityIterationCount = 4
+        }
+
+        over "pelvis" (
+            delete apiSchemas = ["PhysicsArticulationRootAPI", "PhysxArticulationAPI"]
+        )
+        {
+        }
+    }
+}
+

@@ -1,0 +1,414 @@
+{
+  "semilla": 101,
+  "iteracion": 331,
+  "escenario": "campus",
+  "pies": [
+    "izq",
+    "der"
+  ],
+  "zonas_por_pie": [
+    "TalonInterior",
+    "TalonExterior",
+    "AntepieInterior",
+    "AntepieExterior"
+  ],
+  "episodios": [
+    {
+      "etapa": "cruce",
+      "episodio": 1,
+      "segundos": 21.55,
+      "aprobados": 16,
+      "caidas": 0,
+      "robots_con_choque": 0,
+      "choques_con_entorno": 0,
+      "llegadas": 16,
+      "eventos": [],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": true,
+          "avance_m": 2.56,
+          "alternancias": 23,
+          "maximos_plantares_N": [
+            [
+              165.2,
+              189.27,
+              80.24,
+              119.25
+            ],
+            [
+              139.74,
+              208.51,
+              84.34,
+              96.81
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.632,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 1,
+          "aprobado": true,
+          "avance_m": 2.744,
+          "alternancias": 48,
+          "maximos_plantares_N": [
+            [
+              158.48,
+              207.18,
+              81.73,
+              123.33
+            ],
+            [
+              133.17,
+              205.53,
+              90.74,
+              118.06
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.632,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 2,
+          "aprobado": true,
+          "avance_m": 2.678,
+          "alternancias": 23,
+          "maximos_plantares_N": [
+            [
+              129.71,
+              205.4,
+              88.47,
+              136.39
+            ],
+            [
+              152.46,
+              206.95,
+              75.47,
+              97.05
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.235,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 3,
+          "aprobado": true,
+          "avance_m": 2.779,
+          "alternancias": 48,
+          "maximos_plantares_N": [
+            [
+              190.67,
+              193.29,
+              85.31,
+              123.85
+            ],
+            [
+              138.09,
+              203.46,
+              79.75,
+              118.44
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.646,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 4,
+          "aprobado": true,
+          "avance_m": 2.701,
+          "alternancias": 48,
+          "maximos_plantares_N": [
+            [
+              183.66,
+              194.11,
+              95.96,
+              111.61
+            ],
+            [
+              146.79,
+              213.61,
+              81.61,
+              125.67
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.625,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 5,
+          "aprobado": true,
+          "avance_m": 2.574,
+          "alternancias": 24,
+          "maximos_plantares_N": [
+            [
+              182.32,
+              187.04,
+              103.06,
+              137.39
+            ],
+            [
+              133.14,
+              194.16,
+              84.66,
+              116.41
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.625,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 6,
+          "aprobado": true,
+          "avance_m": 2.658,
+          "alternancias": 48,
+          "maximos_plantares_N": [
+            [
+              169.14,
+              199.81,
+              90.19,
+              133.14
+            ],
+            [
+              159.19,
+              202.4,
+              101.62,
+              117.28
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.628,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 7,
+          "aprobado": true,
+          "avance_m": 2.785,
+          "alternancias": 24,
+          "maximos_plantares_N": [
+            [
+              126.12,
+              193.55,
+              91.33,
+              130.74
+            ],
+            [
+              142.38,
+              219.83,
+              76.91,
+              119.49
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.329,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 8,
+          "aprobado": true,
+          "avance_m": 2.548,
+          "alternancias": 48,
+          "maximos_plantares_N": [
+            [
+              140.83,
+              211.31,
+              80.84,
+              99.05
+            ],
+            [
+              133.44,
+              211.29,
+              86.19,
+              96.7
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.849,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 9,
+          "aprobado": true,
+          "avance_m": 2.734,
+          "alternancias": 24,
+          "maximos_plantares_N": [
+            [
+              166.81,
+              204.27,
+              82.61,
+              98.54
+            ],
+            [
+              135.73,
+              202.78,
+              81.6,
+              124.94
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.849,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 10,
+          "aprobado": true,
+          "avance_m": 2.713,
+          "alternancias": 48,
+          "maximos_plantares_N": [
+            [
+              168.26,
+              203.19,
+              80.76,
+              116.91
+            ],
+            [
+              133.19,
+              211.64,
+              90.54,
+              124.87
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.851,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 11,
+          "aprobado": true,
+          "avance_m": 2.738,
+          "alternancias": 24,
+          "maximos_plantares_N": [
+            [
+              182.68,
+              194.82,
+              85.06,
+              148.54
+            ],
+            [
+              133.26,
+              202.7,
+              82.47,
+              92.52
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.0,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 12,
+          "aprobado": true,
+          "avance_m": 2.698,
+          "alternancias": 48,
+          "maximos_plantares_N": [
+            [
+              181.6,
+              200.26,
+              82.68,
+              121.85
+            ],
+            [
+              146.21,
+              216.85,
+              92.68,
+              114.06
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.906,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 13,
+          "aprobado": true,
+          "avance_m": 2.817,
+          "alternancias": 24,
+          "maximos_plantares_N": [
+            [
+              189.12,
+              208.69,
+              90.62,
+              104.73
+            ],
+            [
+              133.47,
+              210.3,
+              85.97,
+              126.36
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.906,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 14,
+          "aprobado": true,
+          "avance_m": 2.648,
+          "alternancias": 48,
+          "maximos_plantares_N": [
+            [
+              199.55,
+              215.78,
+              85.22,
+              134.61
+            ],
+            [
+              133.38,
+              197.63,
+              77.01,
+              146.06
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.925,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 15,
+          "aprobado": true,
+          "avance_m": 2.747,
+          "alternancias": 24,
+          "maximos_plantares_N": [
+            [
+              157.81,
+              205.33,
+              101.48,
+              111.49
+            ],
+            [
+              188.3,
+              204.15,
+              79.77,
+              119.6
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.022,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        }
+      ]
+    }
+  ]
+}

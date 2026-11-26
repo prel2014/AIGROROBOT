@@ -1,0 +1,3680 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary cameraSettings = {
+            dictionary Perspective = {
+                double3 position = (11, -14, 12)
+                double3 target = (0, 0, 0.6)
+            }
+        }
+    }
+    defaultPrim = "World"
+    endTimeCode = 1728000
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 20
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    def PhysicsScene "Fisica" (
+        prepend apiSchemas = ["PhysxSceneAPI"]
+    )
+    {
+        vector3f physics:gravityDirection = (0, 0, -1)
+        float physics:gravityMagnitude = 9.81
+        uniform token physxScene:broadphaseType = "MBP"
+        bool physxScene:enableGPUDynamics = 0
+        token physxScene:solverType = "TGS"
+        uint physxScene:timeStepsPerSecond = 120
+    }
+
+    def Cube "Suelo" (
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI"]
+    )
+    {
+        float physxCollision:contactOffset = 0.001
+        float physxCollision:restOffset = 0
+        color3f[] primvars:displayColor = [(0.16, 0.18, 0.2)]
+        uniform token purpose = "default"
+        double size = 1
+        float3 xformOp:scale = (24, 24, 0.07)
+        double3 xformOp:translate = (0, 0, -0.035)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def DomeLight "Luz"
+    {
+        float inputs:intensity = 750
+    }
+
+    def DistantLight "LuzPrincipal"
+    {
+        float inputs:intensity = 2000
+        float3 xformOp:rotateXYZ = (35, -40, 0)
+        uniform token[] xformOpOrder = ["xformOp:rotateXYZ"]
+    }
+
+    def Xform "Xavier_00" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = 90
+        double3 xformOp:translate = (-2.4000000000000004, -3.2, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_01" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -180
+        double3 xformOp:translate = (-3.2, -2.4000000000000004, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_02" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = 90
+        double3 xformOp:translate = (-1.2000000000000002, -3.2, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_03" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -180
+        double3 xformOp:translate = (-3.2, -1.2000000000000002, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_04" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -90
+        double3 xformOp:translate = (2.4000000000000004, -3.2, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_05" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -180
+        double3 xformOp:translate = (3.2, -2.4000000000000004, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_06" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -90
+        double3 xformOp:translate = (1.2000000000000002, -3.2, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_07" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -180
+        double3 xformOp:translate = (3.2, -1.2000000000000002, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_08" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = 90
+        double3 xformOp:translate = (-2.4000000000000004, 3.2, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_09" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -0
+        double3 xformOp:translate = (-3.2, 2.4000000000000004, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_10" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = 90
+        double3 xformOp:translate = (-1.2000000000000002, 3.2, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_11" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -0
+        double3 xformOp:translate = (-3.2, 1.2000000000000002, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_12" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -90
+        double3 xformOp:translate = (2.4000000000000004, 3.2, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_13" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -0
+        double3 xformOp:translate = (3.2, 2.4000000000000004, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_14" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -90
+        double3 xformOp:translate = (1.2000000000000002, 3.2, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+
+    def Xform "Xavier_15" (
+        prepend inherits = </XavierMarcha>
+    )
+    {
+        float xformOp:rotateZ = -0
+        double3 xformOp:translate = (3.2, 1.2000000000000002, 0.003)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+}
+
+class "XavierMarcha" (
+    prepend references = @./humanoide_xavier_isaac.usd@
+)
+{
+    rel isaac:physics:robotJoints = [
+        </XavierMarcha/Juntas/cuello>,
+        </XavierMarcha/Juntas/hombro_izq>,
+        </XavierMarcha/Juntas/codo_izq>,
+        </XavierMarcha/Juntas/muneca_izq>,
+        </XavierMarcha/Juntas/cadera_izq>,
+        </XavierMarcha/Juntas/rodilla_izq>,
+        </XavierMarcha/Juntas/tobillo_izq>,
+        </XavierMarcha/Juntas/hombro_der>,
+        </XavierMarcha/Juntas/codo_der>,
+        </XavierMarcha/Juntas/muneca_der>,
+        </XavierMarcha/Juntas/cadera_der>,
+        </XavierMarcha/Juntas/rodilla_der>,
+        </XavierMarcha/Juntas/tobillo_der>,
+    ]
+    rel isaac:physics:robotLinks = [
+        </XavierMarcha/pelvis>,
+        </XavierMarcha/cabeza>,
+        </XavierMarcha/brazo_izq>,
+        </XavierMarcha/antebrazo_izq>,
+        </XavierMarcha/mano_izq>,
+        </XavierMarcha/muslo_izq>,
+        </XavierMarcha/pantorrilla_izq>,
+        </XavierMarcha/pie_izq>,
+        </XavierMarcha/brazo_der>,
+        </XavierMarcha/antebrazo_der>,
+        </XavierMarcha/mano_der>,
+        </XavierMarcha/muslo_der>,
+        </XavierMarcha/pantorrilla_der>,
+        </XavierMarcha/pie_der>,
+    ]
+
+    over "mano_izq" (
+        delete apiSchemas = ["PhysicsFilteredPairsAPI"]
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        point3f physics:centerOfMass = (0.00015129987, 0.0057289386, -0.011045036)
+        float3 physics:diagonalInertia = (0.0007443523, 0.0009096444, 0.0014090458)
+        float physics:mass = 0.45060956
+        quatf physics:principalAxes = (0.73016924, 0.06898919, -0.6664172, -0.13409503)
+        custom float physxContactReport:threshold = 0
+
+        def Xform "indice_izq_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_izq_palanca1>
+        )
+        {
+            double3 xformOp:translate = (-0.007550000000000029, 0.04464031348896084, 0.0010535054099861663)
+
+            over "Visual"
+            {
+                over "p8_8_6_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_6_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "indice_izq_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_izq_varilla1>
+        )
+        {
+            double3 xformOp:translate = (-0.0006500000000000117, 0.04156200612087638, -0.0028865483647225743)
+
+            over "Visual"
+            {
+                over "p8_8_6_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_6_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_6_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_izq_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_izq_acople>
+        )
+        {
+            double3 xformOp:translate = (-0.00016998167864151759, 0.05523836117945767, -0.03291531615034404)
+
+            over "Visual"
+            {
+                over "p8_8_6_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_6_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_6_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_izq_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_izq_cardan>
+        )
+        {
+            double3 xformOp:translate = (-0.005500000482103862, 0.06352342126881075, -0.026559857350372917)
+
+            over "Visual"
+            {
+                over "p8_8_6_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_6_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_izq_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_izq_distal>
+        )
+        {
+            double3 xformOp:translate = (-0.012719891851244364, 0.07690803586484052, -0.07486533264770179)
+
+            over "Visual"
+            {
+                over "p8_8_6_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p8_8_6_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_6_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_izq_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_izq_proximal>
+        )
+        {
+            double3 xformOp:translate = (-0.007003864482260036, 0.08368835563443489, -0.07435863298801548)
+
+            over "Visual"
+            {
+                over "p8_8_6_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_6_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_6_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_6_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "indice_izq_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_izq_palanca2>
+        )
+        {
+            double3 xformOp:translate = (-0.007550000000000029, 0.05601059419149647, 0.005191949168882326)
+
+            over "Visual"
+            {
+                over "p8_8_6_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_6_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_izq_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_izq_varilla2>
+        )
+        {
+            double3 xformOp:translate = (-0.0006500000000000117, 0.060901332197419694, 0.004152390725398636)
+
+            over "Visual"
+            {
+                over "p8_8_6_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_6_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_6_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        def Xform "medio_izq_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_izq_palanca1>
+        )
+        {
+            double3 xformOp:translate = (-0.007550000000000029, 0.014808679634230364, -0.0028865202077288377)
+
+            over "Visual"
+            {
+                over "p8_8_7_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_7_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "medio_izq_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_izq_varilla1>
+        )
+        {
+            double3 xformOp:translate = (-0.0006500000000000117, 0.01133538768766459, -0.006483219118385897)
+
+            over "Visual"
+            {
+                over "p8_8_7_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_7_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_7_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_izq_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_izq_acople>
+        )
+        {
+            double3 xformOp:translate = (-0.00016998167864151759, 0.021797960403720052, -0.0377770548464077)
+
+            over "Visual"
+            {
+                over "p8_8_7_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_7_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_7_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_izq_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_izq_cardan>
+        )
+        {
+            double3 xformOp:translate = (-0.005500000482103862, 0.030701960563540995, -0.0323224367666306)
+
+            over "Visual"
+            {
+                over "p8_8_7_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_7_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_izq_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_izq_distal>
+        )
+        {
+            double3 xformOp:translate = (-0.012719891851244364, 0.03896395433706837, -0.0817623630456138)
+
+            over "Visual"
+            {
+                over "p8_8_7_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p8_8_7_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_7_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_izq_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_izq_proximal>
+        )
+        {
+            double3 xformOp:translate = (-0.007003864482260036, 0.04576009533648124, -0.08196717573852563)
+
+            over "Visual"
+            {
+                over "p8_8_7_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_7_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_7_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_7_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "medio_izq_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_izq_palanca2>
+        )
+        {
+            double3 xformOp:translate = (-0.007550000000000029, 0.026549257998894443, 0.000040734421301813484)
+
+            over "Visual"
+            {
+                over "p8_8_7_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_7_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_izq_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_izq_varilla2>
+        )
+        {
+            double3 xformOp:translate = (-0.0006500000000000117, 0.03130454053987291, -0.0015043506752107083)
+
+            over "Visual"
+            {
+                over "p8_8_7_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_7_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_7_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        def Xform "anular_izq_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_izq_palanca1>
+        )
+        {
+            double3 xformOp:translate = (-0.007550000000000029, -0.015186318435934851, -0.0020182243870086047)
+
+            over "Visual"
+            {
+                over "p8_8_8_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_8_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "anular_izq_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_izq_varilla1>
+        )
+        {
+            double3 xformOp:translate = (-0.0006500000000000117, -0.019099356397456486, -0.0051308011188645475)
+
+            over "Visual"
+            {
+                over "p8_8_8_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_8_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_8_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_izq_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_izq_acople>
+        )
+        {
+            double3 xformOp:translate = (-0.00016998167864151759, -0.012810927434394704, -0.037522547653864424)
+
+            over "Visual"
+            {
+                over "p8_8_8_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_8_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_8_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_izq_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_izq_cardan>
+        )
+        {
+            double3 xformOp:translate = (-0.005500000482103862, -0.0032711356639827664, -0.03327679092278546)
+
+            over "Visual"
+            {
+                over "p8_8_8_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_8_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_izq_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_izq_distal>
+        )
+        {
+            double3 xformOp:translate = (-0.012719891851244364, -0.001532982969712457, -0.08337215674435117)
+
+            over "Visual"
+            {
+                over "p8_8_8_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p8_8_8_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_8_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_izq_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_izq_proximal>
+        )
+        {
+            double3 xformOp:translate = (-0.007003864482260036, 0.005178283697597585, -0.08446228538049072)
+
+            over "Visual"
+            {
+                over "p8_8_8_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_8_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_8_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_8_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "anular_izq_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_izq_palanca2>
+        )
+        {
+            double3 xformOp:translate = (-0.007550000000000029, -0.0031641002244636933, -0.0006484545976749301)
+
+            over "Visual"
+            {
+                over "p8_8_8_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_8_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_izq_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_izq_varilla2>
+        )
+        {
+            double3 xformOp:translate = (-0.0006500000000000117, 0.0013488281493990355, -0.0028010059890207772)
+
+            over "Visual"
+            {
+                over "p8_8_8_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_8_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_8_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        def Xform "pulgar_izq_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_izq_palanca1>
+        )
+        {
+            double3 xformOp:translate = (-0.0044374592280437275, 0.03289053042199022, 0.03524696096080249)
+
+            over "Visual"
+            {
+                over "p8_8_9_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_9_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "pulgar_izq_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_izq_varilla1>
+        )
+        {
+            double3 xformOp:translate = (-0.008533221434651794, 0.03794539456366072, 0.02974395446833178)
+
+            over "Visual"
+            {
+                over "p8_8_9_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_9_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_9_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_izq_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_izq_acople>
+        )
+        {
+            double3 xformOp:translate = (0.02321839807524742, 0.04665630862381026, 0.031969855350059806)
+
+            over "Visual"
+            {
+                over "p8_8_9_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_9_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_9_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_izq_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_izq_cardan>
+        )
+        {
+            double3 xformOp:translate = (0.028853299948913003, 0.03667781242625973, 0.03444385458150956)
+
+            over "Visual"
+            {
+                over "p8_8_9_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_9_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_izq_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_izq_distal>
+        )
+        {
+            double3 xformOp:translate = (0.06120004092024525, 0.0638057335825442, 0.006471405185018875)
+
+            over "Visual"
+            {
+                over "p8_8_9_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p8_8_9_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_9_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_izq_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_izq_proximal>
+        )
+        {
+            double3 xformOp:translate = (0.05789764666557898, 0.056437467273150625, 0.0027693390880050295)
+
+            over "Visual"
+            {
+                over "p8_8_9_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_9_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_9_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_9_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "pulgar_izq_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_izq_palanca2>
+        )
+        {
+            double3 xformOp:translate = (-0.0002990079185926364, 0.02220596415330237, 0.03135809680666701)
+
+            over "Visual"
+            {
+                over "p8_8_9_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_9_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_izq_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_izq_varilla2>
+        )
+        {
+            double3 xformOp:translate = (-0.0015931000009633822, 0.020027535483950525, 0.023222386990376043)
+
+            over "Visual"
+            {
+                over "p8_8_9_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_9_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_9_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        def Xform "menique_izq_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_izq_palanca1>
+        )
+        {
+            double3 xformOp:translate = (-0.007550000000000029, -0.05094482695655187, -0.0023421096482368897)
+
+            over "Visual"
+            {
+                over "p8_8_10_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_10_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "menique_izq_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_izq_varilla1>
+        )
+        {
+            double3 xformOp:translate = (-0.0006500000000000117, -0.05488488070317645, -0.005420417052267479)
+
+            over "Visual"
+            {
+                over "p8_8_10_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_10_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_10_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_izq_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_izq_acople>
+        )
+        {
+            double3 xformOp:translate = (-0.00016998167864151759, -0.04887938810872669, -0.037865811811912065)
+
+            over "Visual"
+            {
+                over "p8_8_10_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_10_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_10_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_izq_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_izq_cardan>
+        )
+        {
+            double3 xformOp:translate = (-0.005500000482103862, -0.039302905091715364, -0.03370347469591384)
+
+            over "Visual"
+            {
+                over "p8_8_10_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_10_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_izq_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_izq_distal>
+        )
+        {
+            double3 xformOp:translate = (-0.012719891851244364, -0.03800202266327163, -0.08381210226135882)
+
+            over "Visual"
+            {
+                over "p8_8_10_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p8_8_10_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_10_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_izq_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_izq_proximal>
+        )
+        {
+            double3 xformOp:translate = (-0.007003864482260036, -0.03130052562038069, -0.0849607615264163)
+
+            over "Visual"
+            {
+                over "p8_8_10_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_10_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_10_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p8_8_10_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "menique_izq_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_izq_palanca2>
+        )
+        {
+            double3 xformOp:translate = (-0.007550000000000029, -0.03891111203139211, -0.0010773151590066643)
+
+            over "Visual"
+            {
+                over "p8_8_10_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p8_8_10_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_izq_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_izq_varilla2>
+        )
+        {
+            double3 xformOp:translate = (-0.0006500000000000117, -0.03441714178465243, -0.0032691708616975346)
+
+            over "Visual"
+            {
+                over "p8_8_10_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p8_8_10_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p8_8_10_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/mano_izq/Visual>
+        )
+        {
+        }
+    }
+
+    over "indice_izq_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_izq_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_izq_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_izq_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_izq_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_izq_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_izq_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_izq_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_izq_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_izq_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_izq_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_izq_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_izq_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_izq_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_izq_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_izq_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_izq_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_izq_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_izq_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_izq_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_izq_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_izq_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_izq_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_izq_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_izq_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_izq_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_izq_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_izq_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_izq_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_izq_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_izq_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_izq_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_izq_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_izq_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_izq_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_izq_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_izq_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_izq_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_izq_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_izq_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "pie_izq" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        def "Cargas"
+        {
+            def Cube "TalonInterior"
+            {
+                custom int carga:canal = 0
+                color3f[] primvars:displayColor = [(0.1, 0.65, 0.95)]
+                uniform token purpose = "guide"
+                double size = 1
+                float3 xformOp:scale = (0.0595, 0.1225, 0.0005)
+                double3 xformOp:translate = (0.02975, -0.06125, -0.029)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "TalonExterior"
+            {
+                custom int carga:canal = 1
+                color3f[] primvars:displayColor = [(0.95, 0.5, 0.12)]
+                uniform token purpose = "guide"
+                double size = 1
+                float3 xformOp:scale = (0.0595, 0.1225, 0.0005)
+                double3 xformOp:translate = (-0.02975, -0.06125, -0.029)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "AntepieInterior"
+            {
+                custom int carga:canal = 2
+                color3f[] primvars:displayColor = [(0.1, 0.65, 0.95)]
+                uniform token purpose = "guide"
+                double size = 1
+                float3 xformOp:scale = (0.0595, 0.1225, 0.0005)
+                double3 xformOp:translate = (0.02975, 0.06125, -0.029)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "AntepieExterior"
+            {
+                custom int carga:canal = 3
+                color3f[] primvars:displayColor = [(0.95, 0.5, 0.12)]
+                uniform token purpose = "guide"
+                double size = 1
+                float3 xformOp:scale = (0.0595, 0.1225, 0.0005)
+                double3 xformOp:translate = (-0.02975, 0.06125, -0.029)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+        }
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pie_izq/Visual>
+        )
+        {
+        }
+    }
+
+    over "mano_der" (
+        delete apiSchemas = ["PhysicsFilteredPairsAPI"]
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        point3f physics:centerOfMass = (-0.00014900754, 0.005725797, -0.011044744)
+        float3 physics:diagonalInertia = (0.0007447145, 0.0009094069, 0.0014093345)
+        float physics:mass = 0.45060956
+        quatf physics:principalAxes = (-0.6665768, -0.13242772, 0.73044467, 0.06774105)
+        custom float physxContactReport:threshold = 0
+
+        def Xform "indice_der_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_der_palanca1>
+        )
+        {
+            double3 xformOp:translate = (0.007550000000000029, 0.05601059419149647, 0.005191949168882326)
+
+            over "Visual"
+            {
+                over "p10_8_6_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_6_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "indice_der_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_der_varilla1>
+        )
+        {
+            double3 xformOp:translate = (0.0006500000000000117, 0.060901332197419666, 0.004152390725398525)
+
+            over "Visual"
+            {
+                over "p10_8_6_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_6_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_6_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_der_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_der_acople>
+        )
+        {
+            double3 xformOp:translate = (0.00016998167864151759, 0.06972675640730992, -0.027641971509542618)
+
+            over "Visual"
+            {
+                over "p10_8_6_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_6_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_6_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_der_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_der_cardan>
+        )
+        {
+            double3 xformOp:translate = (0.005500000482103862, 0.059294821996441226, -0.02809894162853921)
+
+            over "Visual"
+            {
+                over "p10_8_6_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_6_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_der_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_der_distal>
+        )
+        {
+            double3 xformOp:translate = (0.012719891851244364, 0.08009177356079811, -0.07370654688484368)
+
+            over "Visual"
+            {
+                over "p10_8_6_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p10_8_6_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_6_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_der_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_der_proximal>
+        )
+        {
+            double3 xformOp:translate = (0.007003864482260036, 0.07457204703286979, -0.07767669798775678)
+
+            over "Visual"
+            {
+                over "p10_8_6_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_6_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_6_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_6_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "indice_der_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_der_palanca2>
+        )
+        {
+            double3 xformOp:translate = (0.007550000000000029, 0.044640313488960845, 0.0010535054099861663)
+
+            over "Visual"
+            {
+                over "p10_8_6_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_6_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "indice_der_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/indice_der_varilla2>
+        )
+        {
+            double3 xformOp:translate = (0.0006500000000000117, 0.04156200612087623, -0.0028865483647224632)
+
+            over "Visual"
+            {
+                over "p10_8_6_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_6_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_6_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        def Xform "medio_der_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_der_palanca1>
+        )
+        {
+            double3 xformOp:translate = (0.007550000000000029, 0.026549257998894446, 0.000040734421301813484)
+
+            over "Visual"
+            {
+                over "p10_8_7_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_7_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "medio_der_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_der_varilla1>
+        )
+        {
+            double3 xformOp:translate = (0.0006500000000000117, 0.031304540539872854, -0.0015043506752109304)
+
+            over "Visual"
+            {
+                over "p10_8_7_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_7_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_7_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_der_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_der_acople>
+        )
+        {
+            double3 xformOp:translate = (0.00016998167864151759, 0.03675820140400519, -0.03404704825224336)
+
+            over "Visual"
+            {
+                over "p10_8_7_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_7_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_7_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_der_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_der_cardan>
+        )
+        {
+            double3 xformOp:translate = (0.005500000482103862, 0.026335647855100605, -0.033411080672457794)
+
+            over "Visual"
+            {
+                over "p10_8_7_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_7_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_der_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_der_distal>
+        )
+        {
+            double3 xformOp:translate = (0.012719891851244364, 0.042251377303116115, -0.08094271653450935)
+
+            over "Visual"
+            {
+                over "p10_8_7_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p10_8_7_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_7_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_der_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_der_proximal>
+        )
+        {
+            double3 xformOp:translate = (0.007003864482260036, 0.03634689452524112, -0.0843141500350928)
+
+            over "Visual"
+            {
+                over "p10_8_7_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_7_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_7_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_7_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "medio_der_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_der_palanca2>
+        )
+        {
+            double3 xformOp:translate = (0.007550000000000029, 0.014808679634230368, -0.0028865202077288377)
+
+            over "Visual"
+            {
+                over "p10_8_7_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_7_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "medio_der_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/medio_der_varilla2>
+        )
+        {
+            double3 xformOp:translate = (0.0006500000000000117, 0.011335387687664452, -0.006483219118385675)
+
+            over "Visual"
+            {
+                over "p10_8_7_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_7_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_7_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        def Xform "anular_der_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_der_palanca1>
+        )
+        {
+            double3 xformOp:translate = (0.007550000000000029, -0.00316410022446369, -0.0006484545976749301)
+
+            over "Visual"
+            {
+                over "p10_8_8_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_8_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "anular_der_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_der_varilla1>
+        )
+        {
+            double3 xformOp:translate = (0.0006500000000000117, 0.0013488281493989548, -0.0028010059890208883)
+
+            over "Visual"
+            {
+                over "p10_8_8_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_8_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_8_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_der_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_der_acople>
+        )
+        {
+            double3 xformOp:translate = (0.00016998167864151759, 0.0025081885593233356, -0.035777140781489525)
+
+            over "Visual"
+            {
+                over "p10_8_8_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_8_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_8_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_der_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_der_cardan>
+        )
+        {
+            double3 xformOp:translate = (0.005500000482103862, -0.007742190030297362, -0.03378620732911908)
+
+            over "Visual"
+            {
+                over "p10_8_8_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_8_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_der_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_der_distal>
+        )
+        {
+            double3 xformOp:translate = (0.012719891851244364, 0.0018333006173191979, -0.08298861408369262)
+
+            over "Visual"
+            {
+                over "p10_8_8_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p10_8_8_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_8_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_der_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_der_proximal>
+        )
+        {
+            double3 xformOp:translate = (0.007003864482260036, -0.004460726469203849, -0.08556052072219877)
+
+            over "Visual"
+            {
+                over "p10_8_8_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_8_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_8_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_8_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "anular_der_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_der_palanca2>
+        )
+        {
+            double3 xformOp:translate = (0.007550000000000029, -0.015186318435934848, -0.0020182243870086047)
+
+            over "Visual"
+            {
+                over "p10_8_8_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_8_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "anular_der_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/anular_der_varilla2>
+        )
+        {
+            double3 xformOp:translate = (0.0006500000000000117, -0.019099356397456604, -0.005130801118864214)
+
+            over "Visual"
+            {
+                over "p10_8_8_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_8_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_8_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        def Xform "pulgar_der_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_der_palanca1>
+        )
+        {
+            double3 xformOp:translate = (0.0002990079185926364, 0.022205964153302362, 0.03135809680666701)
+
+            over "Visual"
+            {
+                over "p10_8_9_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_9_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "pulgar_der_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_der_varilla1>
+        )
+        {
+            double3 xformOp:translate = (0.0015931000009632157, 0.020027535483950473, 0.023222386990376043)
+
+            over "Visual"
+            {
+                over "p10_8_9_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_9_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_9_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_der_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_der_acople>
+        )
+        {
+            double3 xformOp:translate = (-0.028480980185846078, 0.033069485172077806, 0.027024655951104815)
+
+            over "Visual"
+            {
+                over "p10_8_9_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_9_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_9_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_der_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_der_cardan>
+        )
+        {
+            double3 xformOp:translate = (-0.027314212594133885, 0.04065139568381373, 0.0358901206352904)
+
+            over "Visual"
+            {
+                over "p10_8_9_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_9_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_der_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_der_distal>
+        )
+        {
+            double3 xformOp:translate = (-0.06232948457827436, 0.060889759777705124, 0.0054100774980663235)
+
+            over "Visual"
+            {
+                over "p10_8_9_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p10_8_9_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_9_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_der_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_der_proximal>
+        )
+        {
+            double3 xformOp:translate = (-0.05453521205103551, 0.06511853001301526, 0.005928987580971601)
+
+            over "Visual"
+            {
+                over "p10_8_9_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_9_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_9_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_9_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "pulgar_der_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_der_palanca2>
+        )
+        {
+            double3 xformOp:translate = (0.0044374592280437275, 0.032890530421990215, 0.03524696096080249)
+
+            over "Visual"
+            {
+                over "p10_8_9_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_9_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "pulgar_der_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pulgar_der_varilla2>
+        )
+        {
+            double3 xformOp:translate = (0.008533221434651905, 0.03794539456366057, 0.02974395446833178)
+
+            over "Visual"
+            {
+                over "p10_8_9_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_9_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_9_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        def Xform "menique_der_palanca1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_der_palanca1>
+        )
+        {
+            double3 xformOp:translate = (0.007550000000000029, -0.0389111120313921, -0.0010773151590066643)
+
+            over "Visual"
+            {
+                over "p10_8_10_7"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_10_8"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+            }
+        }
+
+        def Xform "menique_der_varilla1" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_der_varilla1>
+        )
+        {
+            double3 xformOp:translate = (0.0006500000000000117, -0.03441714178465251, -0.0032691708616977566)
+
+            over "Visual"
+            {
+                over "p10_8_10_9"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_10_10"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_10_11"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_der_acople" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_der_acople>
+        )
+        {
+            double3 xformOp:translate = (0.00016998167864151759, -0.033545622614604954, -0.03625416800808834)
+
+            over "Visual"
+            {
+                over "p10_8_10_12"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_10_13"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_10_14"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_der_cardan" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_der_cardan>
+        )
+        {
+            double3 xformOp:translate = (0.005500000482103862, -0.043778235077639546, -0.03417385086311464)
+
+            over "Visual"
+            {
+                over "p10_8_10_15"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_10_16"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_der_distal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_der_distal>
+        )
+        {
+            double3 xformOp:translate = (0.012719891851244364, -0.03463251993665076, -0.08345795323035876)
+
+            over "Visual"
+            {
+                over "p10_8_10_17"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+
+                over "p10_8_10_18"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_10_19"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_der_proximal" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_der_proximal>
+        )
+        {
+            double3 xformOp:translate = (0.007003864482260036, -0.040948753465499046, -0.08597483120358884)
+
+            over "Visual"
+            {
+                over "p10_8_10_20"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_10_21"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_10_22"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_E5E4DA>
+                }
+
+                over "p10_8_10_23"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_34454A>
+                }
+            }
+        }
+
+        def Xform "menique_der_palanca2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_der_palanca2>
+        )
+        {
+            double3 xformOp:translate = (0.007550000000000029, -0.050944826956551864, -0.0023421096482368897)
+
+            over "Visual"
+            {
+                over "p10_8_10_24"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_C38650>
+                }
+
+                over "p10_8_10_25"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+            }
+        }
+
+        def Xform "menique_der_varilla2" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/menique_der_varilla2>
+        )
+        {
+            double3 xformOp:translate = (0.0006500000000000117, -0.05488488070317657, -0.005420417052267368)
+
+            over "Visual"
+            {
+                over "p10_8_10_26"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+
+                over "p10_8_10_27"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_8A9D9F>
+                }
+
+                over "p10_8_10_28"
+                {
+                    rel material:binding = </XavierMarcha/Materiales/Color_328781>
+                }
+            }
+        }
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/mano_der/Visual>
+        )
+        {
+        }
+    }
+
+    over "indice_der_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_der_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_der_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_der_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_der_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_der_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_der_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "indice_der_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_der_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_der_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_der_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_der_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_der_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_der_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_der_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "medio_der_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_der_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_der_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_der_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_der_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_der_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_der_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_der_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "anular_der_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_der_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_der_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_der_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_der_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_der_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_der_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_der_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "pulgar_der_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_der_palanca1" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_der_varilla1" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_der_acople" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_der_cardan" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_der_distal" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_der_proximal" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_der_palanca2" (
+        active = false
+    )
+    {
+    }
+
+    over "menique_der_varilla2" (
+        active = false
+    )
+    {
+    }
+
+    over "pie_der" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        def "Cargas"
+        {
+            def Cube "TalonInterior"
+            {
+                custom int carga:canal = 0
+                color3f[] primvars:displayColor = [(0.1, 0.65, 0.95)]
+                uniform token purpose = "guide"
+                double size = 1
+                float3 xformOp:scale = (0.0595, 0.1225, 0.0005)
+                double3 xformOp:translate = (-0.02975, -0.06125, -0.029)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "TalonExterior"
+            {
+                custom int carga:canal = 1
+                color3f[] primvars:displayColor = [(0.95, 0.5, 0.12)]
+                uniform token purpose = "guide"
+                double size = 1
+                float3 xformOp:scale = (0.0595, 0.1225, 0.0005)
+                double3 xformOp:translate = (0.02975, -0.06125, -0.029)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "AntepieInterior"
+            {
+                custom int carga:canal = 2
+                color3f[] primvars:displayColor = [(0.1, 0.65, 0.95)]
+                uniform token purpose = "guide"
+                double size = 1
+                float3 xformOp:scale = (0.0595, 0.1225, 0.0005)
+                double3 xformOp:translate = (-0.02975, 0.06125, -0.029)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+
+            def Cube "AntepieExterior"
+            {
+                custom int carga:canal = 3
+                color3f[] primvars:displayColor = [(0.95, 0.5, 0.12)]
+                uniform token purpose = "guide"
+                double size = 1
+                float3 xformOp:scale = (0.0595, 0.1225, 0.0005)
+                double3 xformOp:translate = (0.02975, 0.06125, -0.029)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+        }
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pie_der/Visual>
+        )
+        {
+        }
+    }
+
+    over "pelvis" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        float physxArticulation:sleepThreshold = 0
+        int physxArticulation:solverPositionIterationCount = 12
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pelvis/Visual>
+        )
+        {
+        }
+
+        def IsaacImuSensor "IMU"
+        {
+        }
+    }
+
+    over "cabeza" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/cabeza/Visual>
+        )
+        {
+        }
+
+        def Camera "Camara"
+        {
+            float2 clippingRange = (0.02, 30)
+            float focalLength = 8.4
+            float horizontalAperture = 20
+            float verticalAperture = 20
+            float xformOp:rotateX = 75
+            double3 xformOp:translate = (0, 0.08, 0.048)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX"]
+        }
+    }
+
+    over "brazo_izq" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/brazo_izq/Visual>
+        )
+        {
+        }
+    }
+
+    over "antebrazo_izq" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/antebrazo_izq/Visual>
+        )
+        {
+        }
+    }
+
+    over "muslo_izq" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/muslo_izq/Visual>
+        )
+        {
+        }
+    }
+
+    over "pantorrilla_izq" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pantorrilla_izq/Visual>
+        )
+        {
+        }
+    }
+
+    over "brazo_der" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/brazo_der/Visual>
+        )
+        {
+        }
+    }
+
+    over "antebrazo_der" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/antebrazo_der/Visual>
+        )
+        {
+        }
+    }
+
+    over "muslo_der" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/muslo_der/Visual>
+        )
+        {
+        }
+    }
+
+    over "pantorrilla_der" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pantorrilla_der/Visual>
+        )
+        {
+        }
+    }
+
+    over "Juntas"
+    {
+        over "indice_izq_base" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_izq_cierre3" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_base" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_izq_cierre3" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_base" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_izq_cierre3" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_base" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_izq_cierre3" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_base" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_izq_cierre3" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_base" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "indice_der_cierre3" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_base" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "medio_der_cierre3" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_base" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "anular_der_cierre3" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_base" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "pulgar_der_cierre3" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_base" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_pasiva2" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_pasiva4" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_pasiva5" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_m1" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_rotula1" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_m2" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_rotula2" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_cierre1" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_cierre2" (
+            active = false
+        )
+        {
+        }
+
+        over "menique_der_cierre3" (
+            active = false
+        )
+        {
+        }
+    }
+}
+

@@ -1,0 +1,350 @@
+{
+  "semilla": 145,
+  "iteracion": 48,
+  "episodios": [
+    {
+      "etapa": "cruce",
+      "episodio": 1,
+      "segundos": 22.1,
+      "aprobados": 16,
+      "caidas": 0,
+      "robots_con_choque": 0,
+      "llegadas": 16,
+      "eventos": [],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": true,
+          "avance_m": 2.672,
+          "alternancias": 17,
+          "distancia_minima_entre_pelvis_m": 0.699,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 1,
+          "aprobado": true,
+          "avance_m": 2.766,
+          "alternancias": 44,
+          "distancia_minima_entre_pelvis_m": 0.728,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 2,
+          "aprobado": true,
+          "avance_m": 2.65,
+          "alternancias": 20,
+          "distancia_minima_entre_pelvis_m": 1.103,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 3,
+          "aprobado": true,
+          "avance_m": 2.821,
+          "alternancias": 43,
+          "distancia_minima_entre_pelvis_m": 0.699,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 4,
+          "aprobado": true,
+          "avance_m": 2.565,
+          "alternancias": 18,
+          "distancia_minima_entre_pelvis_m": 0.659,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 5,
+          "aprobado": true,
+          "avance_m": 2.611,
+          "alternancias": 43,
+          "distancia_minima_entre_pelvis_m": 0.659,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 6,
+          "aprobado": true,
+          "avance_m": 2.803,
+          "alternancias": 17,
+          "distancia_minima_entre_pelvis_m": 1.37,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 7,
+          "aprobado": true,
+          "avance_m": 2.692,
+          "alternancias": 39,
+          "distancia_minima_entre_pelvis_m": 0.699,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 8,
+          "aprobado": true,
+          "avance_m": 2.735,
+          "alternancias": 39,
+          "distancia_minima_entre_pelvis_m": 0.63,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 9,
+          "aprobado": true,
+          "avance_m": 2.549,
+          "alternancias": 20,
+          "distancia_minima_entre_pelvis_m": 0.63,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 10,
+          "aprobado": true,
+          "avance_m": 2.842,
+          "alternancias": 47,
+          "distancia_minima_entre_pelvis_m": 0.635,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 11,
+          "aprobado": true,
+          "avance_m": 2.762,
+          "alternancias": 16,
+          "distancia_minima_entre_pelvis_m": 1.336,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 12,
+          "aprobado": true,
+          "avance_m": 2.706,
+          "alternancias": 45,
+          "distancia_minima_entre_pelvis_m": 0.754,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 13,
+          "aprobado": true,
+          "avance_m": 2.639,
+          "alternancias": 19,
+          "distancia_minima_entre_pelvis_m": 0.754,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 14,
+          "aprobado": true,
+          "avance_m": 2.887,
+          "alternancias": 47,
+          "distancia_minima_entre_pelvis_m": 0.766,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 15,
+          "aprobado": true,
+          "avance_m": 2.801,
+          "alternancias": 15,
+          "distancia_minima_entre_pelvis_m": 1.222,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        }
+      ]
+    },
+    {
+      "etapa": "cruce",
+      "episodio": 2,
+      "segundos": 21.6,
+      "aprobados": 16,
+      "caidas": 0,
+      "robots_con_choque": 0,
+      "llegadas": 16,
+      "eventos": [],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": true,
+          "avance_m": 2.638,
+          "alternancias": 34,
+          "distancia_minima_entre_pelvis_m": 0.863,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 1,
+          "aprobado": true,
+          "avance_m": 2.799,
+          "alternancias": 20,
+          "distancia_minima_entre_pelvis_m": 0.863,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 2,
+          "aprobado": true,
+          "avance_m": 2.742,
+          "alternancias": 36,
+          "distancia_minima_entre_pelvis_m": 0.874,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 3,
+          "aprobado": true,
+          "avance_m": 2.695,
+          "alternancias": 15,
+          "distancia_minima_entre_pelvis_m": 1.02,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 4,
+          "aprobado": true,
+          "avance_m": 2.776,
+          "alternancias": 22,
+          "distancia_minima_entre_pelvis_m": 0.867,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 5,
+          "aprobado": true,
+          "avance_m": 2.591,
+          "alternancias": 43,
+          "distancia_minima_entre_pelvis_m": 0.867,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 6,
+          "aprobado": true,
+          "avance_m": 2.694,
+          "alternancias": 17,
+          "distancia_minima_entre_pelvis_m": 0.96,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 7,
+          "aprobado": true,
+          "avance_m": 2.71,
+          "alternancias": 42,
+          "distancia_minima_entre_pelvis_m": 0.877,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 8,
+          "aprobado": true,
+          "avance_m": 2.553,
+          "alternancias": 18,
+          "distancia_minima_entre_pelvis_m": 0.659,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 9,
+          "aprobado": true,
+          "avance_m": 2.547,
+          "alternancias": 37,
+          "distancia_minima_entre_pelvis_m": 0.659,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 10,
+          "aprobado": true,
+          "avance_m": 2.826,
+          "alternancias": 18,
+          "distancia_minima_entre_pelvis_m": 1.285,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 11,
+          "aprobado": true,
+          "avance_m": 2.662,
+          "alternancias": 41,
+          "distancia_minima_entre_pelvis_m": 0.668,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 12,
+          "aprobado": true,
+          "avance_m": 2.836,
+          "alternancias": 18,
+          "distancia_minima_entre_pelvis_m": 0.875,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 13,
+          "aprobado": true,
+          "avance_m": 2.659,
+          "alternancias": 43,
+          "distancia_minima_entre_pelvis_m": 0.875,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 14,
+          "aprobado": true,
+          "avance_m": 2.751,
+          "alternancias": 15,
+          "distancia_minima_entre_pelvis_m": 1.051,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 15,
+          "aprobado": true,
+          "avance_m": 2.69,
+          "alternancias": 37,
+          "distancia_minima_entre_pelvis_m": 0.884,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        }
+      ]
+    }
+  ]
+}

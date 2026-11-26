@@ -1,0 +1,459 @@
+{
+  "semilla": 117,
+  "iteracion": 22,
+  "episodios": [
+    {
+      "etapa": "cruce",
+      "episodio": 1,
+      "segundos": 14.35,
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": false,
+          "avance_m": 0.296,
+          "alternancias": 2,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 1,
+          "aprobado": false,
+          "avance_m": 1.945,
+          "alternancias": 11,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 2,
+          "aprobado": false,
+          "avance_m": 1.005,
+          "alternancias": 4,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 3,
+          "aprobado": false,
+          "avance_m": 1.478,
+          "alternancias": 12,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 4,
+          "aprobado": false,
+          "avance_m": 2.637,
+          "alternancias": 21,
+          "caida": true,
+          "choque": true,
+          "meta": true
+        },
+        {
+          "id": 5,
+          "aprobado": true,
+          "avance_m": 2.605,
+          "alternancias": 22,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 6,
+          "aprobado": false,
+          "avance_m": 2.312,
+          "alternancias": 17,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 7,
+          "aprobado": false,
+          "avance_m": 1.619,
+          "alternancias": 10,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 8,
+          "aprobado": false,
+          "avance_m": 1.221,
+          "alternancias": 5,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 9,
+          "aprobado": false,
+          "avance_m": 0.314,
+          "alternancias": 1,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 10,
+          "aprobado": false,
+          "avance_m": 2.32,
+          "alternancias": 15,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 11,
+          "aprobado": false,
+          "avance_m": 1.107,
+          "alternancias": 7,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 12,
+          "aprobado": false,
+          "avance_m": 0.443,
+          "alternancias": 3,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 13,
+          "aprobado": false,
+          "avance_m": 2.72,
+          "alternancias": 18,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 14,
+          "aprobado": false,
+          "avance_m": 1.391,
+          "alternancias": 6,
+          "caida": false,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 15,
+          "aprobado": false,
+          "avance_m": 2.397,
+          "alternancias": 16,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        }
+      ]
+    },
+    {
+      "etapa": "cruce",
+      "episodio": 2,
+      "segundos": 11.6,
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": true,
+          "avance_m": 2.607,
+          "alternancias": 17,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 1,
+          "aprobado": false,
+          "avance_m": 0.974,
+          "alternancias": 4,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 2,
+          "aprobado": false,
+          "avance_m": 1.72,
+          "alternancias": 11,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 3,
+          "aprobado": false,
+          "avance_m": 1.367,
+          "alternancias": 7,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 4,
+          "aprobado": false,
+          "avance_m": 1.085,
+          "alternancias": 7,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 5,
+          "aprobado": false,
+          "avance_m": 1.961,
+          "alternancias": 11,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 6,
+          "aprobado": false,
+          "avance_m": 1.9,
+          "alternancias": 11,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 7,
+          "aprobado": false,
+          "avance_m": 1.501,
+          "alternancias": 9,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 8,
+          "aprobado": false,
+          "avance_m": 0.391,
+          "alternancias": 3,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 9,
+          "aprobado": false,
+          "avance_m": 1.081,
+          "alternancias": 7,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 10,
+          "aprobado": false,
+          "avance_m": 1.63,
+          "alternancias": 12,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 11,
+          "aprobado": false,
+          "avance_m": 1.718,
+          "alternancias": 9,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 12,
+          "aprobado": true,
+          "avance_m": 2.639,
+          "alternancias": 20,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 13,
+          "aprobado": false,
+          "avance_m": 0.974,
+          "alternancias": 4,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 14,
+          "aprobado": false,
+          "avance_m": 1.623,
+          "alternancias": 8,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 15,
+          "aprobado": false,
+          "avance_m": 1.909,
+          "alternancias": 11,
+          "caida": false,
+          "choque": true,
+          "meta": false
+        }
+      ]
+    },
+    {
+      "etapa": "cruce",
+      "episodio": 3,
+      "segundos": 14.1,
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": false,
+          "avance_m": 1.161,
+          "alternancias": 7,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 1,
+          "aprobado": false,
+          "avance_m": 0.354,
+          "alternancias": 3,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 2,
+          "aprobado": false,
+          "avance_m": 1.851,
+          "alternancias": 12,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 3,
+          "aprobado": false,
+          "avance_m": 1.397,
+          "alternancias": 6,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 4,
+          "aprobado": false,
+          "avance_m": 2.435,
+          "alternancias": 16,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 5,
+          "aprobado": false,
+          "avance_m": 0.364,
+          "alternancias": 3,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 6,
+          "aprobado": false,
+          "avance_m": 2.216,
+          "alternancias": 13,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 7,
+          "aprobado": false,
+          "avance_m": 1.488,
+          "alternancias": 9,
+          "caida": false,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 8,
+          "aprobado": false,
+          "avance_m": 0.433,
+          "alternancias": 3,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 9,
+          "aprobado": false,
+          "avance_m": 1.069,
+          "alternancias": 7,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 10,
+          "aprobado": false,
+          "avance_m": 1.395,
+          "alternancias": 10,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 11,
+          "aprobado": false,
+          "avance_m": 1.515,
+          "alternancias": 7,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 12,
+          "aprobado": false,
+          "avance_m": 0.436,
+          "alternancias": 2,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 13,
+          "aprobado": false,
+          "avance_m": 2.399,
+          "alternancias": 13,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 14,
+          "aprobado": false,
+          "avance_m": 1.383,
+          "alternancias": 6,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        },
+        {
+          "id": 15,
+          "aprobado": false,
+          "avance_m": 2.152,
+          "alternancias": 13,
+          "caida": true,
+          "choque": true,
+          "meta": false
+        }
+      ]
+    }
+  ]
+}

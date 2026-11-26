@@ -1,0 +1,30 @@
+[
+  {
+    "name": "animacion.zip",
+    "size": 45237875,
+    "sha256": "08a664d5b62033ca4f82b27f6883f1a7bf778b4acdc407002c5d41983509ecdb",
+    "parts": [
+      "animacion.zip.part001",
+      "animacion.zip.part002"
+    ]
+  },
+  {
+    "name": "cad_componentes_y_fuentes.zip",
+    "size": 96878905,
+    "sha256": "d4500303f07f705ad3b4b238f6c7d474b6634c0a8a20968e3e45dc2450e5b3db",
+    "parts": [
+      "cad_componentes_y_fuentes.zip.part001",
+      "cad_componentes_y_fuentes.zip.part002",
+      "cad_componentes_y_fuentes.zip.part003"
+    ]
+  },
+  {
+    "name": "cad_ensamblaje_xavier_step.zip",
+    "size": 58370614,
+    "sha256": "d0dc69e2d0a84592f69706360932d8387c957a72f7bf5b6a81318e6a68a65f8f",
+    "parts": [
+      "cad_ensamblaje_xavier_step.zip.part001",
+      "cad_ensamblaje_xavier_step.zip.part002"
+    ]
+  }
+]
