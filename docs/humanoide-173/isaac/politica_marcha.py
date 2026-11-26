@@ -150,6 +150,9 @@ def aprender(args, env):
                   periodo_control_s=env.dt_control, contrato=CONTRATO if env.secuencia else "xavier-marcha-plantar",
                   observaciones_adicionales=OBS_ADICIONALES if env.secuencia else (),
                   acciones_adicionales=ACCIONES_ADICIONALES if env.secuencia else ())
+    if env.solo_frenado:
+        perfil.update(tarea="frenado_y_brazos_v2", referencia=env.freno_referencia,
+                      parametros_freno=None if env.freno_referencia else env.freno[0].tolist(), fase_rad=env.fase_freno)
     evaluaciones = []
     iterations = count(inicio + 1) if args.evaluar else range(inicio + 1, inicio + args.iteraciones + 1)
     for it in iterations:

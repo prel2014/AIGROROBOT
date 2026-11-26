@@ -1,0 +1,92 @@
+{
+  "contrato": "frenado-sagital-1",
+  "semilla": 815,
+  "solver": "PhysX CPU 120 Hz",
+  "nombres": [
+    "cadera",
+    "rodilla",
+    "sesgo_tobillo",
+    "kp_pos",
+    "kd_vel",
+    "kp_cadera",
+    "kd_cadera",
+    "kp_inclinacion",
+    "rampa_s",
+    "centro_m"
+  ],
+  "parametros": [
+    0.24413789396077623,
+    0.48204291891288303,
+    -0.0966406495743084,
+    3.168184010593388,
+    0.40318002402505926,
+    -1.4379364813201767,
+    0.007181793921923446,
+    0.35347068283427363,
+    0.025,
+    -0.04196236235017262
+  ],
+  "fase_rad": 2.1598449493429825,
+  "historial": [
+    {
+      "generacion": 1,
+      "aprobados": 3,
+      "intentos": 32,
+      "nota": 40.576840912017886
+    },
+    {
+      "generacion": 2,
+      "aprobados": 4,
+      "intentos": 32,
+      "nota": 40.11486923831174
+    },
+    {
+      "generacion": 3,
+      "aprobados": 4,
+      "intentos": 32,
+      "nota": 40.30159216539691
+    },
+    {
+      "generacion": 4,
+      "aprobados": 6,
+      "intentos": 32,
+      "nota": 40.581587827860034
+    },
+    {
+      "generacion": 5,
+      "aprobados": 5,
+      "intentos": 32,
+      "nota": 40.1580144076305
+    },
+    {
+      "generacion": 6,
+      "aprobados": 6,
+      "intentos": 32,
+      "nota": 40.02067696451607
+    },
+    {
+      "generacion": 7,
+      "aprobados": 13,
+      "intentos": 32,
+      "nota": 40.321984054295086
+    },
+    {
+      "generacion": 8,
+      "aprobados": 15,
+      "intentos": 32,
+      "nota": 40.12288582001501
+    },
+    {
+      "generacion": 9,
+      "aprobados": 19,
+      "intentos": 32,
+      "nota": 40.40970887521971
+    },
+    {
+      "generacion": 10,
+      "aprobados": 14,
+      "intentos": 32,
+      "nota": 40.40551771865357
+    }
+  ]
+}

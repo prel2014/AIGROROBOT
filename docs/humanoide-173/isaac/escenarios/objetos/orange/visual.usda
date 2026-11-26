@@ -1,0 +1,40 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset"
+{
+    float xformOp:rotateX = 90
+    uniform token[] xformOpOrder = ["xformOp:rotateX"]
+
+    def Xform "Geometry" (
+        references = @./geometry.usdc@
+    )
+    {
+        over "Looks"
+        {
+            over "Original_orange_citrus_peel"
+            {
+                def Shader "Relieve"
+                {
+                    uniform token info:id = "UsdUVTexture"
+                    float4 inputs:bias = (-1, -1, -1, 0)
+                    asset inputs:file = @./textures/orange_skin_food_2k_relieve.png@
+                    float4 inputs:scale = (2, 2, 2, 1)
+                    token inputs:sourceColorSpace = "raw"
+                    float2 inputs:st.connect = </Asset/Geometry/Looks/Original_orange_citrus_peel/diffuseTex_UsdTransform2d.outputs:result>
+                    float3 outputs:rgb
+                }
+
+                over "Original_orange_citrus_peel"
+                {
+                    normal3f inputs:normal.connect = </Asset/Geometry/Looks/Original_orange_citrus_peel/Relieve.outputs:rgb>
+                }
+            }
+        }
+    }
+}
+

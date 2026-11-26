@@ -1,0 +1,266 @@
+{
+  "tipo": "calibracion_lateral",
+  "contrato": "naranjal-1",
+  "semilla": 192,
+  "fisica_marcha_hz": 120,
+  "fisica_mano_hz": 240,
+  "control_hz": 60,
+  "fase_apoyo_rad": 1.9634954084936207,
+  "parametros": [
+    0.24413789396077623,
+    0.48204291891288303,
+    -0.0966406495743084,
+    3.168184010593388,
+    0.40318002402505926,
+    -1.4379364813201767,
+    0.007181793921923446,
+    0.35347068283427363,
+    0.025,
+    -0.04196236235017262
+  ],
+  "nota": "Ocho posiciones laterales del fruto y de su soporte con la misma semilla. La secuencia de cierre sin retencion verificada no cuenta como agarre.",
+  "exitos": 0,
+  "intentos": 8,
+  "episodios": [
+    {
+      "x": 0.25,
+      "semilla": 192,
+      "resultado": "cierre",
+      "eventos": [
+        [
+          2.6,
+          "freno"
+        ],
+        [
+          6.167,
+          "alcance"
+        ],
+        [
+          7.767,
+          "cierre"
+        ]
+      ],
+      "avance_m": 0.422,
+      "distancia_minima_pinza_m": 0.0065,
+      "altura_max_m": 0.0,
+      "sosten_continuo_s": 0.0,
+      "contactos_mano": [
+        "anular",
+        "indice",
+        "medio",
+        "pulgar"
+      ],
+      "soporte_retirado": false,
+      "caida": false
+    },
+    {
+      "x": 0.255,
+      "semilla": 192,
+      "resultado": "cierre",
+      "eventos": [
+        [
+          2.6,
+          "freno"
+        ],
+        [
+          6.167,
+          "alcance"
+        ],
+        [
+          7.767,
+          "cierre"
+        ]
+      ],
+      "avance_m": 0.422,
+      "distancia_minima_pinza_m": 0.002,
+      "altura_max_m": 0.0,
+      "sosten_continuo_s": 0.0,
+      "contactos_mano": [
+        "anular",
+        "indice",
+        "medio",
+        "pulgar"
+      ],
+      "soporte_retirado": false,
+      "caida": false
+    },
+    {
+      "x": 0.26,
+      "semilla": 192,
+      "resultado": "cierre",
+      "eventos": [
+        [
+          2.6,
+          "freno"
+        ],
+        [
+          6.167,
+          "alcance"
+        ],
+        [
+          7.767,
+          "cierre"
+        ]
+      ],
+      "avance_m": 0.422,
+      "distancia_minima_pinza_m": 0.0034,
+      "altura_max_m": 0.0,
+      "sosten_continuo_s": 0.0,
+      "contactos_mano": [
+        "anular",
+        "indice",
+        "medio"
+      ],
+      "soporte_retirado": false,
+      "caida": false
+    },
+    {
+      "x": 0.245,
+      "semilla": 192,
+      "resultado": "cierre",
+      "eventos": [
+        [
+          2.6,
+          "freno"
+        ],
+        [
+          6.167,
+          "alcance"
+        ],
+        [
+          7.8,
+          "cierre"
+        ]
+      ],
+      "avance_m": 0.422,
+      "distancia_minima_pinza_m": 0.0117,
+      "altura_max_m": 0.0,
+      "sosten_continuo_s": 0.0,
+      "contactos_mano": [
+        "anular",
+        "indice",
+        "medio",
+        "pulgar"
+      ],
+      "soporte_retirado": false,
+      "caida": false
+    },
+    {
+      "x": 0.235,
+      "semilla": 192,
+      "resultado": "cierre",
+      "eventos": [
+        [
+          2.6,
+          "freno"
+        ],
+        [
+          6.167,
+          "alcance"
+        ],
+        [
+          7.883,
+          "cierre"
+        ]
+      ],
+      "avance_m": 0.422,
+      "distancia_minima_pinza_m": 0.0214,
+      "altura_max_m": 0.0,
+      "sosten_continuo_s": 0.0,
+      "contactos_mano": [
+        "anular",
+        "indice",
+        "medio",
+        "pulgar"
+      ],
+      "soporte_retirado": false,
+      "caida": false
+    },
+    {
+      "x": 0.265,
+      "semilla": 192,
+      "resultado": "cierre",
+      "eventos": [
+        [
+          2.6,
+          "freno"
+        ],
+        [
+          6.167,
+          "alcance"
+        ],
+        [
+          7.783,
+          "cierre"
+        ]
+      ],
+      "avance_m": 0.422,
+      "distancia_minima_pinza_m": 0.0084,
+      "altura_max_m": 0.0,
+      "sosten_continuo_s": 0.0,
+      "contactos_mano": [
+        "anular",
+        "indice",
+        "medio"
+      ],
+      "soporte_retirado": false,
+      "caida": false
+    },
+    {
+      "x": 0.275,
+      "semilla": 192,
+      "resultado": "caida",
+      "eventos": [
+        [
+          2.6,
+          "freno"
+        ],
+        [
+          6.167,
+          "alcance"
+        ]
+      ],
+      "avance_m": 0.357,
+      "distancia_minima_pinza_m": 0.0801,
+      "altura_max_m": 0.0,
+      "sosten_continuo_s": 0.0,
+      "contactos_mano": [
+        "indice",
+        "medio"
+      ],
+      "soporte_retirado": false,
+      "caida": true
+    },
+    {
+      "x": 0.24,
+      "semilla": 192,
+      "resultado": "cierre",
+      "eventos": [
+        [
+          2.6,
+          "freno"
+        ],
+        [
+          6.167,
+          "alcance"
+        ],
+        [
+          7.833,
+          "cierre"
+        ]
+      ],
+      "avance_m": 0.422,
+      "distancia_minima_pinza_m": 0.0165,
+      "altura_max_m": 0.0,
+      "sosten_continuo_s": 0.0,
+      "contactos_mano": [
+        "anular",
+        "indice",
+        "medio",
+        "pulgar"
+      ],
+      "soporte_retirado": false,
+      "caida": false
+    }
+  ]
+}

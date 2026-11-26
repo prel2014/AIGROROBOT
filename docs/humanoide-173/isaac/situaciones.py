@@ -9,8 +9,11 @@ ACCIONES_ADICIONALES = ("residuo_codo_izq", "residuo_codo_der")
 
 
 class Secuencias:
-    def __init__(self, rng, cantidad):
+    def __init__(self, rng, cantidad, solo_frenado=False):
         self.tipo = rng.permutation(np.arange(cantidad) % len(TAREAS))
+        self.solo_frenado = solo_frenado
+        if solo_frenado:
+            self.tipo.fill(3)
         self.lado = rng.integers(0, 2, cantidad)
         self.angulo = np.deg2rad(rng.uniform(28., 48., cantidad))
         self.recorrido = np.where(self.tipo == 3, rng.uniform(.38, .72, cantidad), 0.)
@@ -23,6 +26,10 @@ class Secuencias:
 
     def consignas(self):
         objetivo = np.zeros((len(self.tipo), 2))
+        if self.solo_frenado:
+            filas = np.flatnonzero(self.fase == 2)
+            objetivo[filas, self.lado[filas]] = self.angulo[filas]
+            return objetivo
         primera = (self.fase == 0) & (self.tipo != 3)
         segunda = (self.fase == 1) & ((self.tipo == 1) | (self.tipo == 3))
         filas = np.flatnonzero(primera | segunda)
@@ -46,6 +53,8 @@ class Secuencias:
         self.fase += mover_fase
         self.sostenido[mover_fase] = 0.
         final = np.where((self.tipo == 1) | (self.tipo == 3), 3, 2)
+        if self.solo_frenado:
+            final.fill(4)
         acabo = mover_fase & (self.fase == final)
         premio = np.where(caminando, 0., .10 * np.exp(-5. * error) - .03 * ~estable)
         return acabo, premio + 1.5 * mover_fase

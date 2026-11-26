@@ -227,6 +227,25 @@ La evaluación obtuvo 107 secuencias completas en 144 intentos individuales, con
 | Flexionar y extender los dos codos | 27 / 36 |
 | Caminar, parar, señalar y bajar el brazo | 8 / 36 |
 
+### Frenar antes de usar los brazos
+
+Los 16 Xavier caminan hacia una meta individual, demuestran apoyo y estabilidad durante 0,35 s, flexionan el codo solicitado y regresan al reposo. El controlador usa la posición de la pelvis respecto a los pies, la velocidad de avance y el cabeceo para regular las piernas. Una ventana del ciclo de marcha determina cuándo iniciar la parada. El entrenamiento en PhysX comprendió 512 ensayos iniciales de postura, 192 ensayos de fase y 320 ensayos de ajuste conjunto. PPO continuó desde la iteración 36 hasta la 76 con 40 actualizaciones dedicadas.
+
+En el campus se evaluaron las dos versiones sin exploración con semilla 9017, cuatro episodios y 16 robots por episodio. La versión anterior completó 24 de 64 intentos y registró 40 caídas. La nueva completó 51 de 64 y registró 13 caídas. [Referencia](isaac/escenarios/frenado_referencia.json) · [Evaluación del frenado](isaac/escenarios/frenado_campus.json) · [Pesos PPO](isaac/frenado_ppo.pt)
+
+```powershell
+.\isaac-sim-6.2.0\python.bat .\humanoide-173\isaac\entrenar_marcha.py --etapa situaciones --solo-frenado --evaluar 4 --semilla 9017 --escenario campus
+.\isaac-sim-6.2.0\python.bat .\humanoide-173\isaac\ensayar_naranjal.py --semilla 730 --episodios 16 --informe ensayo_local.json
+```
+
+### Prueba de retención en un naranjal
+
+El huerto utiliza la mano derecha con sus articulaciones y almohadillas CAD y un bípedo de base libre. Una naranja dinámica de 95 g y 58 mm de diámetro cuelga de un soporte de ensayo. El controlador de piernas usa los parámetros de frenado aprendidos y un último apoyo calibrado con la mano articulada. Para alcanzar el fruto se proporciona su posición desde PhysX y se usa cinemática inversa del brazo. La física funciona a 120 Hz al caminar y a 240 Hz durante el alcance y la prensión.
+
+El ensayo retira el soporte del árbol para probar la fuerza de la mano una vez que los contactos toman carga. Para aprobar, la fruta debe elevarse 35 mm y mantenerse durante medio segundo con contactos opuestos de la mano y sin apoyo externo, mientras Xavier permanece erguido con al menos un pie apoyado. Este protocolo prueba retención después de una liberación controlada. El reconocimiento visual del fruto y la separación natural del pedúnculo quedan pendientes. [Escenario USD](isaac/escenarios/naranjal.usda) · [Mediciones por intento](isaac/escenarios/ensayo_naranjal.json)
+
+En la última calibración se probaron ocho posiciones laterales con la misma semilla. Siete intentos alcanzaron la fase de cierre y uno terminó en caída. Ninguno consiguió una elevación sostenida. Quedó pendiente validar la cosecha con posiciones y semillas nuevas.
+
 ## Interior del torso con Jetson AGX Xavier y un banco extraíble
 
 El rediseño conserva los 1.730 mm de altura, la cabeza EZVIZ H9c y las ubicaciones propuestas para los cuatro AK60-39 y el servo del cuello. Los motores se representan mediante sus envolventes exteriores en el STEP de esta variante. Se abrieron dos cavidades en la carrocería de la espalda. El modelo de servicio muestra el torso con sus dos tapas retiradas. [Torso abierto](cad/torso_xavier_abierto.step) · [Humanoide con tapas y motores](cad/humanoide_xavier.step) · [Animación de extracción del computador y del banco](animacion/servicio_interior_xavier.mp4) · [Vista posterior del torso](cad/vista_torso_banco.png) · [Parámetros del diseño](cad/interior_xavier.py)

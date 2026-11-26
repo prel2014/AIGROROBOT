@@ -10,6 +10,7 @@ import numpy as np
 from control_marcha import GANANCIAS_MARCHA, GANANCIAS_REPOSO, MARCHA, referencias, corregir_apoyos, frenar_con_apoyo
 from cargas_plantares import LADOS, ZONAS, integrar_contactos
 from situaciones import Secuencias
+from frenado import consignas as freno_entrenado, ventana_parada
 
 HERE = Path(__file__).resolve().parent
 PISTA = HERE / "pista_marcha_16.usda"
@@ -35,6 +36,16 @@ class Pista:
 
         self.rng = np.random.default_rng(args.semilla)
         self.escenario = args.escenario
+        self.solo_frenado = getattr(args, "solo_frenado", False)
+        self.freno_referencia = getattr(args, "freno_referencia", False)
+        if self.solo_frenado:
+            import json
+            ajuste_freno = json.loads((HERE / "freno_sincronizado.json").read_text())
+            self.fase_freno = ajuste_freno.get("fase_rad")
+            if self.freno_referencia:
+                self.fase_freno = None
+            parametros = ajuste_freno["parametros"]
+            self.freno = np.tile(parametros, (16, 1))
         self.dt_control = PERIODO
         self.app = app
         ctx = omni.usd.get_context()
@@ -170,7 +181,7 @@ class Pista:
             self.heading = np.tile((0., 1.), (16, 1))
             self.goal = self.start + self.heading * (1.3 if self.etapa == "marcha" else 0.)
         root[:, :2] = self.start + self.heading * self.rng.uniform(-.14, .14, (16, 1))
-        self.secuencia = Secuencias(self.rng, len(self.ids)) if self.etapa == "situaciones" else None
+        self.secuencia = Secuencias(self.rng, len(self.ids), self.solo_frenado) if self.etapa == "situaciones" else None
         if self.secuencia:
             self.goal = root[:, :2] + self.heading * self.secuencia.recorrido[:, None]
         root[:, 3:] = Rotation.from_rotvec(np.column_stack((np.zeros((16, 2)),
@@ -393,6 +404,11 @@ class Pista:
             self.tiempo_freno += intervalo * frenar
             desired[frenar] = frenar_con_apoyo(self.inicio_freno[frenar], q[frenar], separacion[frenar],
                                                velocidad[frenar], self.tiempo_freno[frenar])
+            if self.solo_frenado and not self.freno_referencia:
+                vertical = rot.as_matrix()[:, 2, :]
+                desired[frenar] = freno_entrenado(self.freno[frenar], self.inicio_freno[frenar], q[frenar],
+                    separacion[frenar], velocidad[frenar], np.arctan2(vertical[frenar, 1], vertical[frenar, 2]),
+                    self.tiempo_freno[frenar])
             desired[frenar] += np.deg2rad(2.) * action[frenar, :6]
         self.en_marcha += mover*intervalo
         desired = np.clip(desired, self.limits[:, 0], self.limits[:, 1])
@@ -402,6 +418,8 @@ class Pista:
         if self.secuencia:
             previa = self.target[:, self.codos]
             meta = self.secuencia.consignas() + np.deg2rad(18.) * action[:, 7:]
+            if self.solo_frenado:
+                meta[self.secuencia.fase < 2] = 0.
             meta[~self.active] = 0.
             meta = np.clip(meta, self.limites_codo[:, 0], self.limites_codo[:, 1])
             delta = np.minimum(self.vel_codo, np.deg2rad(85.)) * intervalo
@@ -474,9 +492,12 @@ class Pista:
         premio_tarea = 0.
         if self.secuencia:
             fase_antes = self.secuencia.fase.copy()
+            cerca_meta = (restante <= .06) & (distance < .22)
+            if self.solo_frenado and self.fase_freno is not None:
+                cerca_meta = ventana_parada(restante, self.phase, self.fase_freno, .40) & (distance < .22)
             arrived, premio_tarea = self.secuencia.actualizar(
                 PERIODO, self.active & ~hit & ~fallen & (self.time >= .6),
-                (restante <= .06) & (distance < .22), self.steps, feet[:, :, :2].mean(axis=1), upright,
+                cerca_meta, self.steps, feet[:, :, :2].mean(axis=1), upright,
                 np.linalg.norm(self.robot.get_root_velocities()[:, :2], axis=1),
                 self.robot.get_dof_positions()[:, self.codos], izq + der)
             for i in np.flatnonzero(self.secuencia.fase != fase_antes):
@@ -525,6 +546,8 @@ if __name__ == "__main__":
     parser.add_argument("--iteraciones", type=int, default=300)
     parser.add_argument("--pasos", type=int, default=64, help="Decisiones por robot y actualización PPO.")
     parser.add_argument("--semilla", type=int, default=17)
+    parser.add_argument("--solo-frenado", action="store_true", help="Entrena caminar, detenerse, gesticular y volver al reposo.")
+    parser.add_argument("--freno-referencia", action="store_true", help="Evalúa el controlador previo con el mismo protocolo de parada.")
     parser.add_argument("--modelo", type=Path)
     parser.add_argument("--inicial", type=Path, help="Política de marcha para inicializar un entrenamiento de situaciones.")
     parser.add_argument("--etapa", choices=("equilibrio", "marcha", "cruce", "situaciones"))
@@ -538,8 +561,14 @@ if __name__ == "__main__":
     parser.add_argument("--verificar", action="store_true", help="Prueba las cámaras, las IMU y un choque controlado antes de empezar.")
     parser.add_argument("--captura", type=Path, help="Mosaico PNG de las 16 cámaras al empezar.")
     args, kit_args = parser.parse_known_args()
+    if args.solo_frenado and args.etapa != "situaciones":
+        parser.error("--solo-frenado requiere --etapa situaciones.")
+    if args.freno_referencia and not (args.solo_frenado and args.evaluar):
+        parser.error("--freno-referencia se usa con --solo-frenado y --evaluar.")
     if args.modelo is None:
         args.modelo = HERE / ("situaciones.pt" if args.etapa == "situaciones" else "marcha_cargas.pt")
+        if args.solo_frenado and not args.freno_referencia:
+            args.modelo = HERE / "frenado_ppo.pt"
     if args.inicial and (args.evaluar or args.reanudar or args.etapa != "situaciones" or
                          not args.inicial.is_file() or args.inicial.resolve() == args.modelo.resolve()):
         parser.error("--inicial requiere una política existente, una salida distinta y una ejecución nueva de situaciones.")

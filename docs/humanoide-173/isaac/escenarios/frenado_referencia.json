@@ -1,0 +1,3020 @@
+{
+  "semilla": 9017,
+  "iteracion": 36,
+  "escenario": "campus",
+  "pies": [
+    "izq",
+    "der"
+  ],
+  "zonas_por_pie": [
+    "TalonInterior",
+    "TalonExterior",
+    "AntepieInterior",
+    "AntepieExterior"
+  ],
+  "perfil": {
+    "semilla": 9017,
+    "escenario": "campus",
+    "solver": "cpu",
+    "rgb": [
+      256,
+      256,
+      3
+    ],
+    "periodo_control_s": 0.05,
+    "contrato": "xavier-situaciones-v1",
+    "observaciones_adicionales": [
+      "objetivo_izq_rad",
+      "objetivo_der_rad",
+      "codo_izq_rad",
+      "codo_der_rad",
+      "orden_marcha",
+      "residuo_previo_izq",
+      "residuo_previo_der"
+    ],
+    "acciones_adicionales": [
+      "residuo_codo_izq",
+      "residuo_codo_der"
+    ],
+    "tarea": "frenado_y_brazos_v2",
+    "referencia": true,
+    "parametros_freno": null,
+    "fase_rad": null
+  },
+  "episodios": [
+    {
+      "etapa": "situaciones",
+      "episodio": 1,
+      "segundos": 6.45,
+      "aprobados": 4,
+      "caidas": 12,
+      "robots_con_choque": 0,
+      "choques_con_entorno": 0,
+      "llegadas": 4,
+      "eventos": [
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 2.3,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 2.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 2.5,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 2.6,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 2.65,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 2.85,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 2.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 3.2,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 3.2,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 3.3,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 3.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 3.4,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 3.4,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 3.45,
+          "fase_completada": 0
+        },
+        {
+          "segundos": 3.7,
+          "tipo": "caida",
+          "robot": 2,
+          "marcha_s": 1.75
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 3.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 3.8,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 3.9,
+          "tipo": "caida",
+          "robot": 6,
+          "marcha_s": 1.7
+        },
+        {
+          "segundos": 3.95,
+          "tipo": "caida",
+          "robot": 10,
+          "marcha_s": 2.05
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 4.0,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 4.1,
+          "tipo": "caida",
+          "robot": 0,
+          "marcha_s": 1.9
+        },
+        {
+          "segundos": 4.1,
+          "tipo": "caida",
+          "robot": 5,
+          "marcha_s": 2.0
+        },
+        {
+          "segundos": 4.15,
+          "tipo": "caida",
+          "robot": 12,
+          "marcha_s": 2.25
+        },
+        {
+          "segundos": 4.3,
+          "tipo": "caida",
+          "robot": 14,
+          "marcha_s": 2.6
+        },
+        {
+          "segundos": 4.45,
+          "tipo": "caida",
+          "robot": 8,
+          "marcha_s": 2.6
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 4.55,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 4.6,
+          "fase_completada": 2
+        },
+        {
+          "segundos": 4.75,
+          "tipo": "caida",
+          "robot": 3,
+          "marcha_s": 2.35
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 4.8,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 4.8,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 4.85,
+          "tipo": "caida",
+          "robot": 9,
+          "marcha_s": 2.85
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 5.25,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 5.3,
+          "fase_completada": 3
+        },
+        {
+          "segundos": 5.45,
+          "tipo": "caida",
+          "robot": 15,
+          "marcha_s": 2.7
+        },
+        {
+          "segundos": 5.5,
+          "tipo": "caida",
+          "robot": 11,
+          "marcha_s": 2.75
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 5.65,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 5.65,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 6.45,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 6.45,
+          "fase_completada": 3
+        }
+      ],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.416,
+          "angulo_objetivo_grados": 38.05,
+          "lado_inicial": "izq",
+          "avance_m": 0.335,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              116.97,
+              132.08,
+              122.17,
+              85.54
+            ],
+            [
+              133.44,
+              129.48,
+              74.92,
+              97.24
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.982,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 1,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.685,
+          "angulo_objetivo_grados": 47.0,
+          "lado_inicial": "der",
+          "avance_m": 0.551,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              114.66,
+              172.94,
+              83.32,
+              109.99
+            ],
+            [
+              135.93,
+              172.09,
+              80.02,
+              99.38
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.982,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 2,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.384,
+          "angulo_objetivo_grados": 29.89,
+          "lado_inicial": "izq",
+          "avance_m": 0.339,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              110.73,
+              131.15,
+              113.33,
+              88.18
+            ],
+            [
+              145.56,
+              138.46,
+              69.1,
+              87.66
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.009,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 3,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.55,
+          "angulo_objetivo_grados": 34.24,
+          "lado_inicial": "der",
+          "avance_m": 0.437,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              106.01,
+              182.2,
+              80.76,
+              87.67
+            ],
+            [
+              142.62,
+              151.55,
+              68.98,
+              112.35
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.009,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 4,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.692,
+          "angulo_objetivo_grados": 46.43,
+          "lado_inicial": "der",
+          "avance_m": 0.568,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              118.45,
+              172.36,
+              85.79,
+              104.54
+            ],
+            [
+              140.2,
+              187.18,
+              69.0,
+              103.76
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.005,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 5,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.501,
+          "angulo_objetivo_grados": 28.24,
+          "lado_inicial": "der",
+          "avance_m": 0.436,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              118.79,
+              144.65,
+              84.1,
+              85.74
+            ],
+            [
+              133.39,
+              154.0,
+              74.31,
+              91.91
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.005,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 6,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.383,
+          "angulo_objetivo_grados": 28.86,
+          "lado_inicial": "der",
+          "avance_m": 0.33,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              106.47,
+              159.49,
+              76.73,
+              88.45
+            ],
+            [
+              138.05,
+              126.1,
+              69.78,
+              87.46
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.026,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 7,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.45,
+          "angulo_objetivo_grados": 41.6,
+          "lado_inicial": "izq",
+          "avance_m": 0.333,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              118.48,
+              132.55,
+              93.74,
+              85.36
+            ],
+            [
+              151.36,
+              185.64,
+              85.42,
+              87.62
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.026,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 8,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.637,
+          "angulo_objetivo_grados": 29.01,
+          "lado_inicial": "der",
+          "avance_m": 0.587,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              118.98,
+              189.82,
+              92.8,
+              85.63
+            ],
+            [
+              133.43,
+              180.77,
+              85.93,
+              87.54
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.977,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 9,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.707,
+          "angulo_objetivo_grados": 32.27,
+          "lado_inicial": "der",
+          "avance_m": 0.626,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              106.45,
+              139.81,
+              104.92,
+              127.17
+            ],
+            [
+              149.14,
+              169.7,
+              69.09,
+              94.45
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.961,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 10,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.523,
+          "angulo_objetivo_grados": 31.02,
+          "lado_inicial": "izq",
+          "avance_m": 0.388,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              120.28,
+              192.73,
+              98.33,
+              89.66
+            ],
+            [
+              133.53,
+              126.62,
+              115.19,
+              110.86
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.006,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 11,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 2,
+          "distancia_objetivo_m": 0.672,
+          "angulo_objetivo_grados": 36.18,
+          "lado_inicial": "der",
+          "avance_m": 0.502,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              119.19,
+              202.98,
+              84.91,
+              85.43
+            ],
+            [
+              133.33,
+              158.62,
+              78.8,
+              101.99
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.006,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 12,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.514,
+          "angulo_objetivo_grados": 47.11,
+          "lado_inicial": "der",
+          "avance_m": 0.461,
+          "alternancias": 3,
+          "maximos_plantares_N": [
+            [
+              106.95,
+              193.82,
+              93.29,
+              83.83
+            ],
+            [
+              185.24,
+              150.6,
+              69.08,
+              89.33
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.02,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 13,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.444,
+          "angulo_objetivo_grados": 41.5,
+          "lado_inicial": "der",
+          "avance_m": 0.347,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              119.34,
+              144.8,
+              85.37,
+              86.35
+            ],
+            [
+              140.87,
+              169.2,
+              115.65,
+              114.41
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.02,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 14,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.605,
+          "angulo_objetivo_grados": 38.94,
+          "lado_inicial": "der",
+          "avance_m": 0.552,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              106.61,
+              176.02,
+              95.58,
+              123.45
+            ],
+            [
+              135.78,
+              155.12,
+              87.44,
+              104.09
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.029,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 15,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.624,
+          "angulo_objetivo_grados": 34.58,
+          "lado_inicial": "izq",
+          "avance_m": 0.486,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              116.02,
+              193.18,
+              94.6,
+              87.37
+            ],
+            [
+              138.12,
+              183.26,
+              71.23,
+              146.48
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.029,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        }
+      ]
+    },
+    {
+      "etapa": "situaciones",
+      "episodio": 2,
+      "segundos": 6.7,
+      "aprobados": 6,
+      "caidas": 10,
+      "robots_con_choque": 0,
+      "choques_con_entorno": 0,
+      "llegadas": 6,
+      "eventos": [
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 2.45,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 2.6,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 2.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 3.0,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 3.25,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 3.3,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 3.3,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 3.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 3.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 3.4,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 3.45,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 3.45,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 3.55,
+          "fase_completada": 0
+        },
+        {
+          "segundos": 3.8,
+          "tipo": "caida",
+          "robot": 2,
+          "marcha_s": 1.85
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 3.8,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 3.8,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 3.85,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 4.0,
+          "tipo": "caida",
+          "robot": 6,
+          "marcha_s": 2.0
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 4.55,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 4.6,
+          "fase_completada": 2
+        },
+        {
+          "segundos": 4.7,
+          "tipo": "caida",
+          "robot": 0,
+          "marcha_s": 2.95
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 4.7,
+          "fase_completada": 2
+        },
+        {
+          "segundos": 4.75,
+          "tipo": "caida",
+          "robot": 11,
+          "marcha_s": 2.4
+        },
+        {
+          "segundos": 4.8,
+          "tipo": "caida",
+          "robot": 3,
+          "marcha_s": 2.65
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 4.8,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 4.85,
+          "tipo": "caida",
+          "robot": 8,
+          "marcha_s": 2.85
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 4.85,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 5.0,
+          "tipo": "caida",
+          "robot": 4,
+          "marcha_s": 2.7
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 5.05,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 5.1,
+          "tipo": "caida",
+          "robot": 9,
+          "marcha_s": 2.85
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 5.2,
+          "fase_completada": 3
+        },
+        {
+          "segundos": 5.3,
+          "tipo": "caida",
+          "robot": 13,
+          "marcha_s": 2.7
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 5.3,
+          "fase_completada": 3
+        },
+        {
+          "segundos": 5.35,
+          "tipo": "caida",
+          "robot": 7,
+          "marcha_s": 2.75
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 5.45,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 5.5,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 5.65,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 5.9,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 6.15,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 6.4,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 6.7,
+          "fase_completada": 3
+        }
+      ],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.703,
+          "angulo_objetivo_grados": 40.2,
+          "lado_inicial": "der",
+          "avance_m": 0.629,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              164.62,
+              164.17,
+              93.11,
+              94.04
+            ],
+            [
+              198.31,
+              160.15,
+              69.02,
+              96.18
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.036,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 1,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.69,
+          "angulo_objetivo_grados": 46.13,
+          "lado_inicial": "der",
+          "avance_m": 0.553,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              119.45,
+              169.42,
+              84.89,
+              85.13
+            ],
+            [
+              133.58,
+              173.15,
+              91.09,
+              100.97
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.036,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 2,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.436,
+          "angulo_objetivo_grados": 44.09,
+          "lado_inicial": "der",
+          "avance_m": 0.357,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              118.69,
+              131.86,
+              77.48,
+              87.53
+            ],
+            [
+              133.43,
+              174.19,
+              69.86,
+              87.84
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.003,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 3,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.641,
+          "angulo_objetivo_grados": 34.89,
+          "lado_inicial": "der",
+          "avance_m": 0.56,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              122.26,
+              208.43,
+              133.88,
+              85.39
+            ],
+            [
+              133.34,
+              154.73,
+              76.63,
+              110.46
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.003,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 4,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.653,
+          "angulo_objetivo_grados": 30.57,
+          "lado_inicial": "izq",
+          "avance_m": 0.524,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              114.85,
+              173.4,
+              83.42,
+              101.26
+            ],
+            [
+              133.45,
+              170.28,
+              83.14,
+              98.62
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.046,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 5,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.555,
+          "angulo_objetivo_grados": 34.16,
+          "lado_inicial": "der",
+          "avance_m": 0.46,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              110.26,
+              174.87,
+              82.97,
+              83.2
+            ],
+            [
+              148.84,
+              153.15,
+              76.47,
+              104.63
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.046,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 6,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.509,
+          "angulo_objetivo_grados": 30.58,
+          "lado_inicial": "der",
+          "avance_m": 0.42,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              107.28,
+              143.34,
+              75.18,
+              87.21
+            ],
+            [
+              133.28,
+              162.83,
+              75.82,
+              88.08
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.058,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 7,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.646,
+          "angulo_objetivo_grados": 32.81,
+          "lado_inicial": "der",
+          "avance_m": 0.476,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              106.29,
+              144.84,
+              82.92,
+              124.17
+            ],
+            [
+              148.66,
+              144.81,
+              69.06,
+              150.66
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.058,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 8,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.717,
+          "angulo_objetivo_grados": 42.19,
+          "lado_inicial": "der",
+          "avance_m": 0.647,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              147.42,
+              183.83,
+              154.86,
+              88.92
+            ],
+            [
+              139.41,
+              161.76,
+              69.16,
+              114.37
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.062,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 9,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.712,
+          "angulo_objetivo_grados": 31.26,
+          "lado_inicial": "der",
+          "avance_m": 0.657,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              119.57,
+              181.44,
+              91.51,
+              98.53
+            ],
+            [
+              133.4,
+              170.39,
+              75.39,
+              95.11
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.062,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 10,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.473,
+          "angulo_objetivo_grados": 45.56,
+          "lado_inicial": "der",
+          "avance_m": 0.397,
+          "alternancias": 3,
+          "maximos_plantares_N": [
+            [
+              113.31,
+              133.49,
+              79.17,
+              88.28
+            ],
+            [
+              144.74,
+              132.23,
+              104.87,
+              97.81
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.01,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 11,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.583,
+          "angulo_objetivo_grados": 35.0,
+          "lado_inicial": "der",
+          "avance_m": 0.517,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              111.06,
+              158.35,
+              149.39,
+              122.55
+            ],
+            [
+              133.58,
+              158.49,
+              74.55,
+              126.82
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.01,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 12,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.448,
+          "angulo_objetivo_grados": 36.81,
+          "lado_inicial": "izq",
+          "avance_m": 0.334,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              116.99,
+              131.26,
+              93.86,
+              85.41
+            ],
+            [
+              134.84,
+              152.94,
+              85.35,
+              88.14
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.015,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 13,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.621,
+          "angulo_objetivo_grados": 31.96,
+          "lado_inicial": "der",
+          "avance_m": 0.48,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              120.18,
+              190.38,
+              126.92,
+              88.6
+            ],
+            [
+              141.08,
+              171.06,
+              69.02,
+              95.84
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.015,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 14,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.688,
+          "angulo_objetivo_grados": 43.47,
+          "lado_inicial": "der",
+          "avance_m": 0.56,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              107.61,
+              178.21,
+              88.08,
+              83.68
+            ],
+            [
+              151.97,
+              162.99,
+              69.16,
+              106.62
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.989,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 15,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.474,
+          "angulo_objetivo_grados": 40.89,
+          "lado_inicial": "der",
+          "avance_m": 0.404,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              116.2,
+              132.54,
+              94.01,
+              85.91
+            ],
+            [
+              148.58,
+              149.54,
+              82.38,
+              88.06
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.989,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        }
+      ]
+    },
+    {
+      "etapa": "situaciones",
+      "episodio": 3,
+      "segundos": 6.55,
+      "aprobados": 8,
+      "caidas": 8,
+      "robots_con_choque": 0,
+      "choques_con_entorno": 0,
+      "llegadas": 8,
+      "eventos": [
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 2.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 2.5,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 2.6,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 2.65,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 2.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 2.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 3.0,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 3.05,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 3.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 3.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 3.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 3.35,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 3.4,
+          "fase_completada": 0
+        },
+        {
+          "segundos": 3.85,
+          "tipo": "caida",
+          "robot": 7,
+          "marcha_s": 1.75
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 3.85,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 3.9,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 3.95,
+          "tipo": "caida",
+          "robot": 3,
+          "marcha_s": 2.05
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 4.05,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 4.1,
+          "tipo": "caida",
+          "robot": 5,
+          "marcha_s": 2.0
+        },
+        {
+          "segundos": 4.25,
+          "tipo": "caida",
+          "robot": 6,
+          "marcha_s": 1.95
+        },
+        {
+          "segundos": 4.35,
+          "tipo": "caida",
+          "robot": 0,
+          "marcha_s": 2.4
+        },
+        {
+          "segundos": 4.35,
+          "tipo": "caida",
+          "robot": 10,
+          "marcha_s": 2.45
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 4.55,
+          "fase_completada": 2
+        },
+        {
+          "segundos": 4.65,
+          "tipo": "caida",
+          "robot": 1,
+          "marcha_s": 1.9
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 4.7,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 4.8,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 4.9,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 4.9,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 4.9,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 4.95,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 5.0,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 5.15,
+          "fase_completada": 3
+        },
+        {
+          "segundos": 5.25,
+          "tipo": "caida",
+          "robot": 12,
+          "marcha_s": 2.75
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 5.4,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 5.45,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 5.5,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 5.55,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 5.6,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 5.75,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 5.8,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 5.95,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 6.1,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 6.2,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 6.45,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 6.55,
+          "fase_completada": 3
+        }
+      ],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.583,
+          "angulo_objetivo_grados": 41.36,
+          "lado_inicial": "der",
+          "avance_m": 0.505,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              106.21,
+              191.36,
+              92.86,
+              88.92
+            ],
+            [
+              140.6,
+              132.43,
+              76.74,
+              121.05
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.966,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 1,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.394,
+          "angulo_objetivo_grados": 28.66,
+          "lado_inicial": "izq",
+          "avance_m": 0.292,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              118.74,
+              139.09,
+              85.73,
+              88.91
+            ],
+            [
+              133.51,
+              141.23,
+              88.71,
+              96.53
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.966,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 2,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.662,
+          "angulo_objetivo_grados": 33.0,
+          "lado_inicial": "izq",
+          "avance_m": 0.524,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              106.86,
+              185.94,
+              83.97,
+              84.12
+            ],
+            [
+              139.77,
+              157.07,
+              69.14,
+              153.9
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.017,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 3,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.526,
+          "angulo_objetivo_grados": 45.55,
+          "lado_inicial": "der",
+          "avance_m": 0.388,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              104.74,
+              204.66,
+              92.83,
+              86.13
+            ],
+            [
+              133.21,
+              137.72,
+              98.15,
+              96.3
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.017,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 4,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.669,
+          "angulo_objetivo_grados": 28.11,
+          "lado_inicial": "der",
+          "avance_m": 0.515,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              116.86,
+              173.68,
+              82.78,
+              105.81
+            ],
+            [
+              133.29,
+              159.22,
+              88.22,
+              101.48
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.013,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 5,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.507,
+          "angulo_objetivo_grados": 38.3,
+          "lado_inicial": "der",
+          "avance_m": 0.438,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              110.52,
+              132.71,
+              95.14,
+              111.58
+            ],
+            [
+              133.72,
+              127.11,
+              84.31,
+              91.61
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.013,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 6,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.446,
+          "angulo_objetivo_grados": 36.39,
+          "lado_inicial": "der",
+          "avance_m": 0.371,
+          "alternancias": 3,
+          "maximos_plantares_N": [
+            [
+              120.82,
+              131.94,
+              94.19,
+              82.55
+            ],
+            [
+              181.28,
+              122.83,
+              95.55,
+              93.75
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.03,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 7,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.42,
+          "angulo_objetivo_grados": 31.46,
+          "lado_inicial": "izq",
+          "avance_m": 0.347,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              106.72,
+              133.18,
+              99.0,
+              87.43
+            ],
+            [
+              164.95,
+              149.39,
+              73.69,
+              88.67
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.03,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 8,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.663,
+          "angulo_objetivo_grados": 37.79,
+          "lado_inicial": "der",
+          "avance_m": 0.522,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              110.14,
+              158.79,
+              84.04,
+              112.41
+            ],
+            [
+              149.04,
+              183.44,
+              69.15,
+              102.04
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.037,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 9,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.57,
+          "angulo_objetivo_grados": 45.52,
+          "lado_inicial": "izq",
+          "avance_m": 0.469,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              105.62,
+              190.03,
+              82.55,
+              88.51
+            ],
+            [
+              142.0,
+              152.78,
+              69.02,
+              108.01
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.037,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 10,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.606,
+          "angulo_objetivo_grados": 47.68,
+          "lado_inicial": "der",
+          "avance_m": 0.555,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              109.94,
+              178.55,
+              94.99,
+              88.82
+            ],
+            [
+              141.25,
+              151.29,
+              76.82,
+              95.21
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.035,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 11,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.681,
+          "angulo_objetivo_grados": 31.62,
+          "lado_inicial": "der",
+          "avance_m": 0.519,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              109.42,
+              190.63,
+              89.44,
+              85.53
+            ],
+            [
+              133.89,
+              155.83,
+              82.98,
+              105.13
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.035,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 12,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.673,
+          "angulo_objetivo_grados": 32.44,
+          "lado_inicial": "der",
+          "avance_m": 0.524,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              118.83,
+              177.8,
+              90.05,
+              87.96
+            ],
+            [
+              133.09,
+              179.19,
+              83.16,
+              100.88
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.006,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 13,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.582,
+          "angulo_objetivo_grados": 28.47,
+          "lado_inicial": "der",
+          "avance_m": 0.468,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              104.96,
+              187.62,
+              87.66,
+              106.22
+            ],
+            [
+              137.56,
+              148.29,
+              76.98,
+              109.44
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.006,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 14,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.467,
+          "angulo_objetivo_grados": 44.96,
+          "lado_inicial": "der",
+          "avance_m": 0.399,
+          "alternancias": 3,
+          "maximos_plantares_N": [
+            [
+              107.75,
+              154.79,
+              82.5,
+              87.67
+            ],
+            [
+              138.33,
+              150.97,
+              81.19,
+              88.53
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.03,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 15,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.474,
+          "angulo_objetivo_grados": 33.59,
+          "lado_inicial": "izq",
+          "avance_m": 0.389,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              111.62,
+              150.15,
+              86.74,
+              87.8
+            ],
+            [
+              149.86,
+              151.99,
+              78.68,
+              87.86
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.03,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        }
+      ]
+    },
+    {
+      "etapa": "situaciones",
+      "episodio": 4,
+      "segundos": 6.0,
+      "aprobados": 6,
+      "caidas": 10,
+      "robots_con_choque": 0,
+      "choques_con_entorno": 0,
+      "llegadas": 6,
+      "eventos": [
+        {
+          "tipo": "fase",
+          "robot": 7,
+          "segundos": 2.4,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 13,
+          "segundos": 2.45,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 2.55,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 11,
+          "segundos": 2.6,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 1,
+          "segundos": 2.85,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 8,
+          "segundos": 2.85,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 2.9,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 12,
+          "segundos": 2.9,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 4,
+          "segundos": 2.95,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 6,
+          "segundos": 3.0,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 15,
+          "segundos": 3.0,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 3,
+          "segundos": 3.3,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 3.4,
+          "fase_completada": 0
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 3.4,
+          "fase_completada": 0
+        },
+        {
+          "segundos": 3.65,
+          "tipo": "caida",
+          "robot": 7,
+          "marcha_s": 1.8
+        },
+        {
+          "segundos": 3.75,
+          "tipo": "caida",
+          "robot": 13,
+          "marcha_s": 1.85
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 3.8,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 3.8,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 3.85,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 3.9,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 4.05,
+          "tipo": "caida",
+          "robot": 1,
+          "marcha_s": 2.25
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 4.05,
+          "fase_completada": 1
+        },
+        {
+          "segundos": 4.1,
+          "tipo": "caida",
+          "robot": 11,
+          "marcha_s": 2.0
+        },
+        {
+          "segundos": 4.25,
+          "tipo": "caida",
+          "robot": 8,
+          "marcha_s": 2.25
+        },
+        {
+          "segundos": 4.35,
+          "tipo": "caida",
+          "robot": 15,
+          "marcha_s": 2.4
+        },
+        {
+          "segundos": 4.45,
+          "tipo": "caida",
+          "robot": 12,
+          "marcha_s": 2.3
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 4.45,
+          "fase_completada": 2
+        },
+        {
+          "segundos": 4.5,
+          "tipo": "caida",
+          "robot": 6,
+          "marcha_s": 2.4
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 4.5,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 4.6,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 4.65,
+          "fase_completada": 2
+        },
+        {
+          "segundos": 4.7,
+          "tipo": "caida",
+          "robot": 4,
+          "marcha_s": 2.35
+        },
+        {
+          "segundos": 4.75,
+          "tipo": "caida",
+          "robot": 3,
+          "marcha_s": 2.7
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 4.75,
+          "fase_completada": 1
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 4.85,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 5,
+          "segundos": 5.05,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 9,
+          "segundos": 5.1,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 2,
+          "segundos": 5.25,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 10,
+          "segundos": 5.35,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 5.4,
+          "fase_completada": 2
+        },
+        {
+          "tipo": "fase",
+          "robot": 14,
+          "segundos": 5.5,
+          "fase_completada": 3
+        },
+        {
+          "tipo": "fase",
+          "robot": 0,
+          "segundos": 6.0,
+          "fase_completada": 3
+        }
+      ],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.708,
+          "angulo_objetivo_grados": 32.24,
+          "lado_inicial": "der",
+          "avance_m": 0.596,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              117.94,
+              194.05,
+              79.91,
+              102.47
+            ],
+            [
+              133.4,
+              167.31,
+              89.83,
+              101.55
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.985,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 1,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.517,
+          "angulo_objetivo_grados": 33.7,
+          "lado_inicial": "der",
+          "avance_m": 0.469,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              107.36,
+              179.27,
+              71.58,
+              87.99
+            ],
+            [
+              145.52,
+              143.92,
+              72.6,
+              88.67
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.985,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 2,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.463,
+          "angulo_objetivo_grados": 34.0,
+          "lado_inicial": "der",
+          "avance_m": 0.379,
+          "alternancias": 3,
+          "maximos_plantares_N": [
+            [
+              106.5,
+              134.06,
+              94.12,
+              88.08
+            ],
+            [
+              134.52,
+              151.44,
+              79.71,
+              87.82
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.057,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 3,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.634,
+          "angulo_objetivo_grados": 42.33,
+          "lado_inicial": "der",
+          "avance_m": 0.526,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              106.11,
+              178.76,
+              128.98,
+              88.45
+            ],
+            [
+              138.8,
+              178.84,
+              70.76,
+              112.32
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.057,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 4,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.536,
+          "angulo_objetivo_grados": 46.68,
+          "lado_inicial": "izq",
+          "avance_m": 0.444,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              114.2,
+              200.65,
+              90.58,
+              83.47
+            ],
+            [
+              183.41,
+              150.42,
+              69.07,
+              89.29
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.978,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 5,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.481,
+          "angulo_objetivo_grados": 31.32,
+          "lado_inicial": "der",
+          "avance_m": 0.414,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              106.99,
+              132.63,
+              75.36,
+              86.59
+            ],
+            [
+              137.86,
+              155.08,
+              81.84,
+              87.94
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.978,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 6,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.6,
+          "angulo_objetivo_grados": 43.02,
+          "lado_inicial": "izq",
+          "avance_m": 0.544,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              117.37,
+              193.0,
+              84.83,
+              87.43
+            ],
+            [
+              139.25,
+              159.74,
+              72.0,
+              101.61
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.973,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 7,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.435,
+          "angulo_objetivo_grados": 38.31,
+          "lado_inicial": "der",
+          "avance_m": 0.366,
+          "alternancias": 3,
+          "maximos_plantares_N": [
+            [
+              105.02,
+              133.82,
+              89.89,
+              87.92
+            ],
+            [
+              143.76,
+              147.64,
+              69.64,
+              88.0
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.976,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 8,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.527,
+          "angulo_objetivo_grados": 45.21,
+          "lado_inicial": "izq",
+          "avance_m": 0.458,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              110.4,
+              207.25,
+              95.78,
+              97.36
+            ],
+            [
+              137.37,
+              137.03,
+              85.34,
+              87.89
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.061,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 9,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.497,
+          "angulo_objetivo_grados": 34.8,
+          "lado_inicial": "izq",
+          "avance_m": 0.437,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              116.45,
+              132.8,
+              91.7,
+              85.58
+            ],
+            [
+              133.59,
+              151.72,
+              85.68,
+              95.32
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.061,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 10,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.557,
+          "angulo_objetivo_grados": 40.74,
+          "lado_inicial": "izq",
+          "avance_m": 0.458,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              123.51,
+              163.61,
+              94.37,
+              86.15
+            ],
+            [
+              133.43,
+              135.61,
+              123.6,
+              97.9
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.043,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 11,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.51,
+          "angulo_objetivo_grados": 39.73,
+          "lado_inicial": "izq",
+          "avance_m": 0.429,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              115.22,
+              151.04,
+              95.48,
+              86.11
+            ],
+            [
+              133.42,
+              134.47,
+              83.44,
+              88.09
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.043,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 12,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.542,
+          "angulo_objetivo_grados": 38.19,
+          "lado_inicial": "der",
+          "avance_m": 0.418,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              105.58,
+              188.58,
+              98.91,
+              88.1
+            ],
+            [
+              145.77,
+              144.66,
+              69.62,
+              92.38
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.999,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 13,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.406,
+          "angulo_objetivo_grados": 29.56,
+          "lado_inicial": "der",
+          "avance_m": 0.316,
+          "alternancias": 2,
+          "maximos_plantares_N": [
+            [
+              138.93,
+              134.36,
+              101.79,
+              80.49
+            ],
+            [
+              184.74,
+              151.53,
+              69.19,
+              95.56
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.999,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 14,
+          "aprobado": true,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 4,
+          "distancia_objetivo_m": 0.697,
+          "angulo_objetivo_grados": 37.8,
+          "lado_inicial": "izq",
+          "avance_m": 0.572,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              108.02,
+              209.07,
+              86.0,
+              88.26
+            ],
+            [
+              145.58,
+              188.04,
+              69.05,
+              103.4
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.036,
+          "caida": false,
+          "choque": false,
+          "meta": true
+        },
+        {
+          "id": 15,
+          "aprobado": false,
+          "tarea": "caminar_parar_y_senalar",
+          "fases": 1,
+          "distancia_objetivo_m": 0.594,
+          "angulo_objetivo_grados": 34.97,
+          "lado_inicial": "izq",
+          "avance_m": 0.534,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              107.61,
+              177.98,
+              87.17,
+              118.0
+            ],
+            [
+              144.0,
+              146.22,
+              87.63,
+              87.71
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.036,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        }
+      ]
+    }
+  ]
+}

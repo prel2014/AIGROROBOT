@@ -1,0 +1,127 @@
+{
+  "contrato": "frenado-sagital-1",
+  "semilla": 426,
+  "solver": "PhysX CPU 120 Hz",
+  "nombres": [
+    "cadera",
+    "rodilla",
+    "sesgo_tobillo",
+    "kp_pos",
+    "kd_vel",
+    "kp_cadera",
+    "kd_cadera",
+    "kp_inclinacion",
+    "rampa_s",
+    "centro_m"
+  ],
+  "parametros": [
+    0.3048936131084044,
+    0.4724391834631588,
+    -0.10798120786476492,
+    2.433335732995599,
+    0.3482654515540985,
+    -0.8566385581788873,
+    -0.23087106924919684,
+    0.6249215332984327,
+    0.043733745381175096,
+    0.012451857321681581
+  ],
+  "historial": [
+    {
+      "generacion": 1,
+      "aprobados": 1,
+      "intentos": 32,
+      "nota": 22.703538079329594
+    },
+    {
+      "generacion": 2,
+      "aprobados": 2,
+      "intentos": 32,
+      "nota": 40.21945734356916
+    },
+    {
+      "generacion": 3,
+      "aprobados": 3,
+      "intentos": 32,
+      "nota": 40.40159669071918
+    },
+    {
+      "generacion": 4,
+      "aprobados": 4,
+      "intentos": 32,
+      "nota": 24.257233200387414
+    },
+    {
+      "generacion": 5,
+      "aprobados": 6,
+      "intentos": 32,
+      "nota": 40.10004232511491
+    },
+    {
+      "generacion": 6,
+      "aprobados": 5,
+      "intentos": 32,
+      "nota": 40.20531938384015
+    },
+    {
+      "generacion": 7,
+      "aprobados": 12,
+      "intentos": 32,
+      "nota": 40.08078641017002
+    },
+    {
+      "generacion": 8,
+      "aprobados": 3,
+      "intentos": 32,
+      "nota": 40.0271492471782
+    },
+    {
+      "generacion": 9,
+      "aprobados": 5,
+      "intentos": 32,
+      "nota": 23.365385493451953
+    },
+    {
+      "generacion": 10,
+      "aprobados": 7,
+      "intentos": 32,
+      "nota": 40.014299672725386
+    },
+    {
+      "generacion": 11,
+      "aprobados": 11,
+      "intentos": 32,
+      "nota": 40.221033778370206
+    },
+    {
+      "generacion": 12,
+      "aprobados": 13,
+      "intentos": 32,
+      "nota": 40.20323414908252
+    },
+    {
+      "generacion": 13,
+      "aprobados": 5,
+      "intentos": 32,
+      "nota": 40.156868105133654
+    },
+    {
+      "generacion": 14,
+      "aprobados": 12,
+      "intentos": 32,
+      "nota": 40.304893611606055
+    },
+    {
+      "generacion": 15,
+      "aprobados": 15,
+      "intentos": 32,
+      "nota": 40.21835727976806
+    },
+    {
+      "generacion": 16,
+      "aprobados": 14,
+      "intentos": 32,
+      "nota": 40.08901679299299
+    }
+  ]
+}
