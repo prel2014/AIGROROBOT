@@ -188,9 +188,72 @@ def local(t, p, pos, giro, acabado, letrero):
                               (x - .218, -.84, 2.27)]], acabado if i % 2 else "marfil")
 
 
+def edificio_de_esquina(t, pos, giro, pisos):
+    g = t.grupo(t.raiz, "EdificioDeEsquina", pos, giro)
+    altura = 3.*pisos
+    t.caja(g, "Cuerpo", (0,3.9,altura/2), (11.8,7.8,altura), "revoque", True)
+    laterales = [t.grupo(g,"FachadaLateral",(lado*5.90,3.9,0),lado*90) for lado in (-1,1)]
+    for i in range(pisos):
+        z = 1.52 + 3.*i
+        for x in (-4.0,-1.35,1.35,4.0):
+            ventana(t,g,x,-.08,z,1.90,1.38)
+        for pared in laterales:
+            for x in (-2.0,.65):
+                ventana(t,pared,x,-.07,z,1.46,1.38)
+        t.caja(g,"Forjado",(0,-.17,z+1.35),(12.0,.49,.14),"hormigon")
+        if i:
+            t.caja(g,"VueloDeBalcon",(-2.7,-.55,z-.88),(5.0,1.1,.16),"hormigon")
+            for x in np.linspace(-5.1,-.3,11):
+                t.varilla(g,"Montante",(x,-1.04,z-.81),(x,-1.04,z+.13),.023,"grafito")
+            t.varilla(g,"Pasamanos",(-5.1,-1.04,z+.13),(-.3,-1.04,z+.13),.035,"grafito")
+    t.caja(g,"CuartoDeAzotea",(2.5,4.8,altura+.88),(3.2,3.5,1.76),"ladrillo")
+    t.disco(g,"Tanque",(-1.7,5.0,altura+.70),.74,1.4,"grafito")
+
+
+def cuadras_del_fondo(t):
+    p = t.raiz
+    # Cruces perpendiculares y remates en T, visibles desde los dos sentidos.
+    for signo in (-1,1):
+        for distancia in (29.,74.):
+            t.suelo(p,"CalleTransversal",(signo*distancia,0),(8.,76.),"asfalto",.002)
+            for y in np.arange(-4.2,4.3,.85):
+                t.suelo(p,"CrucePeatonal",(signo*(distancia-5.1),y),(1.45,.27),"marfil",.006)
+        for lado in (-1,1):
+            for x, longitud in ((44.,21.8),(62.1,14.),(82.,7.0)):
+                t.suelo(p,"VeredaDeCuadra",(signo*x,lado*7.2),(longitud,4.3),"hormigon",.009)
+                t.caja(p,"Bordillo",(signo*x,lado*5.10,.065),(longitud,.16,.13),"hormigon")
+            frente = 0 if lado > 0 else 180
+            edificio_de_esquina(t,(signo*39.2,lado*9.5,0),frente,3 if signo==lado else 2)
+            casa(t,p,"house_1",(signo*55.6,lado*16.1,0),frente)
+            local(t,p,(signo*66.0,lado*9.5,0),frente,"arena","bodega")
+            for x in (35.,48.5,63.,83.):
+                arbol(t,p,(signo*x,lado*7.1,0),1.45 + (x%3)*.12)
+            casa(t,p,"house_2",(signo*87.,lado*14.7,0),frente)
+        edificio_de_esquina(t,(signo*90.,-1.8,0),-signo*90,4)
+        vehiculo(t,p,(signo*36.,3.85,.003),180,"prius_hybrid")
+        vehiculo(t,p,(signo*61.,-3.65,.003),0,"pickup")
+        for x in range(32,85,6):
+            if abs(x-74)>4:
+                t.suelo(p,"MarcaDeEje",(signo*x,0),(2.2,.095),"ocre",.005)
+    # Cableado con flecha entre apoyos. El tendido atraviesa las cuadras en perspectiva.
+    grupo = t.grupo(p,"RedDeDistribucion")
+    apoyos = (-84.,-62.,-40.,-18.,5.,27.,49.,71.,92.)
+    for x in apoyos:
+        t.disco(grupo,"Poste",(x,7.9,3.75),.11,7.5,"hormigon")
+        t.caja(grupo,"Cruceta",(x,7.9,7.27),(.13,1.45,.10),"grafito")
+        for y in (7.37,7.9,8.43):
+            t.disco(grupo,"Aislador",(x,y,7.43),.055,.25,"ceramica")
+    for xa,xb in zip(apoyos,apoyos[1:]):
+        for y in (7.37,7.9,8.43):
+            pts = [(xa+(xb-xa)*u,y,7.53-2.6*u*(1-u)) for u in np.linspace(0,1,7)]
+            for u,v in zip(pts,pts[1:]):
+                t.varilla(grupo,"Conductor",u,v,.014,"grafito")
+
+
 def calle(t):
     p = t.raiz
-    t.suelo(p, "Calzada", (0, 0), (56, 52), "asfalto")
+    t.suelo(p, "TerrenoUrbano", (0, 0), (238, 235), "suelo_seco", -.025)
+    t.suelo(p, "Calzada", (0, 0), (181, 10.3), "asfalto")
     for y in (-7.3, 7.3):
         t.suelo(p, "Vereda", (0, y), (52, 4.5), "hormigon", .006)
         # En los pasos la vereda queda enrasada con la calzada.
@@ -226,6 +289,7 @@ def calle(t):
         t.caja(p, "Luminaria", (x, y + .75 * sentido, 4.34), (.28, .55, .10), "aluminio", False, .03)
     vehiculo(t, p, (7.2, 3.94, .003), 180, "prius_hybrid")
     vehiculo(t, p, (-8.9, -3.78, .003), 0, "pickup")
+    cuadras_del_fondo(t)
     return (-2.6, -1.7, 1.58), (4.3, 6.5, 1.60)
 
 
@@ -310,10 +374,12 @@ def construir(nombre, diseno):
     stage.SetStartTimeCode(0.)
     stage.SetEndTimeCode(20. * 86400)
     piso = stage.GetPrimAtPath("/World/Suelo")
-    piso.GetAttribute("xformOp:scale").Set((56., 56., .07))
+    lado_suelo = 238. if nombre == "calle" else 56.
+    piso.GetAttribute("xformOp:scale").Set((lado_suelo, lado_suelo, .07))
     UsdGeom.Imageable(piso).CreateVisibilityAttr().Set("invisible")
     cielo = UsdLux.DomeLight(stage.GetPrimAtPath("/World/Luz"))
-    cielo.CreateTextureFileAttr(Sdf.AssetPath("./texturas/kloofendal_48d_partly_cloudy_puresky_1k.hdr"))
+    panorama = "kloofendal_48d_partly_cloudy_4k.hdr" if nombre == "calle" else "kloofendal_48d_partly_cloudy_puresky_1k.hdr"
+    cielo.CreateTextureFileAttr(Sdf.AssetPath("./texturas/" + panorama))
     cielo.CreateTextureFormatAttr("latlong")
     cielo.CreateIntensityAttr().Set(470.)
     sol = UsdLux.DistantLight(stage.GetPrimAtPath("/World/LuzPrincipal"))
@@ -321,6 +387,8 @@ def construir(nombre, diseno):
     sol.CreateColorAttr().Set((1., .92, .79))
     sol.CreateAngleAttr().Set(3.2)
     taller = Taller(stage)
+    if nombre == "calle":
+        stage.OverridePrim("/XavierMarcha/cabeza/Camara").GetAttribute("clippingRange").Set((.02, 220.))
     ojo, centro = diseno(taller)
     cam = UsdGeom.Camera.Define(stage, taller.raiz + "/Vista")
     matriz = Gf.Matrix4d().SetLookAt(Gf.Vec3d(*ojo), Gf.Vec3d(*centro), Gf.Vec3d(0, 0, 1))

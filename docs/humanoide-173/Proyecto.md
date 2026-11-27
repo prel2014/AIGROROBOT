@@ -204,6 +204,8 @@ La evaluación del campus usó la política guardada en la iteración 331, en et
 
 Para regenerar los USD con el Python de Isaac Sim, ejecuta `isaac/escenarios_marcha.py` para los entornos de marcha y `isaac/escena_naranjal.py` para la cosecha. Cada escena incluye la cámara `/World/Escenario/Vista`. El script `isaac/vistas_escenarios.py` coloca en la galería una captura RTX de cada cámara a 1440 × 900. Muestra un Xavier a su altura y posición de partida. Las capturas son estáticas. [Galería RTX](isaac/escenarios/vistas.jpg) · [Capturas a resolución completa](isaac/escenarios/renders/) · [Modelos y licencias](isaac/escenarios/texturas/origen.md)
 
+Para reproducir las vistas de la cabeza, ejecuta `vistas_escenarios.py --desde-cabeza` con el Python de Isaac Sim. Las capturas cuadradas de 1024 px utilizan la posición de partida del robot, la óptica frontal de 8,4 mm y el plano lejano a 220 m. [Calle](isaac/escenarios/renders/calle_cabeza.jpg) · [Naranjal](isaac/escenarios/renders/naranjal_cabeza.jpg) · [Comparación antes y después](isaac/escenarios/renders/comparacion_cabeza.jpg)
+
 ### Entrenamiento con cuatro situaciones
 
 La etapa `situaciones` asigna cuatro Xavier por tarea en cada episodio. Una semilla determina el robot, el lado y la flexión solicitada entre 28° y 48°. Las tareas consisten en flexionar y extender un codo, alternar los brazos, flexionar y extender ambos codos juntos, y caminar entre 0,38 y 0,72 m para detenerse, levantar un antebrazo y bajarlo.

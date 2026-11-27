@@ -56,6 +56,7 @@ def rama_visible(t):
 def crear():
     from pxr import Gf, Sdf, Usd, UsdGeom, UsdLux, UsdPhysics, UsdShade
     from geometria_escenarios import Taller
+    from fondos_escenarios import callejones_huerto, frutos_de_fondo
     stage=Usd.Stage.CreateNew(str(ESCENA))
     UsdGeom.SetStageMetersPerUnit(stage,1.)
     UsdGeom.SetStageUpAxis(stage,'Z')
@@ -65,11 +66,14 @@ def crear():
     for nombre in ('Fisica','Suelo','Luz','LuzPrincipal'):
         path='/World/'+nombre
         Sdf.CopySpec(base,path,stage.GetRootLayer(),path)
-    stage.GetPrimAtPath('/World/Suelo').GetAttribute('xformOp:scale').Set((20.,20.,.07))
+    stage.GetPrimAtPath('/World/Suelo').GetAttribute('xformOp:scale').Set((185.,185.,.07))
     stage.GetPrimAtPath('/World/Suelo').GetAttribute('primvars:displayColor').Set([(0.19,.11,.055)])
     r=UsdGeom.Xform.Define(stage,'/World/Xavier')
     r.GetPrim().GetReferences().AddReference('../humanoide_xavier_isaac.usd')
     r.AddTranslateOp().Set((0.,0.,.003))
+    camara = UsdGeom.Camera.Define(stage, '/World/Xavier/cabeza/Camara')
+    camara.GetPrim().GetReferences().AddReference('../pista_marcha_16.usda', '/XavierMarcha/cabeza/Camara')
+    camara.CreateClippingRangeAttr((.02, 220.))
     for lado in ('izq','der'):
         pie=stage.OverridePrim('/World/Xavier/pie_'+lado)
         pie.AddAppliedSchema('PhysxContactReportAPI')
@@ -137,24 +141,29 @@ def crear():
     taller = Taller(stage)
     UsdGeom.Imageable(stage.GetPrimAtPath('/World/ArbolObjetivo/Rama')).MakeInvisible()
     rama_visible(taller)
-    taller.suelo(taller.raiz, "Tierra", (0, 0), (60, 60), "suelo_seco")
+    taller.suelo(taller.raiz, "Tierra", (0, 0), (185, 185), "suelo_seco")
+    callejones_huerto(taller)
     cielo = UsdLux.DomeLight(stage.GetPrimAtPath('/World/Luz'))
-    cielo.CreateTextureFileAttr(Sdf.AssetPath('./texturas/kloofendal_48d_partly_cloudy_puresky_1k.hdr'))
+    cielo.CreateTextureFileAttr(Sdf.AssetPath('./texturas/clarens_midday_4k.hdr'))
     cielo.CreateTextureFormatAttr('latlong')
     cielo.CreateIntensityAttr(470.)
     sol = UsdLux.DistantLight(stage.GetPrimAtPath('/World/LuzPrincipal'))
     sol.CreateIntensityAttr(880.)
     sol.CreateAngleAttr(3.2)
     posiciones = [(.95,1.45),(-2.,1.5),(.95,3.9),(-2.,3.9)]
-    posiciones += [(x,y) for x in (-8., -5., -2., 1., 4., 7.) for y in (7., 10., 13.)]
+    posiciones += [(x,y) for x in (-14.,-11.,-8.,-5.,-2.,1.,4.,7.,10.,13.,16.)
+                   for y in (7.,10.,13.,16.,19.,31.,36.,41.,46.,51.)]
     for i,(tx,ty) in enumerate(posiciones):
         arbol=UsdGeom.Xform.Define(stage,'/World/Huerto/Arbol'+str(i))
         arbol.AddTranslateOp().Set((tx,ty,0.))
         arbol.AddRotateZOp().Set(float((i * 67) % 360))
-        arbol.AddScaleOp().Set((.63,) * 3)
+        escala = .63 if i < 4 else .64 + .065 * ((i * 11) % 5)
+        arbol.AddScaleOp().Set((escala,) * 3)
         child=UsdGeom.Xform.Define(stage,str(arbol.GetPath())+'/Modelo')
         child.GetPrim().GetReferences().AddReference(base_model+'/tree_small_02/visual.usdc')
         child.GetPrim().SetInstanceable(True)
+        if ty <= 16. and abs(tx) < 10.:
+            frutos_de_fondo(taller, str(arbol.GetPath()), i)
     ojo, centro = Gf.Vec3d(1.9,-1.75,1.48), Gf.Vec3d(.05,.56,.96)
     cam = UsdGeom.Camera.Define(stage, taller.raiz + "/Vista")
     cam.AddTransformOp().Set(Gf.Matrix4d().SetLookAt(ojo, centro, Gf.Vec3d(0,0,1)).GetInverse())

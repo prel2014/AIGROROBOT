@@ -16,7 +16,13 @@ VISTAS = {
 }
 
 
-def capturar(app, nombres):
+CAMARAS_CABEZA = {
+    "calle": "/World/Xavier_00/cabeza/Camara",
+    "naranjal": "/World/Xavier/cabeza/Camara",
+}
+
+
+def capturar(app, nombres, desde_cabeza=False):
     import numpy as np
     import omni.replicator.core as rep
     import omni.usd
@@ -25,7 +31,7 @@ def capturar(app, nombres):
 
     (DIRECTORIO / "renders").mkdir(exist_ok=True)
     contexto = omni.usd.get_context()
-    ancho, alto = 1440, 900
+    ancho, alto = (1024, 1024) if desde_cabeza else (1440, 900)
     for nombre in nombres:
         if not contexto.open_stage(str(DIRECTORIO / (nombre + ".usda"))):
             raise RuntimeError(f"No se pudo abrir {nombre}")
@@ -33,11 +39,14 @@ def capturar(app, nombres):
             app.update()
         stage = contexto.get_stage()
         stage.SetEditTarget(stage.GetSessionLayer())
-        if VISTAS[nombre][1] is not None:
+        if not desde_cabeza and VISTAS[nombre][1] is not None:
             for n in range(16):
                 if n != VISTAS[nombre][1]:
                     UsdGeom.Imageable(stage.GetPrimAtPath(f"/World/Xavier_{n:02}")).MakeInvisible()
-        producto = rep.create.render_product("/World/Escenario/Vista", (ancho, alto))
+        ruta_camara = CAMARAS_CABEZA[nombre] if desde_cabeza else "/World/Escenario/Vista"
+        if not stage.GetPrimAtPath(ruta_camara).IsA(UsdGeom.Camera):
+            raise RuntimeError(f"Falta la cámara {ruta_camara} en {nombre}")
+        producto = rep.create.render_product(ruta_camara, (ancho, alto))
         rgb = rep.AnnotatorRegistry.get_annotator("rgb")
         rgb.attach(producto)
         try:
@@ -46,7 +55,8 @@ def capturar(app, nombres):
             pixeles = np.asarray(rgb.get_data())[:, :, :3]
             if pixeles.shape != (alto, ancho, 3) or pixeles.std() < 2:
                 raise RuntimeError(f"Captura RTX vacía en {nombre}")
-            Image.fromarray(pixeles).save(DIRECTORIO / "renders" / (nombre + ".jpg"),
+            sufijo = "_cabeza.jpg" if desde_cabeza else ".jpg"
+            Image.fromarray(pixeles).save(DIRECTORIO / "renders" / (nombre + sufijo),
                                          quality=95, subsampling=0)
             print(f"Vista RTX {nombre}", flush=True)
         finally:
@@ -75,14 +85,18 @@ def galeria():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--escenas", nargs="+", choices=tuple(VISTAS), default=list(VISTAS))
+    parser.add_argument("--escenas", nargs="+", choices=tuple(VISTAS))
+    parser.add_argument("--desde-cabeza", action="store_true", help="Capturar el sensor frontal de Xavier")
     args = parser.parse_args()
+    nombres = args.escenas or list(CAMARAS_CABEZA if args.desde_cabeza else VISTAS)
+    if args.desde_cabeza and set(nombres) - CAMARAS_CABEZA.keys():
+        parser.error("Las vistas de cabeza disponibles son calle y naranjal.")
     app = SimulationApp({"headless": True, "multi_gpu": False, "hide_ui": True,
                          "anti_aliasing": 4})
     estado = 0
     try:
-        capturar(app, args.escenas)
-        if all((DIRECTORIO / "renders" / (n + ".jpg")).exists() for n in VISTAS):
+        capturar(app, nombres, args.desde_cabeza)
+        if not args.desde_cabeza and all((DIRECTORIO / "renders" / (n + ".jpg")).exists() for n in VISTAS):
             galeria()
     except Exception:
         traceback.print_exc()

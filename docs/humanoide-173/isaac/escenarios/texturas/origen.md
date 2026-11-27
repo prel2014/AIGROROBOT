@@ -12,6 +12,8 @@ La adaptación de AIGROROBOT convierte las mallas OBJ y COLLADA a USD, conserva 
 
 ## Iluminación y superficies exteriores
 
+La calle comercial utiliza el panorama completo de Kloofendal y el naranjal utiliza el paisaje de Clarens. Los archivos HDR 4K aportan luz y horizonte. Las cuadras, los frutales, los camellones y la estación de riego son geometría USD. [Kloofendal 48d Partly Cloudy](https://polyhaven.com/a/kloofendal_48d_partly_cloudy) · [Clarens Midday](https://polyhaven.com/a/clarens_midday) · [Licencia CC0](https://polyhaven.com/license)
+
 La luz ambiental utiliza un cielo HDR de Greg Zaal y Jarod Guest. El revoque, el césped y la tierra seca emplean mapas de color, normales y rugosidad de 1K. [Cielo Kloofendal](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky) · [Revoque](https://polyhaven.com/a/plastered_wall_02) · [Césped](https://polyhaven.com/a/aerial_grass_rock) · [Tierra seca](https://polyhaven.com/a/brown_mud_dry) · [Licencia CC0](https://polyhaven.com/license)
 
 ## Superficies fotográficas de la revisión
