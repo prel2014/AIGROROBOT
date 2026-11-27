@@ -1,0 +1,2241 @@
+{
+  "modelo": "marcha_campus_validada.pt",
+  "sha256": "76a7b1f50aa2b0897f240cb01c772ea530e04e47e58f649949d80eb44db4e71a",
+  "modelo_paso": "paso_visual_campus.pt",
+  "sha256_paso": "be37e57080173bfa51156c024ca9de06fee87275f882adb1a90a9a10a7d55c52",
+  "pruebas": [
+    {
+      "semilla": 937,
+      "iteracion": 82,
+      "escenario": "campus",
+      "pies": [
+        "izq",
+        "der"
+      ],
+      "zonas_por_pie": [
+        "TalonInterior",
+        "TalonExterior",
+        "AntepieInterior",
+        "AntepieExterior"
+      ],
+      "perfil": {
+        "semilla": 937,
+        "escenario": "campus",
+        "solver": "cpu",
+        "rgb": [
+          256,
+          256,
+          3
+        ],
+        "periodo_control_s": 0.05,
+        "contrato": "xavier-marcha-cadera-3ejes",
+        "ejes_controlados": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "acciones_marcha": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "cadencia",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "observaciones_adicionales": [],
+        "acciones_adicionales": [],
+        "controlador": "marcha residual con parada en doble apoyo",
+        "permanencia_en_meta_s": 1.0,
+        "decision_de_paso": {
+          "observacion": "RGB de la cámara de la cabeza del propio Xavier",
+          "resolucion": [
+            256,
+            256
+          ],
+          "posiciones_de_otros_robots": false,
+          "turnos_asignados": false,
+          "campo_horizontal_grados": 145.55,
+          "reevalua": "Durante la espera, hasta comprometerse a atravesar el cruce."
+        }
+      },
+      "episodios": [
+        {
+          "etapa": "cruce",
+          "episodio": 1,
+          "segundos": 56.9,
+          "decision": "RGB local 256x256",
+          "sin_iniciar": 0,
+          "sin_llegar": 0,
+          "horizonte_s": 65.0,
+          "aprobados": 16,
+          "caidas": 0,
+          "robots_con_choque": 0,
+          "choques_con_entorno": 0,
+          "parejas_en_contacto": 0,
+          "llegadas": 16,
+          "eventos": [
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 0,
+              "xy": [
+                -4.039999961853027,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 2,
+              "xy": [
+                4.133999824523926,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 6,
+              "xy": [
+                -2.4739999771118164,
+                3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 15,
+              "xy": [
+                2.431999921798706,
+                3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 6.1,
+              "robot": 14,
+              "xy": [
+                1.2079999446868896,
+                3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 6.3,
+              "robot": 13,
+              "xy": [
+                -5.330999851226807,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 6.95,
+              "robot": 3,
+              "xy": [
+                5.276000022888184,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 7.4,
+              "robot": 9,
+              "xy": [
+                -1.3279999494552612,
+                3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 21.25,
+              "robot": 10,
+              "xy": [
+                3.200000047683716,
+                4.065000057220459
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 21.45,
+              "robot": 12,
+              "xy": [
+                3.200000047683716,
+                -3.9489998817443848
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 22.15,
+              "robot": 5,
+              "xy": [
+                -3.200000047683716,
+                2.4110000133514404
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 22.2,
+              "robot": 4,
+              "xy": [
+                -3.200000047683716,
+                -2.2780001163482666
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 26.45,
+              "robot": 7,
+              "xy": [
+                3.200000047683716,
+                -5.164999961853027
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 29.05,
+              "robot": 8,
+              "xy": [
+                -3.200000047683716,
+                1.1239999532699585
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 29.05,
+              "robot": 11,
+              "xy": [
+                3.200000047683716,
+                5.129000186920166
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 41.7,
+              "robot": 1,
+              "xy": [
+                -3.200000047683716,
+                -1.3170000314712524
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            }
+          ],
+          "robots": [
+            {
+              "id": 0,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.65,
+              "alternancias": 40,
+              "segundos_estables_en_meta": 41.35,
+              "distancia_final_a_meta_m": 0.169,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  181.24,
+                  184.56,
+                  89.27,
+                  77.73
+                ],
+                [
+                  197.17,
+                  185.18,
+                  99.68,
+                  89.17
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.916,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 1,
+              "aprobado": true,
+              "inicio_cruce_s": 41.7,
+              "avance_m": 2.666,
+              "alternancias": 40,
+              "segundos_estables_en_meta": 1.0,
+              "distancia_final_a_meta_m": 0.172,
+              "rapidez_horizontal_final_m_s": 0.063,
+              "maximos_plantares_N": [
+                [
+                  185.5,
+                  185.93,
+                  85.26,
+                  72.8
+                ],
+                [
+                  208.79,
+                  184.25,
+                  95.48,
+                  81.48
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.943,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 2,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.743,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 40.95,
+              "distancia_final_a_meta_m": 0.177,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  183.14,
+                  184.48,
+                  90.64,
+                  82.75
+                ],
+                [
+                  197.41,
+                  188.74,
+                  95.53,
+                  102.98
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.751,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 3,
+              "aprobado": true,
+              "inicio_cruce_s": 6.95,
+              "avance_m": 2.823,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 35.5,
+              "distancia_final_a_meta_m": 0.148,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  181.5,
+                  185.87,
+                  93.12,
+                  151.17
+                ],
+                [
+                  197.18,
+                  183.63,
+                  86.05,
+                  84.51
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.716,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 4,
+              "aprobado": true,
+              "inicio_cruce_s": 22.2,
+              "avance_m": 2.806,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 19.9,
+              "distancia_final_a_meta_m": 0.144,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  196.28,
+                  185.61,
+                  91.57,
+                  97.26
+                ],
+                [
+                  193.41,
+                  187.62,
+                  92.71,
+                  102.87
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.84,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 5,
+              "aprobado": true,
+              "inicio_cruce_s": 22.15,
+              "avance_m": 2.67,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 21.15,
+              "distancia_final_a_meta_m": 0.148,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  187.28,
+                  183.31,
+                  87.96,
+                  78.44
+                ],
+                [
+                  195.56,
+                  240.0,
+                  93.88,
+                  72.96
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.734,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 6,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.577,
+              "alternancias": 40,
+              "segundos_estables_en_meta": 39.25,
+              "distancia_final_a_meta_m": 0.194,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  192.79,
+                  193.69,
+                  97.06,
+                  94.97
+                ],
+                [
+                  194.03,
+                  190.12,
+                  97.3,
+                  100.52
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.734,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 7,
+              "aprobado": true,
+              "inicio_cruce_s": 26.45,
+              "avance_m": 2.688,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 15.7,
+              "distancia_final_a_meta_m": 0.181,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  185.49,
+                  191.0,
+                  94.53,
+                  80.26
+                ],
+                [
+                  192.22,
+                  184.25,
+                  88.61,
+                  103.55
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.938,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 8,
+              "aprobado": true,
+              "inicio_cruce_s": 29.05,
+              "avance_m": 2.821,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 12.35,
+              "distancia_final_a_meta_m": 0.177,
+              "rapidez_horizontal_final_m_s": 0.013,
+              "maximos_plantares_N": [
+                [
+                  183.96,
+                  195.59,
+                  92.48,
+                  67.81
+                ],
+                [
+                  194.2,
+                  203.31,
+                  88.73,
+                  81.92
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.981,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 9,
+              "aprobado": true,
+              "inicio_cruce_s": 7.4,
+              "avance_m": 2.627,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 35.3,
+              "distancia_final_a_meta_m": 0.172,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  181.0,
+                  185.04,
+                  115.36,
+                  100.61
+                ],
+                [
+                  203.06,
+                  219.95,
+                  101.32,
+                  118.13
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.782,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 10,
+              "aprobado": true,
+              "inicio_cruce_s": 21.25,
+              "avance_m": 2.749,
+              "alternancias": 40,
+              "segundos_estables_en_meta": 21.05,
+              "distancia_final_a_meta_m": 0.126,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  179.12,
+                  184.25,
+                  84.64,
+                  94.14
+                ],
+                [
+                  195.71,
+                  184.55,
+                  97.27,
+                  94.13
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.794,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 11,
+              "aprobado": true,
+              "inicio_cruce_s": 29.05,
+              "avance_m": 2.682,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 13.05,
+              "distancia_final_a_meta_m": 0.19,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  184.07,
+                  184.31,
+                  88.06,
+                  77.62
+                ],
+                [
+                  192.68,
+                  189.3,
+                  97.8,
+                  94.01
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.962,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 12,
+              "aprobado": true,
+              "inicio_cruce_s": 21.45,
+              "avance_m": 2.643,
+              "alternancias": 37,
+              "segundos_estables_en_meta": 20.9,
+              "distancia_final_a_meta_m": 0.107,
+              "rapidez_horizontal_final_m_s": 0.014,
+              "maximos_plantares_N": [
+                [
+                  190.51,
+                  189.74,
+                  99.14,
+                  107.07
+                ],
+                [
+                  199.27,
+                  185.21,
+                  108.06,
+                  83.23
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.716,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 13,
+              "aprobado": true,
+              "inicio_cruce_s": 6.3,
+              "avance_m": 2.838,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 34.55,
+              "distancia_final_a_meta_m": 0.189,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  183.62,
+                  185.91,
+                  94.96,
+                  94.78
+                ],
+                [
+                  195.29,
+                  191.61,
+                  100.47,
+                  109.01
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.84,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 14,
+              "aprobado": true,
+              "inicio_cruce_s": 6.1,
+              "avance_m": 2.77,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 35.25,
+              "distancia_final_a_meta_m": 0.198,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  177.08,
+                  186.87,
+                  99.08,
+                  85.1
+                ],
+                [
+                  195.51,
+                  185.47,
+                  98.62,
+                  87.66
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.794,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 15,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.638,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 41.5,
+              "distancia_final_a_meta_m": 0.157,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  181.57,
+                  183.45,
+                  127.98,
+                  127.16
+                ],
+                [
+                  203.49,
+                  188.91,
+                  81.41,
+                  72.01
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.831,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "semilla": 1201,
+      "iteracion": 82,
+      "escenario": "campus",
+      "pies": [
+        "izq",
+        "der"
+      ],
+      "zonas_por_pie": [
+        "TalonInterior",
+        "TalonExterior",
+        "AntepieInterior",
+        "AntepieExterior"
+      ],
+      "perfil": {
+        "semilla": 1201,
+        "escenario": "campus",
+        "solver": "cpu",
+        "rgb": [
+          256,
+          256,
+          3
+        ],
+        "periodo_control_s": 0.05,
+        "contrato": "xavier-marcha-cadera-3ejes",
+        "ejes_controlados": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "acciones_marcha": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "cadencia",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "observaciones_adicionales": [],
+        "acciones_adicionales": [],
+        "controlador": "marcha residual con parada en doble apoyo",
+        "permanencia_en_meta_s": 1.0,
+        "decision_de_paso": {
+          "observacion": "RGB de la cámara de la cabeza del propio Xavier",
+          "resolucion": [
+            256,
+            256
+          ],
+          "posiciones_de_otros_robots": false,
+          "turnos_asignados": false,
+          "campo_horizontal_grados": 145.55,
+          "reevalua": "Durante la espera, hasta comprometerse a atravesar el cruce."
+        }
+      },
+      "episodios": [
+        {
+          "etapa": "cruce",
+          "episodio": 1,
+          "segundos": 56.8,
+          "decision": "RGB local 256x256",
+          "sin_iniciar": 0,
+          "sin_llegar": 0,
+          "horizonte_s": 65.0,
+          "aprobados": 16,
+          "caidas": 0,
+          "robots_con_choque": 0,
+          "choques_con_entorno": 0,
+          "parejas_en_contacto": 0,
+          "llegadas": 16,
+          "eventos": [
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 0,
+              "xy": [
+                2.4140000343322754,
+                3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 6,
+              "xy": [
+                -2.328000068664551,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 7,
+              "xy": [
+                2.3519999980926514,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 14,
+              "xy": [
+                -2.5290000438690186,
+                3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 5.7,
+              "robot": 2,
+              "xy": [
+                1.055999994277954,
+                3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 6.4,
+              "robot": 12,
+              "xy": [
+                -1.1449999809265137,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 7.3,
+              "robot": 5,
+              "xy": [
+                1.2289999723434448,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 10.25,
+              "robot": 3,
+              "xy": [
+                -1.100000023841858,
+                3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 21.4,
+              "robot": 15,
+              "xy": [
+                3.200000047683716,
+                -2.388000011444092
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 22.75,
+              "robot": 13,
+              "xy": [
+                -3.200000047683716,
+                -4.119999885559082
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 23.1,
+              "robot": 4,
+              "xy": [
+                3.200000047683716,
+                3.986999988555908
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 27.35,
+              "robot": 8,
+              "xy": [
+                3.200000047683716,
+                5.309000015258789
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 28.45,
+              "robot": 1,
+              "xy": [
+                -3.200000047683716,
+                2.4570000171661377
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 29.05,
+              "robot": 10,
+              "xy": [
+                -3.200000047683716,
+                -5.236000061035156
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 31.45,
+              "robot": 9,
+              "xy": [
+                3.200000047683716,
+                -1.0720000267028809
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 41.05,
+              "robot": 11,
+              "xy": [
+                -3.200000047683716,
+                1.1339999437332153
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            }
+          ],
+          "robots": [
+            {
+              "id": 0,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.682,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 41.35,
+              "distancia_final_a_meta_m": 0.207,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  183.86,
+                  184.02,
+                  94.97,
+                  78.53
+                ],
+                [
+                  201.15,
+                  184.72,
+                  114.75,
+                  133.42
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.781,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 1,
+              "aprobado": true,
+              "inicio_cruce_s": 28.45,
+              "avance_m": 2.575,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 14.0,
+              "distancia_final_a_meta_m": 0.135,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  183.98,
+                  191.17,
+                  79.61,
+                  83.68
+                ],
+                [
+                  195.97,
+                  182.71,
+                  89.95,
+                  76.23
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.66,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 2,
+              "aprobado": true,
+              "inicio_cruce_s": 5.7,
+              "avance_m": 2.929,
+              "alternancias": 44,
+              "segundos_estables_en_meta": 36.05,
+              "distancia_final_a_meta_m": 0.113,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  185.3,
+                  184.23,
+                  84.87,
+                  106.46
+                ],
+                [
+                  206.32,
+                  185.58,
+                  111.56,
+                  141.62
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.752,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 3,
+              "aprobado": true,
+              "inicio_cruce_s": 10.25,
+              "avance_m": 2.81,
+              "alternancias": 45,
+              "segundos_estables_en_meta": 30.45,
+              "distancia_final_a_meta_m": 0.166,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  185.26,
+                  187.7,
+                  127.96,
+                  112.07
+                ],
+                [
+                  193.22,
+                  188.56,
+                  95.16,
+                  98.91
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.66,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 4,
+              "aprobado": true,
+              "inicio_cruce_s": 23.1,
+              "avance_m": 2.627,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 19.9,
+              "distancia_final_a_meta_m": 0.171,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  182.56,
+                  182.77,
+                  93.33,
+                  112.8
+                ],
+                [
+                  194.92,
+                  184.84,
+                  99.55,
+                  81.32
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.752,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 5,
+              "aprobado": true,
+              "inicio_cruce_s": 7.3,
+              "avance_m": 2.757,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 35.4,
+              "distancia_final_a_meta_m": 0.181,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  185.35,
+                  179.6,
+                  92.91,
+                  80.02
+                ],
+                [
+                  201.68,
+                  187.4,
+                  98.87,
+                  91.27
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.8,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 6,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.717,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 38.8,
+              "distancia_final_a_meta_m": 0.212,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  187.02,
+                  208.14,
+                  97.24,
+                  102.66
+                ],
+                [
+                  195.07,
+                  188.06,
+                  91.31,
+                  102.63
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.867,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 7,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.667,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 40.9,
+              "distancia_final_a_meta_m": 0.191,
+              "rapidez_horizontal_final_m_s": 0.013,
+              "maximos_plantares_N": [
+                [
+                  187.31,
+                  185.96,
+                  86.93,
+                  86.86
+                ],
+                [
+                  195.32,
+                  186.12,
+                  99.14,
+                  86.64
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.737,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 8,
+              "aprobado": true,
+              "inicio_cruce_s": 27.35,
+              "avance_m": 2.814,
+              "alternancias": 37,
+              "segundos_estables_en_meta": 14.6,
+              "distancia_final_a_meta_m": 0.217,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  184.26,
+                  187.78,
+                  86.75,
+                  75.59
+                ],
+                [
+                  194.65,
+                  202.65,
+                  94.47,
+                  78.02
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.897,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 9,
+              "aprobado": true,
+              "inicio_cruce_s": 31.45,
+              "avance_m": 2.907,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 10.3,
+              "distancia_final_a_meta_m": 0.158,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  182.15,
+                  184.49,
+                  86.51,
+                  81.51
+                ],
+                [
+                  195.62,
+                  185.58,
+                  97.12,
+                  86.19
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.955,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 10,
+              "aprobado": true,
+              "inicio_cruce_s": 29.05,
+              "avance_m": 2.781,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 13.1,
+              "distancia_final_a_meta_m": 0.158,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  186.7,
+                  180.92,
+                  86.92,
+                  74.71
+                ],
+                [
+                  196.02,
+                  184.41,
+                  95.59,
+                  78.1
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.952,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 11,
+              "aprobado": true,
+              "inicio_cruce_s": 41.05,
+              "avance_m": 2.835,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 1.0,
+              "distancia_final_a_meta_m": 0.175,
+              "rapidez_horizontal_final_m_s": 0.038,
+              "maximos_plantares_N": [
+                [
+                  186.36,
+                  183.73,
+                  88.63,
+                  90.38
+                ],
+                [
+                  202.64,
+                  190.16,
+                  94.59,
+                  86.42
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.851,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 12,
+              "aprobado": true,
+              "inicio_cruce_s": 6.4,
+              "avance_m": 2.795,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 35.45,
+              "distancia_final_a_meta_m": 0.164,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  193.68,
+                  187.0,
+                  95.97,
+                  84.12
+                ],
+                [
+                  197.59,
+                  190.46,
+                  100.64,
+                  94.09
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.873,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 13,
+              "aprobado": true,
+              "inicio_cruce_s": 22.75,
+              "avance_m": 2.791,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 19.2,
+              "distancia_final_a_meta_m": 0.176,
+              "rapidez_horizontal_final_m_s": 0.008,
+              "maximos_plantares_N": [
+                [
+                  180.77,
+                  192.42,
+                  82.83,
+                  76.68
+                ],
+                [
+                  194.64,
+                  204.82,
+                  93.05,
+                  75.45
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.867,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 14,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.535,
+              "alternancias": 40,
+              "segundos_estables_en_meta": 40.7,
+              "distancia_final_a_meta_m": 0.137,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  188.07,
+                  184.77,
+                  90.97,
+                  93.05
+                ],
+                [
+                  191.78,
+                  189.46,
+                  99.99,
+                  87.5
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.675,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 15,
+              "aprobado": true,
+              "inicio_cruce_s": 21.4,
+              "avance_m": 2.695,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 20.65,
+              "distancia_final_a_meta_m": 0.178,
+              "rapidez_horizontal_final_m_s": 0.015,
+              "maximos_plantares_N": [
+                [
+                  190.89,
+                  179.44,
+                  115.4,
+                  98.37
+                ],
+                [
+                  197.34,
+                  189.28,
+                  90.51,
+                  81.55
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.737,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "semilla": 1417,
+      "iteracion": 82,
+      "escenario": "campus",
+      "pies": [
+        "izq",
+        "der"
+      ],
+      "zonas_por_pie": [
+        "TalonInterior",
+        "TalonExterior",
+        "AntepieInterior",
+        "AntepieExterior"
+      ],
+      "perfil": {
+        "semilla": 1417,
+        "escenario": "campus",
+        "solver": "cpu",
+        "rgb": [
+          256,
+          256,
+          3
+        ],
+        "periodo_control_s": 0.05,
+        "contrato": "xavier-marcha-cadera-3ejes",
+        "ejes_controlados": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "acciones_marcha": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "cadencia",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "observaciones_adicionales": [],
+        "acciones_adicionales": [],
+        "controlador": "marcha residual con parada en doble apoyo",
+        "permanencia_en_meta_s": 1.0,
+        "decision_de_paso": {
+          "observacion": "RGB de la cámara de la cabeza del propio Xavier",
+          "resolucion": [
+            256,
+            256
+          ],
+          "posiciones_de_otros_robots": false,
+          "turnos_asignados": false,
+          "campo_horizontal_grados": 145.55,
+          "reevalua": "Durante la espera, hasta comprometerse a atravesar el cruce."
+        }
+      },
+      "episodios": [
+        {
+          "etapa": "cruce",
+          "episodio": 1,
+          "segundos": 51.65,
+          "decision": "RGB local 256x256",
+          "sin_iniciar": 0,
+          "sin_llegar": 0,
+          "horizonte_s": 65.0,
+          "aprobados": 16,
+          "caidas": 0,
+          "robots_con_choque": 0,
+          "choques_con_entorno": 0,
+          "parejas_en_contacto": 0,
+          "llegadas": 16,
+          "eventos": [
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 1,
+              "xy": [
+                -3.9010000228881836,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 3,
+              "xy": [
+                3.200000047683716,
+                4.091000080108643
+              ],
+              "rumbo": [
+                -0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 6,
+              "xy": [
+                3.9519999027252197,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 1.45,
+              "robot": 12,
+              "xy": [
+                -4.047999858856201,
+                3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 6.1,
+              "robot": 13,
+              "xy": [
+                -5.203999996185303,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 7.05,
+              "robot": 15,
+              "xy": [
+                5.164000034332275,
+                -3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 7.1,
+              "robot": 0,
+              "xy": [
+                -5.085999965667725,
+                3.200000047683716
+              ],
+              "rumbo": [
+                1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 7.25,
+              "robot": 5,
+              "xy": [
+                3.200000047683716,
+                5.1479997634887695
+              ],
+              "rumbo": [
+                -0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 20.95,
+              "robot": 2,
+              "xy": [
+                -3.200000047683716,
+                -2.437999963760376
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 21.15,
+              "robot": 9,
+              "xy": [
+                -3.200000047683716,
+                3.927999973297119
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 21.9,
+              "robot": 10,
+              "xy": [
+                3.9560000896453857,
+                3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 26.15,
+              "robot": 14,
+              "xy": [
+                -3.200000047683716,
+                5.068999767303467
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 27.05,
+              "robot": 7,
+              "xy": [
+                3.200000047683716,
+                -4.119999885559082
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 30.25,
+              "robot": 4,
+              "xy": [
+                5.275000095367432,
+                3.200000047683716
+              ],
+              "rumbo": [
+                -1.0,
+                -0.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 32.5,
+              "robot": 8,
+              "xy": [
+                3.200000047683716,
+                -5.116000175476074
+              ],
+              "rumbo": [
+                -0.0,
+                1.0
+              ]
+            },
+            {
+              "tipo": "entrada",
+              "segundos": 37.1,
+              "robot": 11,
+              "xy": [
+                -3.200000047683716,
+                -1.3140000104904175
+              ],
+              "rumbo": [
+                0.0,
+                -1.0
+              ]
+            }
+          ],
+          "robots": [
+            {
+              "id": 0,
+              "aprobado": true,
+              "inicio_cruce_s": 7.1,
+              "avance_m": 2.622,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 30.7,
+              "distancia_final_a_meta_m": 0.166,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  191.32,
+                  180.41,
+                  113.86,
+                  130.86
+                ],
+                [
+                  197.93,
+                  184.12,
+                  94.35,
+                  114.07
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.73,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 1,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.596,
+              "alternancias": 40,
+              "segundos_estables_en_meta": 36.05,
+              "distancia_final_a_meta_m": 0.165,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  183.0,
+                  180.44,
+                  96.38,
+                  85.59
+                ],
+                [
+                  197.04,
+                  185.45,
+                  97.15,
+                  76.83
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.721,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 2,
+              "aprobado": true,
+              "inicio_cruce_s": 20.95,
+              "avance_m": 2.64,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 16.25,
+              "distancia_final_a_meta_m": 0.142,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  180.06,
+                  179.94,
+                  91.55,
+                  72.41
+                ],
+                [
+                  184.39,
+                  182.6,
+                  96.0,
+                  80.91
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.721,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 3,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.759,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 35.5,
+              "distancia_final_a_meta_m": 0.159,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  179.94,
+                  182.5,
+                  89.7,
+                  80.95
+                ],
+                [
+                  198.58,
+                  185.04,
+                  96.84,
+                  76.04
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.731,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 4,
+              "aprobado": true,
+              "inicio_cruce_s": 30.25,
+              "avance_m": 2.827,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 5.3,
+              "distancia_final_a_meta_m": 0.16,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  181.61,
+                  184.06,
+                  97.2,
+                  85.77
+                ],
+                [
+                  194.42,
+                  186.23,
+                  111.94,
+                  113.53
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.931,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 5,
+              "aprobado": true,
+              "inicio_cruce_s": 7.25,
+              "avance_m": 2.653,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 29.5,
+              "distancia_final_a_meta_m": 0.154,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  183.03,
+                  183.69,
+                  92.32,
+                  87.55
+                ],
+                [
+                  200.45,
+                  183.33,
+                  96.29,
+                  82.42
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.784,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 6,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.584,
+              "alternancias": 37,
+              "segundos_estables_en_meta": 35.8,
+              "distancia_final_a_meta_m": 0.156,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  185.15,
+                  185.01,
+                  92.3,
+                  80.95
+                ],
+                [
+                  190.16,
+                  188.7,
+                  100.27,
+                  102.63
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.855,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 7,
+              "aprobado": true,
+              "inicio_cruce_s": 27.05,
+              "avance_m": 2.793,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 9.75,
+              "distancia_final_a_meta_m": 0.158,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  178.66,
+                  182.64,
+                  85.74,
+                  77.77
+                ],
+                [
+                  194.81,
+                  186.15,
+                  94.47,
+                  79.03
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.855,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 8,
+              "aprobado": true,
+              "inicio_cruce_s": 32.5,
+              "avance_m": 2.681,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 4.9,
+              "distancia_final_a_meta_m": 0.136,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  179.24,
+                  180.73,
+                  89.44,
+                  77.73
+                ],
+                [
+                  197.06,
+                  183.64,
+                  95.49,
+                  97.82
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.935,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 9,
+              "aprobado": true,
+              "inicio_cruce_s": 21.15,
+              "avance_m": 2.62,
+              "alternancias": 38,
+              "segundos_estables_en_meta": 17.05,
+              "distancia_final_a_meta_m": 0.164,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  182.74,
+                  189.75,
+                  91.47,
+                  75.11
+                ],
+                [
+                  205.45,
+                  185.13,
+                  89.14,
+                  82.67
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.726,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 10,
+              "aprobado": true,
+              "inicio_cruce_s": 21.9,
+              "avance_m": 2.636,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 16.0,
+              "distancia_final_a_meta_m": 0.172,
+              "rapidez_horizontal_final_m_s": 0.015,
+              "maximos_plantares_N": [
+                [
+                  183.91,
+                  179.14,
+                  90.61,
+                  78.68
+                ],
+                [
+                  196.76,
+                  184.99,
+                  92.94,
+                  89.02
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.731,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 11,
+              "aprobado": true,
+              "inicio_cruce_s": 37.1,
+              "avance_m": 2.582,
+              "alternancias": 40,
+              "segundos_estables_en_meta": 1.0,
+              "distancia_final_a_meta_m": 0.162,
+              "rapidez_horizontal_final_m_s": 0.046,
+              "maximos_plantares_N": [
+                [
+                  185.5,
+                  186.76,
+                  98.87,
+                  76.03
+                ],
+                [
+                  195.31,
+                  185.38,
+                  91.53,
+                  102.32
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.968,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 12,
+              "aprobado": true,
+              "inicio_cruce_s": 1.45,
+              "avance_m": 2.748,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 35.55,
+              "distancia_final_a_meta_m": 0.141,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  180.66,
+                  189.72,
+                  97.83,
+                  85.71
+                ],
+                [
+                  203.27,
+                  188.07,
+                  99.6,
+                  96.45
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.726,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 13,
+              "aprobado": true,
+              "inicio_cruce_s": 6.1,
+              "avance_m": 2.787,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 30.4,
+              "distancia_final_a_meta_m": 0.162,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  181.53,
+                  208.74,
+                  97.78,
+                  93.53
+                ],
+                [
+                  203.92,
+                  187.72,
+                  90.56,
+                  85.62
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.722,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 14,
+              "aprobado": true,
+              "inicio_cruce_s": 26.15,
+              "avance_m": 2.596,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 11.4,
+              "distancia_final_a_meta_m": 0.19,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  182.33,
+                  182.4,
+                  91.71,
+                  85.03
+                ],
+                [
+                  198.03,
+                  189.79,
+                  114.87,
+                  80.49
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.858,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 15,
+              "aprobado": true,
+              "inicio_cruce_s": 7.05,
+              "avance_m": 2.69,
+              "alternancias": 40,
+              "segundos_estables_en_meta": 30.0,
+              "distancia_final_a_meta_m": 0.176,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  179.92,
+                  179.08,
+                  93.93,
+                  81.29
+                ],
+                [
+                  198.62,
+                  238.55,
+                  93.57,
+                  79.7
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.92,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "aprobado": true
+}

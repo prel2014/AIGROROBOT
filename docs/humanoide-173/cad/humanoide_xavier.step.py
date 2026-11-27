@@ -7,6 +7,7 @@ from cartucho_auxiliar import robot_loom
 from tren_inferior import Leg
 from equipo_rodilla import pelvis_with_ports
 from equipo_brazos import elbow_motor, shaft_pilots, traction_branch
+from montaje_cadera import integrar
 
 
 def neck_servo():
@@ -53,6 +54,7 @@ def gen_step():
     parts.append(pelvic_harness)
     parts.append(Compound(label='Tracción de los codos - CAN0 y 48 V',
                           children=[traction_branch(s) for s in (-1,1)]))
+    integrar(parts)
     robot=Compound(label='Humanoide 1730 - Jetson Xavier y cartucho 18650',children=parts)
     return {"shape":robot,"params":"humanoide_xavier.params.js"}
 

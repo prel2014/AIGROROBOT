@@ -1,4 +1,4 @@
-"""Construye los escenarios de Xavier con la pista articulada común."""
+"""Construye la vivienda, la calle y el campus con la pista articulada común."""
 from itertools import product
 from pathlib import Path
 import math
@@ -7,7 +7,6 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdLux
 
-from entornos_xavier import acopio, arbol, casa, residencial, vehiculo
 from geometria_escenarios import Taller, banco, cojin, estante, mesa, planta, silla
 
 HERE = Path(__file__).resolve().parent
@@ -38,19 +37,19 @@ def rotulos():
 
 
 def ventana(t, p, x, y, z, ancho, alto, luz_natural=False):
-    if luz_natural:
-        for lado in (-1, 1):
-            t.caja(p, "Marco", (x + lado * ancho / 2, y, z), (.055, .10, alto), "grafito")
-            t.caja(p, "Travesano", (x, y, z + lado * alto / 2), (ancho, .10, .05), "grafito")
-    else:
-        t.caja(p, "Marco", (x, y, z), (ancho + .10, .10, alto + .10), "grafito")
-        # Las lamas y el vano quedan detrás del cristal, con profundidad visible al sesgo.
-        for k in range(6):
-            t.caja(p, "LamaInterior", (x, y - .058, z + alto * (.43 - .09*k)),
-                   (ancho * .97, .018, alto * .048), "lino" if k % 3 else "arena")
-        t.caja(p, "Cristal", (x, y - .083, z), (ancho, .013, alto), "vidrio")
+    for lado in (-1, 1):
+        t.caja(p, "Marco", (x + lado * ancho / 2, y, z), (.055, .14, alto), "grafito")
+        t.caja(p, "Travesano", (x, y, z + lado * alto / 2), (ancho, .14, .05), "grafito")
+    if not luz_natural:
+        t.caja(p, "FondoVano", (x, y + .008, z), (ancho - .04, .016, alto - .04), "grafito")
+        posicion = t.rng.uniform(.08, .30)
+        for k in range(7):
+            lama = t.caja(p, "Persiana", (x, y - .026, z + alto * (.45 - k * posicion / 3)),
+                          (ancho - .058, .039, .031), "lino", bisel=.004)
+            lama.AddRotateXOp().Set(22.)
+    t.caja(p, "Cristal", (x, y - .072, z), (ancho - .04, .004, alto - .04), "vidrio")
     for k in (-.25, .25):
-        t.caja(p, "Parteluz", (x + ancho * k, y - .103, z), (.034, .04, alto), "aluminio")
+        t.caja(p, "Parteluz", (x + ancho * k, y - .081, z), (.032, .034, alto), "aluminio")
     t.caja(p, "Alfeizar", (x, y - .05, z - alto / 2 - .035), (ancho + .18, .23, .065), "hormigon")
 
 
@@ -67,12 +66,12 @@ def plafon(t, p, pos, ancho=1.2, intensidad=5200.):
 def muro_casa(t, p):
     # Dos puertas de 1.8 m, alineadas con los recorridos de la pista.
     for centro, ancho in ((-6.45, 4.7), (0, 4.6), (6.45, 4.7)):
-        t.caja(p, "Antepecho", (centro, 0, .49), (ancho, .20, .98), "cal", True)
+        t.caja(p, "Antepecho", (centro, 0, .49), (ancho, .20, .98), "revoque_cal", True)
         t.caja(p, "Zocalo", (centro, -.115, .09), (ancho, .04, .18), "roble")
         ventana(t, p, centro, 0, 1.82, ancho - .32, 1.55, luz_natural=True)
-        t.caja(p, "Dintel", (centro, 0, 2.96), (ancho, .20, .70), "cal", True)
+        t.caja(p, "Dintel", (centro, 0, 2.96), (ancho, .20, .70), "revoque_cal", True)
         for lado in (-1, 1):
-            t.caja(p, "Jamba", (centro + lado * (ancho / 2 - .08), 0, 1.83), (.16, .22, 1.70), "cal", True)
+            t.caja(p, "Jamba", (centro + lado * (ancho / 2 - .08), 0, 1.83), (.16, .22, 1.70), "revoque_cal", True)
         cristal = t.caja(p, "CierreVentana", (centro, .04, 1.83), (ancho - .32, .04, 1.65), "vidrio", True)
         UsdGeom.Imageable(cristal.GetPrim()).MakeInvisible()
     for x in (-3.2, 3.2):
@@ -87,14 +86,11 @@ def vivienda(t):
         muro_casa(t, t.grupo(p, "Cerramiento", (*xy, 0), giro))
     for xy, giro in (((0, 13.8), 0), ((13.8, 0), -90), ((0, -13.8), 180), ((-13.8, 0), 90)):
         jardin = t.grupo(p, "PatioExterior", (*xy, 0), giro)
-        t.caja(jardin, "Medianera", (0, 0, .87), (27.6, .22, 1.74), "revoque", True)
-        t.suelo(jardin, "Cesped", (0, -1.80), (25.8, 3.3), "cesped", .003)
-        for x in (-8.2, -.4, 7.0):
-            arbol(t, jardin, (x, 2.2, 0), 1.8)
+        t.caja(jardin, "Medianera", (0, 0, .87), (27.6, .22, 1.74), "revoque_arena", True)
         t.caja(jardin, "Albardilla", (0, 0, 1.77), (27.6, .30, .07), "marfil")
         for x in (-7.2, 0, 7.2):
             planta(t, jardin, (x, -1.6, 0), 2.15)
-        arbol(t, jardin, (4.1, -1.5, 0), 1.66)
+        palmera(t, jardin, (5.1, -1.0, 0), 3.45)
     for lado in (-1, 1):
         t.caja(p, "TechoGaleria", (0, lado * 6.17, 3.33), (17.72, 5.38, .16), "cal", True)
         t.caja(p, "TechoLateral", (lado * 6.17, 0, 3.33), (5.38, 6.96, .16), "cal", True)
@@ -104,14 +100,8 @@ def vivienda(t):
         plafon(t, p, (x, y, 3.20), 1.48, 12500.)
     for x, y in ((0, -5.4), (0, 5.4), (-5.4, 0), (5.4, 0)):
         plafon(t, p, (x, y, 3.20), 1.40, 9500.)
-    rebote = UsdLux.RectLight.Define(t.stage, p + "/LuzDeLucernario")
-    rebote.AddTranslateOp().Set((-1.7, 1.8, 3.42))
-    rebote.CreateWidthAttr(3.3)
-    rebote.CreateHeightAttr(3.3)
-    rebote.CreateIntensityAttr(5300.)
-    rebote.CreateColorAttr((.95, .97, 1.))
-    t.caja(p, "TabiqueDormitorio", (7.14, -4.83, 1.6), (3.15, .14, 3.2), "marfil", True)
-    t.caja(p, "TabiqueComedor", (-7.30, -4.83, 1.6), (2.92, .14, 3.2), "arena", True)
+    t.caja(p, "TabiqueDormitorio", (7.14, -4.83, 1.6), (3.15, .14, 3.2), "revoque_marfil", True)
+    t.caja(p, "TabiqueComedor", (-7.30, -4.83, 1.6), (2.92, .14, 3.2), "revoque_arena", True)
     salon = t.grupo(p, "Sala", (-5.95, 5.80, 0))
     t.suelo(salon, "Alfombra", (0, -.42), (3.65, 2.50), "tejido", .009)
     t.caja(salon, "SofaBase", (0, .72, .32), (2.65, .94, .46), "tejido", True, .10)
@@ -156,25 +146,59 @@ def vivienda(t):
         silla(t, p, (x, y, 0), 180 if y < -6 else 0)
     estante(t, p, (-6.1, -7.87, 0), 180)
     planta(t, p, (.95, .75, 0), 1.62)
-    return (-.55, -.55, 1.59), (-5.7, 5.65, 1.04)
+    return (-3.34, 3.14, 1.57), (-5.96, 6.42, .93)
+
+
+def palmera(t, p, pos, altura=4.8):
+    g = t.grupo(p, "Palmera", pos)
+    t.disco(g, "Tronco", (0, 0, altura / 2), .13, altura, "arena", True)
+    for i in range(1, int(altura / .19)):
+        t.disco(g, "Cicatriz", (0, 0, i * .19), .137, .027, "lino")
+    caras = [[], []]
+    for i in range(16):
+        a = i * 2.40
+        d = np.array((math.cos(a), math.sin(a), 0))
+        lateral = np.array((-d[1], d[0], 0))
+        longitud = t.rng.uniform(1.34, 2.16)
+
+        def nervio(s):
+            return d * longitud * s + [0, 0, altura + .70 * math.sin(s * math.pi) - .48 * s]
+
+        for j in range(1, 15):
+            s = j / 16
+            base = nervio(s)
+            t0 = nervio(s + .055)
+            caras[i % 2].append(
+                [base - .016 * lateral, t0 - .014 * lateral, t0 + .014 * lateral, base + .016 * lateral])
+            for signo in (-1, 1):
+                largo = .09 + .36 * math.sin(math.pi * s)
+                punta = base + signo * lateral * largo + d * (.10 + .13 * s) - [0, 0, largo * .56]
+                # Foliolos arqueados con una nervadura central y una punta colgante.
+                ancho = .032 * math.sin(math.pi * s) + .008
+                filas = []
+                for u in np.linspace(0., 1., 8):
+                    centro = (1. - u) * base + u * punta
+                    centro[2] += .14 * math.sin(math.pi * u)
+                    mitad = ancho * (.35 + .65 * math.sin(math.pi * u)) * (1. - u)
+                    filas.append((centro - d * mitad, centro + [0, 0, mitad * .35], centro + d * mitad))
+                for inferior, superior in zip(filas[:-2], filas[1:-1]):
+                    for k in (0, 1):
+                        caras[i % 2].append([inferior[k], inferior[k+1], superior[k+1], superior[k]])
+                for k in (0, 1):
+                    caras[i % 2].append([filas[-2][k], filas[-2][k+1], punta])
+    for hojas, acabado in zip(caras, ("hoja", "brote")):
+        t.malla(g, "Corona", hojas, acabado)
 
 
 def local(t, p, pos, giro, acabado, letrero):
     g = t.grupo(p, "Comercio", pos, giro)
-    t.caja(g, "Edificio", (0, 1.9, 2.90), (5.95, 3.8, 5.80), "revoque", True)
-    t.caja(g, "Cornisa", (0, 0, 5.73), (6.08, .32, .18), "cal")
+    t.caja(g, "Edificio", (0, 1.9, 2.90), (5.95, 3.8, 5.80), "revoque_" + acabado, True)
+    t.caja(g, "Cornisa", (0, 0, 5.73), (6.08, .32, .18), "revoque_cal")
     t.caja(g, "Basamento", (0, -.09, .29), (5.94, .20, .58), "hormigon")
     for x in (-1.48, 1.48):
         ventana(t, g, x, -.12, 4.30, 2.13, 1.32)
-    if letrero in ("pan", "bodega"):
-        t.caja(g, "Balcon", (0, -.38, 3.54), (5.20, .83, .14), "hormigon", True)
-        t.varilla(g, "Pasamanos", (-2.5, -.74, 4.43), (2.5, -.74, 4.43), .028, "grafito")
-        for k in range(27):
-            x = -2.47 + k * .19
-            t.varilla(g, "Barrote", (x, -.74, 3.59), (x, -.74, 4.42), .012, "grafito")
-    t.disco(g, "Bajante", (2.80, -.16, 2.72), .048, 5.44, "aluminio")
     ventana(t, g, -.88, -.13, 1.41, 3.38, 1.63)
-    t.panel(g, "Escaparate", (-.88, -.241, 1.41), 3.37, 1.62, "vitrina_" + letrero)
+    t.panel(g, "Escaparate", (-.88, -.205, 1.41), 3.37, 1.62, "vitrina_" + letrero)
     t.caja(g, "MarcoPuerta", (1.72, -.13, 1.19), (1.29, .20, 2.38), "grafito")
     t.caja(g, "Puerta", (1.72, -.245, 1.22), (1.11, .03, 2.25), "vidrio")
     t.caja(g, "Manija", (2.07, -.28, .98), (.037, .05, .31), "laton")
@@ -188,72 +212,23 @@ def local(t, p, pos, giro, acabado, letrero):
                               (x - .218, -.84, 2.27)]], acabado if i % 2 else "marfil")
 
 
-def edificio_de_esquina(t, pos, giro, pisos):
-    g = t.grupo(t.raiz, "EdificioDeEsquina", pos, giro)
-    altura = 3.*pisos
-    t.caja(g, "Cuerpo", (0,3.9,altura/2), (11.8,7.8,altura), "revoque", True)
-    laterales = [t.grupo(g,"FachadaLateral",(lado*5.90,3.9,0),lado*90) for lado in (-1,1)]
-    for i in range(pisos):
-        z = 1.52 + 3.*i
-        for x in (-4.0,-1.35,1.35,4.0):
-            ventana(t,g,x,-.08,z,1.90,1.38)
-        for pared in laterales:
-            for x in (-2.0,.65):
-                ventana(t,pared,x,-.07,z,1.46,1.38)
-        t.caja(g,"Forjado",(0,-.17,z+1.35),(12.0,.49,.14),"hormigon")
-        if i:
-            t.caja(g,"VueloDeBalcon",(-2.7,-.55,z-.88),(5.0,1.1,.16),"hormigon")
-            for x in np.linspace(-5.1,-.3,11):
-                t.varilla(g,"Montante",(x,-1.04,z-.81),(x,-1.04,z+.13),.023,"grafito")
-            t.varilla(g,"Pasamanos",(-5.1,-1.04,z+.13),(-.3,-1.04,z+.13),.035,"grafito")
-    t.caja(g,"CuartoDeAzotea",(2.5,4.8,altura+.88),(3.2,3.5,1.76),"ladrillo")
-    t.disco(g,"Tanque",(-1.7,5.0,altura+.70),.74,1.4,"grafito")
-
-
-def cuadras_del_fondo(t):
-    p = t.raiz
-    # Cruces perpendiculares y remates en T, visibles desde los dos sentidos.
-    for signo in (-1,1):
-        for distancia in (29.,74.):
-            t.suelo(p,"CalleTransversal",(signo*distancia,0),(8.,76.),"asfalto",.002)
-            for y in np.arange(-4.2,4.3,.85):
-                t.suelo(p,"CrucePeatonal",(signo*(distancia-5.1),y),(1.45,.27),"marfil",.006)
-        for lado in (-1,1):
-            for x, longitud in ((44.,21.8),(62.1,14.),(82.,7.0)):
-                t.suelo(p,"VeredaDeCuadra",(signo*x,lado*7.2),(longitud,4.3),"hormigon",.009)
-                t.caja(p,"Bordillo",(signo*x,lado*5.10,.065),(longitud,.16,.13),"hormigon")
-            frente = 0 if lado > 0 else 180
-            edificio_de_esquina(t,(signo*39.2,lado*9.5,0),frente,3 if signo==lado else 2)
-            casa(t,p,"house_1",(signo*55.6,lado*16.1,0),frente)
-            local(t,p,(signo*66.0,lado*9.5,0),frente,"arena","bodega")
-            for x in (35.,48.5,63.,83.):
-                arbol(t,p,(signo*x,lado*7.1,0),1.45 + (x%3)*.12)
-            casa(t,p,"house_2",(signo*87.,lado*14.7,0),frente)
-        edificio_de_esquina(t,(signo*90.,-1.8,0),-signo*90,4)
-        vehiculo(t,p,(signo*36.,3.85,.003),180,"prius_hybrid")
-        vehiculo(t,p,(signo*61.,-3.65,.003),0,"pickup")
-        for x in range(32,85,6):
-            if abs(x-74)>4:
-                t.suelo(p,"MarcaDeEje",(signo*x,0),(2.2,.095),"ocre",.005)
-    # Cableado con flecha entre apoyos. El tendido atraviesa las cuadras en perspectiva.
-    grupo = t.grupo(p,"RedDeDistribucion")
-    apoyos = (-84.,-62.,-40.,-18.,5.,27.,49.,71.,92.)
-    for x in apoyos:
-        t.disco(grupo,"Poste",(x,7.9,3.75),.11,7.5,"hormigon")
-        t.caja(grupo,"Cruceta",(x,7.9,7.27),(.13,1.45,.10),"grafito")
-        for y in (7.37,7.9,8.43):
-            t.disco(grupo,"Aislador",(x,y,7.43),.055,.25,"ceramica")
-    for xa,xb in zip(apoyos,apoyos[1:]):
-        for y in (7.37,7.9,8.43):
-            pts = [(xa+(xb-xa)*u,y,7.53-2.6*u*(1-u)) for u in np.linspace(0,1,7)]
-            for u,v in zip(pts,pts[1:]):
-                t.varilla(grupo,"Conductor",u,v,.014,"grafito")
+def automovil(t, p, pos, giro, modelo):
+    grupo = t.grupo(p, "AutomovilEstacionado", pos, giro)
+    visual = UsdGeom.Xform.Define(t.stage, grupo + "/Visual")
+    visual.GetPrim().GetReferences().AddReference("./objetos/" + modelo + "/visual.usdc")
+    visual.GetPrim().SetInstanceable(True)
+    largo, ancho, alto = (4.62, 1.86, 1.54) if modelo == "prius_hybrid" else (5.66, 2.31, 1.87)
+    for nombre, centro, medidas in (
+        ("Bastidor", (0, 0, .53), (largo * .97, ancho, .74)),
+        ("Cabina", (0, 0, (alto + .84) / 2), (largo * .52, ancho * .86, alto - .84)),
+    ):
+        proxy = t.caja(grupo, nombre, centro, medidas, "grafito", True)
+        UsdGeom.Imageable(proxy).MakeInvisible()
 
 
 def calle(t):
     p = t.raiz
-    t.suelo(p, "TerrenoUrbano", (0, 0), (238, 235), "suelo_seco", -.025)
-    t.suelo(p, "Calzada", (0, 0), (181, 10.3), "asfalto")
+    t.suelo(p, "Calzada", (0, 0), (56, 52), "asfalto")
     for y in (-7.3, 7.3):
         t.suelo(p, "Vereda", (0, y), (52, 4.5), "hormigon", .006)
         # En los pasos la vereda queda enrasada con la calzada.
@@ -272,8 +247,13 @@ def calle(t):
         local(t, p, (x, 9.15, 0), 0, acabado, nombre)
         local(t, p, (-x, -9.65, 0), 180, acabado, nombre)
     for lado in (-1, 1):
-        for y in (-15.9, 15.9):
-            casa(t, p, "house_2", (lado * 19.1, y, 0), 0 if y > 0 else 180)
+        for x, acabado in ((15, "marfil"), (21, "arena")):
+            for y in (-9.3, 9.3):
+                g = t.grupo(p, "CuadraContigua", (lado * x, y, 0), 0 if y > 0 else 180)
+                t.caja(g, "Vivienda", (0, 1.50, 2.45), (5.85, 3, 4.90), "revoque_" + acabado, True)
+                for vx in (-1.5, 1.5):
+                    ventana(t, g, vx, -.07, 3.32, 1.57, 1.12)
+                    ventana(t, g, vx, -.07, 1.37, 1.45, 1.16)
     parada = t.grupo(p, "ParadaBus", (-6.65, 6.97, 0))
     banco(t, parada, (0, 0, 0))
     for x in (-1.38, 1.38):
@@ -281,16 +261,15 @@ def calle(t):
     t.caja(parada, "Cubierta", (0, 0, 2.44), (3.08, 1.38, .10), "petroleo", True, .025)
     t.rotulo(parada, "Senal", (0, -.71, 2.44), 1.22, .30, "paradero")
     for x, y in ((-7, -6.22), (8, 6.33), (-12, 6.3), (12, -6.30)):
-        arbol(t, p, (x, y, 0), 1.52)
+        palmera(t, p, (x, y, 0), 4.2)
     for x, y in ((-10, 5.82), (7.5, -5.80)):
         t.disco(p, "Farola", (x, y, 2.12), .075, 4.24, "grafito", True)
         sentido = -np.sign(y)
         t.varilla(p, "Brazo", (x, y, 4.17), (x, y + .76 * sentido, 4.34), .038, "grafito")
         t.caja(p, "Luminaria", (x, y + .75 * sentido, 4.34), (.28, .55, .10), "aluminio", False, .03)
-    vehiculo(t, p, (7.2, 3.94, .003), 180, "prius_hybrid")
-    vehiculo(t, p, (-8.9, -3.78, .003), 0, "pickup")
-    cuadras_del_fondo(t)
-    return (-2.6, -1.7, 1.58), (4.3, 6.5, 1.60)
+    automovil(t, p, (8.5, 4.50, 0), 180, "prius_hybrid")
+    automovil(t, p, (-8.9, -4.58, 0), 0, "pickup")
+    return (-7.50, -1.68, 2.15), (.32, 8.12, 2.0)
 
 
 def pabellon(t, p, pos, giro, letrero):
@@ -308,7 +287,7 @@ def pabellon(t, p, pos, giro, letrero):
         t.caja(g, "Quiebrasol", (x, -.39, 5.10), (.066, .46, 1.98), "roble")
     for x in (-7.56, -.02, 7.55):
         t.caja(g, "Columna", (x, -.83, 1.52), (.30, .30, 3.04), "hormigon", True)
-    t.caja(g, "Friso", (0, -.98, 3.14), (16.24, .18, .44), "marfil")
+    t.caja(g, "Friso", (0, -.98, 3.14), (16.24, .18, .44), "revoque_marfil")
     for x in (-4., 4.):
         plafon(t, g, (x, 1.13, 2.94))
     t.rotulo(g, "Directorio", (2.42, -1.077, 3.14), 1.72, .40, letrero)
@@ -342,7 +321,7 @@ def campus(t):
     for x, y in ((-6.58, 5.69), (6.58, 5.69), (-6.58, -5.69), (6.58, -5.69)):
         t.caja(p, "Jardinera", (x, y, .21), (2.02, 1.60, .42), "hormigon", True, .045)
         t.caja(p, "Sustrato", (x, y, .427), (1.85, 1.43, .026), "tierra")
-        arbol(t, p, (x, y, .435), 1.58)
+        palmera(t, p, (x, y, .435), 4.56)
     for x in (-6.9, 6.9):
         banco(t, p, (x, .37, 0), 90 if x < 0 else -90)
     for x in (-9.80, 9.80):
@@ -357,11 +336,10 @@ def campus(t):
             for x in (-5., 0., 5.):
                 ventana(t, g, x, -.08, z, 4.53, 1.35)
             t.caja(g, "Alero", (0, -.19, z + .79), (16.0, .68, .13), "marfil")
-    return (-6.1, -2.3, 1.61), (-.80, 7.45, 1.62)
+    return (-8.52, -2.26, 2.48), (1.25, 8.78, 2.35)
 
 
-ESCENAS = {"vivienda": vivienda, "calle": calle, "campus": campus,
-           "residencial": residencial, "acopio": acopio}
+ESCENAS = {"vivienda": vivienda, "calle": calle, "campus": campus}
 
 
 def construir(nombre, diseno):
@@ -374,21 +352,17 @@ def construir(nombre, diseno):
     stage.SetStartTimeCode(0.)
     stage.SetEndTimeCode(20. * 86400)
     piso = stage.GetPrimAtPath("/World/Suelo")
-    lado_suelo = 238. if nombre == "calle" else 56.
-    piso.GetAttribute("xformOp:scale").Set((lado_suelo, lado_suelo, .07))
+    piso.GetAttribute("xformOp:scale").Set((56., 56., .07))
     UsdGeom.Imageable(piso).CreateVisibilityAttr().Set("invisible")
     cielo = UsdLux.DomeLight(stage.GetPrimAtPath("/World/Luz"))
-    panorama = "kloofendal_48d_partly_cloudy_4k.hdr" if nombre == "calle" else "kloofendal_48d_partly_cloudy_puresky_1k.hdr"
-    cielo.CreateTextureFileAttr(Sdf.AssetPath("./texturas/" + panorama))
+    cielo.CreateTextureFileAttr(Sdf.AssetPath("./texturas/cielo_costero.jpg"))
     cielo.CreateTextureFormatAttr("latlong")
-    cielo.CreateIntensityAttr().Set(470.)
+    cielo.CreateIntensityAttr().Set(520.)
     sol = UsdLux.DistantLight(stage.GetPrimAtPath("/World/LuzPrincipal"))
-    sol.CreateIntensityAttr().Set(880.)
+    sol.CreateIntensityAttr().Set(1900.)
     sol.CreateColorAttr().Set((1., .92, .79))
-    sol.CreateAngleAttr().Set(3.2)
+    sol.CreateAngleAttr().Set(1.6)
     taller = Taller(stage)
-    if nombre == "calle":
-        stage.OverridePrim("/XavierMarcha/cabeza/Camara").GetAttribute("clippingRange").Set((.02, 220.))
     ojo, centro = diseno(taller)
     cam = UsdGeom.Camera.Define(stage, taller.raiz + "/Vista")
     matriz = Gf.Matrix4d().SetLookAt(Gf.Vec3d(*ojo), Gf.Vec3d(*centro), Gf.Vec3d(0, 0, 1))

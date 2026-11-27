@@ -29,8 +29,8 @@ def outlet(g):
 
 
 def thigh_harness(g):
-    parts=[loom(g,'Funda de torsión por eje de cadera',hip_points(),4.8,BOOT),
-           part(g.block(31,0,801,10,18,10),'Salida de funda y separación de ramales',DARK)]
+    # Terminal móvil de rodilla. El antiguo tubo pasaba por el nuevo rotor de flexión.
+    parts=[part(g.block(31,0,801,10,18,10),'Salida de funda y separación de ramales',DARK)]
     sleeves=[]
     for label,offset,r,color in LANES:
         y=offset*g.side
@@ -57,41 +57,49 @@ def thigh_harness(g):
 
 
 def pelvis_route():
-    return [(-73,-65,HIP),(-73,-25,HIP),(-73,0,HIP),(-52.5,0,HIP)]
+    # Coordenada transversal relativa al centro de la cadera. Los extremos son
+    # la unión de los dos ramales del conector y el prensaestopas del muslo.
+    return [(-73,-77.5,HIP),(-73,-76,858),(-73,-82,833),
+            (-66,-98,802),(-27,-107,785),(11,-88,780),(31,-67,790),
+            (31,-43,792),(31,-22,802),(31,-15,813),(31,-8,816),
+            (31,0,814),(31,0,806)]
 
 
 def pelvis_parts(g):
-    parts=[loom(g,'Tramo fijo hasta eje de cadera',pelvis_route(),4.8,BOOT)]
+    parts=[]
     # External service connector envelopes stop at the upstream harness interface.
     for label,y,r,color in LANES:
         u=-73+y
-        parts.append(loom(g,label+' - entrada pélvica',[(u,-83,HIP),(u,-76,HIP),(-73,-65,HIP)],r,color,4))
+        parts.append(loom(g,label+' - entrada pélvica',[(u,-83,HIP),(u,-80,HIP),(-73,-77.5,HIP)],r,color,4))
         parts.append(part(g.block(u,-87,HIP,9,8,8),label+' - conector de servicio',color))
         parts.append(part(g.block(u,-94,HIP,9,6,8),label+' - mitad del troncal',DARK))
+    parts.append(loom(g,'Lazo posterior de servicio al muslo',pelvis_route(),4.8,BOOT,12))
     return group('Paso pélvico '+('derecho' if g.side>0 else 'izquierdo'),parts)
 
 
 def pelvis_with_ports(torso,legs):
     cuts=[]
+    bosses=[]
     fixtures=[]
     for g in legs:
-        cuts.append(loom(g,'Conducto pélvico',pelvis_route(),6.1,DARK))
+        cuts.append(loom(g,'Conducto pélvico',pelvis_route()[:4],6.1,DARK,12))
         cuts.append(g.block(-73,-75,HIP,24,28,13))
-        # Rear-facing socket carrier. Trim its mounting feet to the pelvic surface.
-        plate=g.block(-73,-85,HIP,38,4,21)-g.block(-73,-85,HIP,23,6,10)
-        pelvis=next(p for p in torso.children if 'escudo' in p.label.lower() and 'lv' in p.label.lower())
-        for shift in (-15,15):
-            u=-73+shift
-            foot=g.cross(u,-83,-25,HIP,3.6)-pelvis
-            # Trim away any cylinder continuing past the first wall in the dense shell.
-            plug=g.cross(u,-93,-25,HIP,1.4)
-            plate=plate.fuse(foot)-plug
-            cuts.append(plug)
-        fixtures.append(part(plate,'Soporte de conectores pélvicos',AL))
+        # Anclar arriba y abajo del conector deja libre el barrido del motor posterior.
+        plate=g.block(-73,-85,HIP,32,4,34)-g.block(-73,-85,HIP,23,6,10)
+        fasteners=[]
+        u_fijacion=-82  # 9 mm hacia el centro, fuera del descenso de la funda.
+        for z in (HIP-12.5,HIP+12.5):
+            bosses.append(g.cross(u_fijacion,-83,-49,z,4.2))
+            cuts.append(g.cross(u_fijacion,-84,-68,z,1.25))
+            plate-=g.cross(u_fijacion,-89,-82,z,1.7)
+            screw=g.cross(u_fijacion,-87,-75,z,1.5).fuse(g.cross(u_fijacion,-90,-87,z,2.7))
+            fasteners.append(part(screw,'Tornillo M3 del soporte pélvico',STEEL))
+        fixtures.append(group('Conectores - soporte posterior',[part(plate,'Placa de conectores',AL),*fasteners]))
     updated=[]
     for p in torso.children:
         if 'lv' in p.label.lower() and p.bounding_box().min.Z<HIP+15:
-            p=part(p-cuts,p.label,p.color)
+            forma=p.fuse(*bosses) if 'escudo' in p.label.lower() else p
+            p=part(forma-cuts,p.label,p.color)
         updated.append(p)
     torso.children=tuple(updated)
     return group('Conectores fijos de pelvis',fixtures+[pelvis_parts(g) for g in legs])

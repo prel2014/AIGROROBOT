@@ -8,7 +8,7 @@ from controlar import DEDOS, cierre_dedo
 
 BANK = Path(__file__).resolve().with_name("banco_xavier.usda")
 ARMS = {"hombro", "codo", "muneca"}
-LEGS = {"cadera", "rodilla", "tobillo"}
+LEGS = {"giro_cadera", "apertura_cadera", "cadera", "rodilla", "tobillo"}
 
 
 def fases_dedos(names, limits):
@@ -35,11 +35,11 @@ def choreography(robot):
     def pose(group, side):
         target = neutral.copy()
         for i, name in enumerate(names):
-            tokens = name.split("_")
-            if tokens[0] not in group:
+            eje, _, lado = name.rpartition("_")
+            if eje not in group:
                 continue
             lo, hi = limits[i]
-            target[i] = hi if tokens[1] == side else lo
+            target[i] = hi if lado == side else lo
         return target
 
     def alternate(title, group, look_at, height):
@@ -50,10 +50,10 @@ def choreography(robot):
 
     alternate("Brazos · hombros, codos y muñecas", ARMS, (0, .07, 1.04), 2.05)
     alternate("Piernas · caderas, rodillas y tobillos", LEGS, (0, .035, .66), 1.32)
-    active = [i for i, name in enumerate(names) if name.split("_")[0] in ARMS | LEGS
+    active = [i for i, name in enumerate(names) if name.rpartition("_")[0] in ARMS | LEGS
               or (name.split("_")[0] in DEDOS and name.endswith(("_m1", "_m2")))]
-    if len(active) != 32:
-        raise RuntimeError(f"Se esperaban 32 ejes en las extremidades, se encontraron {len(active)}")
+    if len(active) != 36:
+        raise RuntimeError(f"Se esperaban 36 ejes en las extremidades, se encontraron {len(active)}")
     return phases, active, hand_views
 
 

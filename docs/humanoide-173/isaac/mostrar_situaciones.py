@@ -73,7 +73,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--escenario", choices=("campus", "vivienda", "calle"), default="campus")
     parser.add_argument("--semilla", type=int, default=197)
-    parser.add_argument("--modelo", type=Path, default=HERE / "situaciones.pt")
+    parser.add_argument("--modelo", type=Path, default=HERE / "situaciones_cadera_3ejes.pt")
     parser.add_argument("--salida", type=Path, default=HERE / "escenarios" / "situaciones.gif")
     args = parser.parse_args()
     args.etapa, args.visible, args.fisica = "situaciones", False, "cpu"
@@ -90,3 +90,4 @@ if __name__ == "__main__":
     finally:
         app.close(exit_code=estado)
     raise SystemExit(estado)
+

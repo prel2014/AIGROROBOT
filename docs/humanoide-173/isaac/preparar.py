@@ -27,7 +27,9 @@ PROFILES = {
     "hombro": (-20, 65, 18, 45, 130, 10, "virtual"),
     "codo": (0, 90, 24, 420, 100, 6, "AK60-39"),
     "muneca": (-5, 25, 3, 45, 18, 1.1, "virtual"),
-    "cadera": (-15, 35, 45, 45, 260, 16, "virtual"),
+    "cadera": (-15, 35, 24, 420, 260, 16, "AK60-39 V3.0 KV80"),
+    "apertura_cadera": (-8, 18, 24, 420, 220, 12, "AK60-39 V3.0 KV80"),
+    "giro_cadera": (-20, 20, 24, 420, 140, 8, "AK60-39 V3.0 KV80"),
     "rodilla": (0, 80, 24, 420, 180, 10, "AK60-39"),
     "tobillo": (-12, 12, 18, 45, 100, 6, "virtual"),
 }
@@ -67,6 +69,26 @@ def box(stage, path, center, size):
     shape.AddScaleOp().Set(vec(size))
     collider(shape.GetPrim())
     return shape
+
+
+MOTOR_KG, RADIO, LARGO = .750, .0395, .067
+Z_GIRO = .875 + .096 + LARGO/2
+
+
+def inercia_motor(eje):
+    transversal = MOTOR_KG * (3*RADIO**2 + LARGO**2) / 12
+    diagonal = np.full(3, transversal)
+    diagonal["XYZ".index(eje)] = MOTOR_KG * RADIO**2 / 2
+    return diagonal
+
+
+def contacto_motor(stage, path, center, eje):
+    forma = UsdGeom.Cylinder.Define(stage, path)
+    forma.CreateRadiusAttr(RADIO)
+    forma.CreateHeightAttr(LARGO)
+    forma.CreateAxisAttr(eje)
+    forma.AddTranslateOp().Set(Gf.Vec3d(*center))
+    collider(forma.GetPrim())
 
 
 class Robot:
@@ -148,6 +170,18 @@ class Robot:
 
     def trunk(self):
         base = self.segment("pelvis", (0, 0, 1.17), (.32, .165, .59), 6.8, [], contact=False)
+        # Ambos estatores de giro van anclados al tronco. Ejes principales por simetría.
+        masa = UsdPhysics.MassAPI(base)
+        dz = Z_GIRO - 1.17
+        total = 6.8 + 2*MOTOR_KG
+        cz = 2*MOTOR_KG*dz/total
+        tensor = np.array(masa.GetDiagonalInertiaAttr().Get()) + 6.8 * np.array([cz**2,cz**2,0])
+        tensor += 2*(inercia_motor("Z") + MOTOR_KG*np.array([(dz-cz)**2, .112**2+(dz-cz)**2, .112**2]))
+        masa.CreateMassAttr(total)
+        masa.CreateCenterOfMassAttr(vec((0,0,cz)))
+        masa.CreateDiagonalInertiaAttr(vec(tensor))
+        for side, x in (("izq",-.112),("der",.112)):
+            contacto_motor(self.stage,self.paths["pelvis"]+"/Motor_"+side,(x,0,dz),"Z")
         # Tres volúmenes siguen el cambio de sección pelvis-abdomen-tórax.
         for i, (z, size) in enumerate(((.92, (.255, .14, .14)), (1.10, (.19, .15, .23)),
                                        (1.345, (.32, .165, .26)))):
@@ -178,11 +212,30 @@ class Robot:
         self.segment(name("pantorrilla"), (h, -.006, .278), (.094, .094, .335), .95,
                      [(leg, k) for k in (2, 3)] + [(leg, 4, 3), (knee, 3)])
         self.segment(name("pie"), (h, .042, .029), (.119, .245, .058), .50, [(leg, 1)])
+        pivot = (h, 0., .875)
+        indice = 2 if sign < 0 else 4
+        giro, apertura = name("bastidor_giro"), name("bastidor_apertura")
+        for link, center, eje, grupo in (
+            (giro,(h,-.024-LARGO/2,.875),"Y",indice),
+            (apertura,(h-sign*(.040+LARGO/2),0.,.875),"X",indice+1),
+        ):
+            self.body(link,center,MOTOR_KG,(0,0,0),inercia_motor(eje))
+            self.mapping[(20,grupo)] = link
+            contacto_motor(self.stage,self.paths[link]+"/Motor",(0,0,0),eje)
+        self.flexible.append((18,3 if sign < 0 else 4,7))
+        for j,p,c,eje in (("giro_cadera","pelvis",giro,(0,0,-sign)),
+                          ("apertura_cadera",giro,apertura,(0,-sign,0)),
+                          ("cadera",apertura,name("muslo"),(1,0,0))):
+            self.joint(name(j),p,c,pivot,eje,profile=PROFILES[j])
+        # Las cajas envolventes del escudo y los componentes que aloja se solapan.
+        # Excluir únicamente esos pares del mismo robot. Ambas piernas sí interactúan.
+        filtro = UsdPhysics.FilteredPairsAPI.Apply(self.stage.GetPrimAtPath(self.paths["pelvis"]))
+        for link in (apertura,name("muslo")):
+            filtro.CreateFilteredPairsRel().AddTarget(self.paths[link])
         for j, p, c, pivot, axis in [
             ("hombro", "pelvis", name("brazo"), (x, 0, 1.4), 1),
             ("codo", name("brazo"), name("antebrazo"), (x, 0, 1.1), 1),
             ("muneca", name("antebrazo"), name("mano"), (x, 0, .845), 1),
-            ("cadera", "pelvis", name("muslo"), (h, 0, .875), 1),
             ("rodilla", name("muslo"), name("pantorrilla"), (h, 0, .48), -1),
             ("tobillo", name("pantorrilla"), name("pie"), (h, 0, .085), 1),
         ]:

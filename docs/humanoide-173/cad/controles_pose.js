@@ -22,7 +22,8 @@ for (const {key, side, arm, leg, kneeMotor, elbowMotor, branch} of sides) {
   const label = side > 0 ? "D" : "I";
   for (const [name, title, low, high] of [
     ["hombro", "Hombro", -20, 65], ["codo", "Codo", 0, 90],
-    ["muneca", "Muñeca · ajuste", -5, 25], ["cadera", "Cadera", -15, 35],
+    ["muneca", "Muñeca · ajuste", -5, 25], ["cadera", "Flexión del muslo", -15, 35],
+    ["apertura", "Aducción (−) / abducción (+)", -8, 18], ["giro", "Giro del muslo", -20, 20],
     ["rodilla", "Rodilla", 0, 80], ["tobillo", "Tobillo", -12, 12],
   ]) parameter(name + "_" + key, title + " " + label, low, high);
   parameter("cierre_" + key, "Cierre de mano " + label, 0, 100, "%", 5);
@@ -37,6 +38,11 @@ for (const {key, side, arm, leg, kneeMotor, elbowMotor, branch} of sides) {
   ]);
   feature("mano_" + key, [arm+".8"]);
   feature("pierna_" + key, [leg, kneeMotor]);
+  const giro = side < 0 ? "20.2" : "20.4";
+  const apertura = side < 0 ? "20.3" : "20.5";
+  feature("apertura_" + key,[apertura, leg, kneeMotor]);
+  feature("giro_" + key,[giro, apertura, leg, kneeMotor]);
+  feature("lazo_"+key,["18."+(side<0 ? 3 : 4)+".7"]);
   feature("pantorrilla_" + key, [...[1,2,3,"4.3"].map(i => leg+"."+i), kneeMotor+".3"]);
   feature("pie_" + key, [leg+".1"]);
   feature("can_" + key, [wire+".3"]);
@@ -144,6 +150,36 @@ function routeCables(ctx,key,shoulder,elbow,wrist) {
     effects.visible(featureId,false);
   }
 }
+function lazoCadera(ctx,key,side,flexion,apertura,giro) {
+  const {THREE,effects,modelGroup} = ctx, cache = hoseCache(ctx);
+  const id="lazo_"+key;
+  let mesh=cache.get(id);
+  if (!(flexion || apertura || giro)) {
+    if (mesh) mesh.visible=false;
+    return;
+  }
+  const ang=Math.PI/180, x=112*side;
+  const pose=new THREE.Matrix4().makeTranslation(x,0,875)
+    .multiply(new THREE.Matrix4().makeRotationZ(-side*giro*ang))
+    .multiply(new THREE.Matrix4().makeRotationY(-side*apertura*ang))
+    .multiply(new THREE.Matrix4().makeRotationX(flexion*ang))
+    .multiply(new THREE.Matrix4().makeTranslation(-x,0,-875));
+  const pts=rig.sides[key].lazo.map(([x,y,z,w])=>{
+    const p=new THREE.Vector3(x,y,z);
+    return p.clone().lerp(p.applyMatrix4(pose),w);
+  });
+  const geometry=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),pts.length*2,4.8,10,false);
+  if (!mesh) {
+    mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:0x465258}));
+    modelGroup.add(mesh);
+    cache.set(id,mesh);
+  } else {
+    mesh.geometry.dispose();
+    mesh.geometry=geometry;
+    mesh.visible=true;
+  }
+  effects.visible(id,false);
+}
 export default {
   manifest: {schemaVersion:1, step:{path:"cad/humanoide_xavier.step"},parameters,features},
   update(ctx) {
@@ -166,6 +202,9 @@ export default {
       rotate("pie_"+key,[hipX,0,85],read("tobillo"));
       rotate("pantorrilla_"+key,[hipX,0,480],-read("rodilla"));
       rotate("pierna_"+key,[hipX,0,875],read("cadera"));
+      rotate("apertura_"+key,[hipX,0,875],-side*read("apertura"),[0,1,0]);
+      rotate("giro_"+key,[hipX,0,875],-side*read("giro"),[0,0,1]);
+      lazoCadera(ctx,key,side,read("cadera"),read("apertura"),read("giro"));
       routeCables(ctx,key,shoulder,elbow,wrist);
     }
   },

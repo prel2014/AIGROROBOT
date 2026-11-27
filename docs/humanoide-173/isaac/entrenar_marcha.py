@@ -8,14 +8,15 @@ from time import perf_counter
 
 import numpy as np
 from control_marcha import GANANCIAS_MARCHA, GANANCIAS_REPOSO, MARCHA, referencias, corregir_apoyos, frenar_con_apoyo
+from control_marcha import ARTICULACIONES, EJES_CONTROL, ACCIONES_MARCHA
+from control_marcha import APERTURA_MARCHA_GRADOS, REALIMENTACION_LATERAL, SESGO_FLEXION_GRADOS, SESGO_TOBILLO_GRADOS
+from control_marcha import GANANCIAS_CADERA_TRANSVERSAL, RESIDUO_SAGITAL, RESIDUO_GIRO, RESIDUO_APERTURA, RESIDUO_CADENCIA
+from control_marcha import punto_captura, postura_de_parada, UMBRAL_CAPTURA_M, ESPERA_EN_META_S
 from cargas_plantares import LADOS, ZONAS, integrar_contactos
 from situaciones import Secuencias
-from frenado import consignas as freno_entrenado, ventana_parada
 
 HERE = Path(__file__).resolve().parent
 PISTA = HERE / "pista_marcha_16.usda"
-ARTICULACIONES = [f"{eje}_{lado}" for lado in ("izq", "der")
-                  for eje in ("cadera", "rodilla", "tobillo")]
 DT = 1 / 120
 SUBPASOS = 6
 SUBPASOS_EQUILIBRIO = 2
@@ -36,16 +37,6 @@ class Pista:
 
         self.rng = np.random.default_rng(args.semilla)
         self.escenario = args.escenario
-        self.solo_frenado = getattr(args, "solo_frenado", False)
-        self.freno_referencia = getattr(args, "freno_referencia", False)
-        if self.solo_frenado:
-            import json
-            ajuste_freno = json.loads((HERE / "freno_sincronizado.json").read_text())
-            self.fase_freno = ajuste_freno.get("fase_rad")
-            if self.freno_referencia:
-                self.fase_freno = None
-            parametros = ajuste_freno["parametros"]
-            self.freno = np.tile(parametros, (16, 1))
         self.dt_control = PERIODO
         self.app = app
         ctx = omni.usd.get_context()
@@ -69,6 +60,10 @@ class Pista:
               f"Fabric {SimulationManager.is_fabric_enabled()}", flush=True)
         get_physx_interface().set_thread_count(4)
         self.paths = [f"/World/Xavier_{i:02}" for i in range(N)]
+        self.focales = [stage.GetPrimAtPath(p + "/cabeza/Camara").GetAttribute("focalLength") for p in self.paths]
+        self.focal_normal = self.focales[0].Get()
+        self.politica_paso = None
+        self.ruta_paso = getattr(args, "modelo_paso", HERE / "paso_visual_campus.pt")
         if not all(stage.GetPrimAtPath(p + "/pelvis/IMU") for p in self.paths):
             raise RuntimeError("Faltan robots o sensores en la pista de marcha.")
         if not all(stage.GetPrimAtPath(f"{p}/pie_{lado}/Cargas/{zona}")
@@ -101,24 +96,31 @@ class Pista:
         self.numeros = np.asarray(ids)
         tracks = [recorrido(i) for i in ids]
         self.start, self.heading, self.goal = (np.stack(x) for x in zip(*tracks))
-        self.joints = [self.robot.shared_metatype.dof_names.index(k) for k in ARTICULACIONES]
+        self.joints = [self.robot.shared_metatype.dof_names.index(k) for k in EJES_CONTROL]
         self.ids = np.arange(N, dtype=np.uint32)
         self.neutral = self.robot.get_dof_position_targets().copy()
         self.rest = self.robot.get_root_transforms().copy()
         self.limits = self.robot.get_dof_limits()[0, self.joints]
-        self.speeds = self.robot.get_dof_max_velocities()[0, self.joints]
+        self.speeds = self.robot.get_dof_max_velocities()[0, self.joints].copy()
+        # Velocidad de consigna al caminar. El límite físico del actuador sigue en el USD.
+        caderas = [i for i,eje in enumerate(EJES_CONTROL) if "cadera" in eje]
+        self.speeds[caderas] = np.minimum(self.speeds[caderas], np.deg2rad(45.))
         self.codos = [self.robot.shared_metatype.dof_names.index("codo_" + lado) for lado in LADOS]
         self.limites_codo = self.robot.get_dof_limits()[0, self.codos]
         self.vel_codo = self.robot.get_dof_max_velocities()[0, self.codos]
         self.kp = self.robot.get_dof_stiffnesses().copy()
         self.kd = self.robot.get_dof_dampings().copy()
+        self.ganancias_originales_transversales = [matriz[:, self.joints[6:]].copy() for matriz in (self.kp, self.kd)]
         self.parametros = np.tile(MARCHA, (N, 1))
         self.etapa = args.etapa or "equilibrio"
         self.foot_ids = [self.robot.shared_metatype.link_names.index("pie_" + s) for s in ("izq", "der")]
         self.indice_pie = {PhysicsSchemaTools.sdfPathToInt(Sdf.Path(f"{p}/pie_{lado}")): 2*i+j
                            for i, p in enumerate(order) for j, lado in enumerate(LADOS)}
         self.impulso_plantar = np.zeros((N, 2, 4))
-        self.peso = self.robot.get_masses().sum(axis=1) * 9.81
+        masas = self.robot.get_masses().copy()
+        self.peso = masas.sum(axis=1) * 9.81
+        self.fraccion_masa = (masas / masas.sum(axis=1, keepdims=True))[:, :, None]
+        self.centros_locales = self.robot.get_coms()[:, :, :3].copy()
         self.rgb = None
         self.monitor = None
         if args.visible:
@@ -171,9 +173,14 @@ class Pista:
     def reset(self):
         # Preparar toda la pista a la vez evita reaparecer sobre otro participante.
         root = self.rest.copy()
-        from pista_marcha import recorrido
+        from paso_visual import itinerarios_cruce, FOCAL_CRUCE_MM
         from scipy.spatial.transform import Rotation
-        self.start, self.heading, self.goal = (np.stack(x) for x in zip(*(recorrido(i) for i in self.numeros)))
+        focal = FOCAL_CRUCE_MM if self.etapa == "cruce" else self.focal_normal
+        if abs(self.focales[0].Get() - focal) > 1e-5:
+            for atributo in self.focales:
+                atributo.Set(focal)
+        if self.etapa == "cruce":
+            self.start, self.heading, self.goal, _ = itinerarios_cruce(self.rng, self.numeros)
         if self.etapa != "cruce":
             self.start = np.column_stack(((self.numeros % 4 - 1.5)*3.4, (self.numeros // 4 - 1.5)*3.4))
             if self.escenario != "pista":
@@ -181,7 +188,7 @@ class Pista:
             self.heading = np.tile((0., 1.), (16, 1))
             self.goal = self.start + self.heading * (1.3 if self.etapa == "marcha" else 0.)
         root[:, :2] = self.start + self.heading * self.rng.uniform(-.14, .14, (16, 1))
-        self.secuencia = Secuencias(self.rng, len(self.ids), self.solo_frenado) if self.etapa == "situaciones" else None
+        self.secuencia = Secuencias(self.rng, len(self.ids)) if self.etapa == "situaciones" else None
         if self.secuencia:
             self.goal = root[:, :2] + self.heading * self.secuencia.recorrido[:, None]
         root[:, 3:] = Rotation.from_rotvec(np.column_stack((np.zeros((16, 2)),
@@ -192,6 +199,7 @@ class Pista:
         self.robot.set_dof_positions(self.neutral, self.ids)
         self.robot.set_dof_velocities(np.zeros_like(self.neutral), self.ids)
         self.target = self.neutral.copy()
+        self.apoyo_final = np.zeros(16, bool)
         self.modo_movil = np.ones(16, bool)
         self.ajustar_ganancias(np.zeros(16, bool))
         self.robot.set_dof_position_targets(self.target, self.ids)
@@ -203,6 +211,9 @@ class Pista:
         self.phase = np.zeros(16)
         self.en_marcha = np.zeros(16)
         self.tiempo_freno = np.zeros(16)
+        self.tiempo_aproximacion = np.zeros(16)
+        self.segundos_estables = np.zeros(16)
+        self.parada_premiada = np.zeros(16, bool)
         self.inicio_freno = self.neutral[:, self.joints].copy()
         self.eventos = []
         self.parejas = set()
@@ -210,9 +221,15 @@ class Pista:
         self.caido = np.zeros(16, bool)
         self.chocado = np.zeros(16, bool)
         self.chocado_entorno = np.zeros(16, bool)
-        self.prioridad = self.rng.integers(0, 2, 4)
-        self.liberado = np.zeros(4, bool)
-        self.prev_action = np.zeros((16, 9 if self.secuencia else 7), np.float32)
+        self.vista_libre = np.zeros(16)
+        self.referencia_visual = None
+        self.ultimo_muestreo_visual = -1.
+        self.movimiento_derecha = np.zeros(16)
+        self.vio_trafico = np.zeros(16, bool)
+        self.en_travesia = np.zeros(16, bool)
+        self.salida_s = np.full(16, np.nan)
+        self.prev_action = np.zeros((16, len(ACCIONES_MARCHA) + (2 if self.secuencia else 0)), np.float32)
+        self.mando_marcha = np.zeros((16,len(ACCIONES_MARCHA)))
         self.active = np.ones(16, bool)
         self.time = 0.
         self.horizonte = {"equilibrio": 12., "marcha": 24., "cruce": 65., "situaciones": 14.}[self.etapa]
@@ -240,41 +257,57 @@ class Pista:
     def ajustar_ganancias(self, movil):
         if np.array_equal(self.modo_movil, movil):
             return
-        for matriz, reposo, marcha, enviar in (
-            (self.kp, GANANCIAS_REPOSO[0], GANANCIAS_MARCHA[0], self.robot.set_dof_stiffnesses),
-            (self.kd, GANANCIAS_REPOSO[1], GANANCIAS_MARCHA[1], self.robot.set_dof_dampings),
+        for indice, matriz, enviar in (
+            (0, self.kp, self.robot.set_dof_stiffnesses),
+            (1, self.kd, self.robot.set_dof_dampings),
         ):
-            matriz[:, self.joints] = np.where(movil[:, None], marcha * 2, reposo * 2)
+            matriz[:, self.joints[:6]] = np.where(movil[:, None], GANANCIAS_MARCHA[indice] * 2, GANANCIAS_REPOSO[indice] * 2)
+            if matriz is self.kd:
+                matriz[np.ix_(self.apoyo_final, self.joints[:6])] = 25.
+            transversal = self.ganancias_originales_transversales[indice] if self.secuencia else GANANCIAS_CADERA_TRANSVERSAL[indice] * 2
+            matriz[:, self.joints[6:]] = transversal
             enviar(matriz, self.ids)
         self.modo_movil = movil.copy()
 
-    def permiso(self, pose):
+    def decidir_salida(self):
         if self.secuencia:
             return self.secuencia.caminar()
         if self.etapa == "equilibrio":
             return np.zeros(16, bool)
         if self.etapa == "marcha":
             return np.ones(16, bool)
-        grupo = self.numeros // 4
-        primero = self.numeros % 2 == self.prioridad[grupo]
-        centro = self.start + self.heading * (.8 + 1.2 * ((self.numeros % 4) // 2))[:, None]
-        salida = ((pose[:, :2] - centro)*self.heading).sum(axis=1)
-        despejado = (salida > .67) | (~self.active & (np.linalg.norm(pose[:, :2]-centro, axis=1) > 1.75))
-        for i in range(4):
-            if self.liberado[i]:
-                continue
-            fila = (grupo == i) & primero
-            self.liberado[i] = np.all(despejado[fila])
-        return primero | self.liberado[grupo]
+        from paso_visual import PasoVisual
+        if self.politica_paso is None:
+            self.politica_paso = PasoVisual(self.ruta_paso)
+        mirando = self.active & ~self.en_travesia
+        if mirando.any():
+            riesgos = self.politica_paso.riesgo(self.rgb[mirando])
+            libre = riesgos.max(axis=1) < self.politica_paso.umbral
+            if getattr(self.politica_paso, "umbral_movimiento", None) is not None:
+                from paso_visual import vista_lateral, movimiento_lateral
+                self.vio_trafico[mirando] |= riesgos[:, 1] > .55
+                if self.time - self.ultimo_muestreo_visual >= .4 - 1e-6:
+                    lateral = vista_lateral(self.rgb)
+                    if self.referencia_visual is not None:
+                        self.movimiento_derecha = movimiento_lateral(self.referencia_visual, lateral)
+                    self.referencia_visual = lateral
+                    self.ultimo_muestreo_visual = self.time
+                libre &= ~(self.vio_trafico[mirando] & (
+                    self.movimiento_derecha[mirando] >= self.politica_paso.umbral_movimiento))
+            self.vista_libre[mirando] = np.where(libre, self.vista_libre[mirando] + PERIODO, 0.)
+            entrar = mirando & (self.vista_libre >= self.politica_paso.confirmacion_s) & (self.time >= .6)
+            self.salida_s[entrar] = self.time
+            self.en_travesia |= entrar
+        return self.en_travesia.copy()
 
     def terminado(self):
         if not self.active.any() or self.time + 1e-6 >= self.horizonte:
             return True
         if self.etapa == 'equilibrio':
             return False
-        pendientes = self.active & ~self.en_meta
-        if self.etapa == 'cruce':
-            pendientes &= self.permiso(self.robot.get_root_transforms())
+        pendientes = self.active & (~self.en_meta | (self.segundos_estables < ESPERA_EN_META_S))
+        if self.secuencia:
+            pendientes = self.active & ~self.en_meta
         return not pendientes.any()
 
     def verificar_sensores_y_contacto(self):
@@ -304,6 +337,23 @@ class Pista:
         self.avanzar(SUBPASOS)
         if self.impulso_plantar[a].any() or np.any(self.impulso_plantar.sum(axis=(1,2))[self.ids != a] <= 0.):
             raise RuntimeError("Fallo de descarga o atribución de las celdas al levantar un Xavier.")
+        # Un eje por robot en vuelo libre, para aislarlo de la reacción del suelo.
+        ejes = ["cadera_izq","cadera_der",*EJES_CONTROL[6:]]
+        columnas = [self.robot.shared_metatype.dof_names.index(n) for n in ejes]
+        root = self.robot.get_root_transforms().copy()
+        root[:,2] += .60
+        self.robot.set_root_transforms(root,self.ids)
+        self.robot.set_root_velocities(np.zeros((16,6),np.float32),self.ids)
+        inicial = self.robot.get_dof_positions().copy()  # PhysX reutiliza este búfer de lectura.
+        orden = inicial.copy()
+        filas = np.arange(len(ejes))
+        orden[filas,columnas] += np.deg2rad(5.)
+        self.robot.set_dof_position_targets(orden,self.ids)
+        self.avanzar(24)
+        cambio = np.rad2deg((self.robot.get_dof_positions()-inicial)[filas,columnas])
+        if not np.all(np.isfinite(cambio) & (cambio > 1.)):
+            raise RuntimeError(f"Mandos de cadera sin respuesta física: {dict(zip(ejes,cambio))}")
+        print(f"MARCHA seis ejes de cadera en PhysX, respuesta a +5 grados: {dict(zip(ejes,cambio.round(2).tolist()))}",flush=True)
         self.reset()
         root = self.robot.get_root_transforms().copy()
         root[b] = root[a]
@@ -370,46 +420,91 @@ class Pista:
         local = orientation.inv().apply(np.c_[direction, np.zeros(16)])
         q = self.robot.get_dof_positions()[:, self.joints]
         dq = self.robot.get_dof_velocities()[:, self.joints]
-        state = np.column_stack((self.imu, self.vertical, q, dq, self.prev_action[:, :7], np.sin(self.phase),
-                                 np.cos(self.phase), local[:, :2], self.cargas.reshape(16, 8)/self.peso[:, None]))
+        state = np.column_stack((self.imu, self.vertical, q[:,:6], dq[:,:6], self.mando_marcha[:, :7], np.sin(self.phase),
+                                 np.cos(self.phase), local[:, :2], self.cargas.reshape(16, 8)/self.peso[:, None],
+                                 q[:,6:], dq[:,6:], self.mando_marcha[:,7:11]))
         if self.secuencia:
             state = np.column_stack((state, self.secuencia.consignas(), self.robot.get_dof_positions()[:, self.codos],
-                                     self.secuencia.caminar(), self.prev_action[:, 7:]))
+                                     self.secuencia.caminar(), self.prev_action[:, 11:]))
         if not np.isfinite(state).all():
             raise RuntimeError("Estado físico o sensorial no finito.")
         return self.rgb, np.clip(state, -10, 10).astype(np.float32)
+
+    def medir_captura(self, eslabones, pies):
+        """Centro de masa de los 18 eslabones, proyectado en el eje del carril."""
+        from scipy.spatial.transform import Rotation
+        orientaciones = Rotation.from_quat(eslabones[:, :, 3:].reshape(-1, 4))
+        offsets = orientaciones.apply(self.centros_locales.reshape(-1, 3)).reshape(self.centros_locales.shape)
+        centro = (self.fraccion_masa * (eslabones[:, :, :3] + offsets)).sum(axis=1)
+        velocidad = (self.fraccion_masa * self.robot.get_link_velocities()[:, :, :3]).sum(axis=1)
+        return punto_captura(centro, velocidad, pies, self.heading), (velocidad[:, :2] * self.heading).sum(axis=1)
 
     def motores(self, action, mover, intervalo):
         from scipy.spatial.transform import Rotation
         pose = self.robot.get_root_transforms()
         rot = Rotation.from_quat(pose[:, 3:])
         velocidad_raiz = self.robot.get_root_velocities()
-        ajuste = np.clip(self.en_marcha - 2., 0., 1.)
-        self.phase += 2*np.pi*MARCHA[0]*intervalo*(1.+.012*ajuste*action[:, 6])*mover
+        eslabones = self.robot.get_link_transforms()
+        pies = eslabones[:, self.foot_ids, :3].mean(axis=1)
+        if not self.secuencia:
+            llegando = self.en_meta & self.active
+            if llegando.any():
+                captura, velocidad_centro = self.medir_captura(eslabones, pies)
+                buscando = llegando & ~self.apoyo_final
+                self.apoyo_final |= buscando & (captura <= UMBRAL_CAPTURA_M)
+                self.tiempo_aproximacion += intervalo * buscando
+            mover = mover & ~self.apoyo_final
+            self.ajustar_ganancias(mover)
+        # Constante de 0,20 s para que la exploración a 20 Hz no sacuda los apoyos.
+        self.mando_marcha += -np.expm1(-intervalo/.20)*(action[:,:11]-self.mando_marcha)
+        mando = self.mando_marcha
+        cadencia = .12 if self.secuencia else RESIDUO_CADENCIA
+        self.phase += 2*np.pi*self.parametros[:,0]*intervalo*(1.+cadencia*mando[:, 6])*mover
         q = self.robot.get_dof_positions()[:, self.joints]
         dq = self.robot.get_dof_velocities()[:, self.joints]
         amplitud = np.minimum(self.en_marcha/.7, 1.)
         desired = referencias(self.parametros, self.phase, amplitud,
-                              rot.as_matrix()[:, 2, :], rot.inv().apply(velocidad_raiz[:, 3:]), q, dq)
-        pies = self.robot.get_link_transforms()[:, self.foot_ids, :2].mean(axis=1)
-        separacion = ((pose[:, :2]-pies)*self.heading).sum(axis=1)
+                              rot.as_matrix()[:, 2, :], rot.inv().apply(velocidad_raiz[:, 3:]), q[:,:6], dq[:,:6])
+        separacion = ((pose[:, :2]-pies[:, :2])*self.heading).sum(axis=1)
         velocidad = (velocidad_raiz[:, :2]*self.heading).sum(axis=1)
         corregir_apoyos(desired, self.phase, amplitud, separacion, velocidad)
-        desired += np.deg2rad(.14 * ajuste[:, None] * action[:, :6])
-        desired[~mover] = np.deg2rad(.04 * action[~mover, :6]) if self.etapa == 'equilibrio' else 0.
+        desired[:,0::3] += np.deg2rad(SESGO_FLEXION_GRADOS)
+        desired[:,2::3] += np.deg2rad(SESGO_TOBILLO_GRADOS)
+        if not self.secuencia:
+            # Reduce el impulso hacia delante durante los últimos apoyos.
+            desired[:,2::3] -= np.deg2rad(5.) * np.minimum(self.tiempo_aproximacion / .55, 1.)[:,None]
         if self.secuencia:
-            frenar = (self.secuencia.tipo == 3) & ~mover & (self.en_marcha > 0.) & self.active
+            ajuste = (1.5 + np.clip(self.en_marcha - 2., 0., 1.))[:, None]
+            desired += np.deg2rad(ajuste * mando[:, :6])
+            desired[~mover] = np.deg2rad(.45 * mando[~mover, :6])
+        else:
+            desired += np.deg2rad(RESIDUO_SAGITAL * mando[:, :6])
+            desired[~mover] = 0.
+        frenar = self.apoyo_final & self.active
+        if self.secuencia:
+            frenar |= (self.secuencia.tipo == 3) & ~mover & (self.en_marcha > 0.) & self.active
+        if frenar.any():
             inicio = frenar & (self.tiempo_freno == 0.)
             self.inicio_freno[inicio] = q[inicio]
             self.tiempo_freno += intervalo * frenar
-            desired[frenar] = frenar_con_apoyo(self.inicio_freno[frenar], q[frenar], separacion[frenar],
-                                               velocidad[frenar], self.tiempo_freno[frenar])
-            if self.solo_frenado and not self.freno_referencia:
-                vertical = rot.as_matrix()[:, 2, :]
-                desired[frenar] = freno_entrenado(self.freno[frenar], self.inicio_freno[frenar], q[frenar],
-                    separacion[frenar], velocidad[frenar], np.arctan2(vertical[frenar, 1], vertical[frenar, 2]),
-                    self.tiempo_freno[frenar])
-            desired[frenar] += np.deg2rad(2.) * action[frenar, :6]
+            if self.secuencia:
+                desired[frenar] = frenar_con_apoyo(self.inicio_freno[frenar,:6], q[frenar,:6],
+                    separacion[frenar], velocidad[frenar], self.tiempo_freno[frenar])
+                desired[frenar] += np.deg2rad(2. * mando[frenar, :6])
+            else:
+                desired[frenar] = postura_de_parada(self.inicio_freno[frenar,:6], captura[frenar], velocidad_centro[frenar])
+        # Las convenciones anatómicas se espejan en el USD. Dos consignas independientes
+        # por pierna mantienen el equilibrio lateral y orientan el siguiente apoyo.
+        vertical = rot.as_matrix()[:,2,:]
+        balance = np.clip(REALIMENTACION_LATERAL*(-.35*np.arctan2(vertical[:,0],vertical[:,2])
+                          + .07*rot.inv().apply(velocidad_raiz[:,3:])[:,1]), -.08,.08)
+        apertura = np.deg2rad(APERTURA_MARCHA_GRADOS)*mover
+        lateral = np.column_stack((np.zeros(16),apertura+balance,np.zeros(16),apertura-balance))
+        escala = np.array([RESIDUO_GIRO, RESIDUO_APERTURA] * 2) * mover[:, None]
+        if self.secuencia:
+            escala = np.where(mover[:, None], [10., 6., 10., 6.], [1.5, 1., 1.5, 1.])
+        lateral += np.deg2rad(escala * mando[:,7:11])
+        desired = np.column_stack((desired,lateral))
         self.en_marcha += mover*intervalo
         desired = np.clip(desired, self.limits[:, 0], self.limits[:, 1])
         desired[~self.active] = 0.
@@ -417,9 +512,7 @@ class Pista:
         self.target[:, self.joints] = previous + np.clip(desired - previous, -self.speeds * intervalo, self.speeds * intervalo)
         if self.secuencia:
             previa = self.target[:, self.codos]
-            meta = self.secuencia.consignas() + np.deg2rad(18.) * action[:, 7:]
-            if self.solo_frenado:
-                meta[self.secuencia.fase < 2] = 0.
+            meta = self.secuencia.consignas() + np.deg2rad(18.) * action[:, 11:]
             meta[~self.active] = 0.
             meta = np.clip(meta, self.limites_codo[:, 0], self.limites_codo[:, 1])
             delta = np.minimum(self.vel_codo, np.deg2rad(85.)) * intervalo
@@ -428,13 +521,15 @@ class Pista:
 
     def step(self, action):
         from scipy.spatial.transform import Rotation
-        mover = self.permiso(self.robot.get_root_transforms()) & self.active & (self.time >= .6)
+        detenido = self.en_meta if self.secuencia else self.apoyo_final
+        mover = self.decidir_salida() & self.active & ~detenido & (self.time >= .6)
         self.ajustar_ganancias(mover)
         self.contactos.clear()
         self.contactos_entorno.clear()
         self.impulso_plantar.fill(0.)
         inicio = perf_counter()
-        bloque = SUBPASOS_EQUILIBRIO if mover.any() or self.secuencia else SUBPASOS
+        regular_apoyos = mover.any() or (self.apoyo_final & self.active).any() or self.secuencia
+        bloque = SUBPASOS_EQUILIBRIO if regular_apoyos else SUBPASOS
         for _ in range(SUBPASOS // bloque):
             self.motores(action, mover, DT * bloque)
             self.avanzar(bloque)
@@ -450,23 +545,18 @@ class Pista:
         gain = (self.distance - distance) * ~self.en_meta
         self.distance = distance
         fallen = (pose[:, 2] < .85) | (upright < .69)
-        if self.secuencia:
-            fallen &= self.active
         hit = np.zeros(16, bool)
         for a, b in self.contactos:
             indices = [self.contact_index[a], self.contact_index[b]]
-            if self.secuencia:
-                indices = [i for i in indices if self.active[i]]
-                if not indices:
-                    continue
-            hit[indices] = True
+            participantes = [i for i in indices if self.active[i]]
+            hit[participantes] = True
             if (a,b) not in self.parejas:
                 self.parejas.add((a,b))
                 self.eventos.append(dict(segundos=round(self.time + PERIODO, 2), tipo='contacto',
                     robots=self.numeros[indices].tolist(), xy=pose[indices, :2].round(3).tolist()))
         for robot, obstaculo in sorted(self.contactos_entorno):
             i = self.contact_index[robot]
-            if self.secuencia and not self.active[i]:
+            if not self.active[i]:
                 continue
             hit[i] = True
             if not self.chocado_entorno[i]:
@@ -492,21 +582,26 @@ class Pista:
         premio_tarea = 0.
         if self.secuencia:
             fase_antes = self.secuencia.fase.copy()
-            cerca_meta = (restante <= .06) & (distance < .22)
-            if self.solo_frenado and self.fase_freno is not None:
-                cerca_meta = ventana_parada(restante, self.phase, self.fase_freno, .40) & (distance < .22)
             arrived, premio_tarea = self.secuencia.actualizar(
                 PERIODO, self.active & ~hit & ~fallen & (self.time >= .6),
-                cerca_meta, self.steps, feet[:, :, :2].mean(axis=1), upright,
+                (restante <= .06) & (distance < .22), self.steps, feet[:, :, :2].mean(axis=1), upright,
                 np.linalg.norm(self.robot.get_root_velocities()[:, :2], axis=1),
                 self.robot.get_dof_positions()[:, self.codos], izq + der)
             for i in np.flatnonzero(self.secuencia.fase != fase_antes):
                 self.eventos.append(dict(tipo="fase", robot=int(self.numeros[i]), segundos=round(self.time + PERIODO, 2),
                                          fase_completada=int(fase_antes[i])))
         self.en_meta |= arrived
+        velocidad_horizontal = np.linalg.norm(self.robot.get_root_velocities()[:, :2], axis=1)
+        estable = self.apoyo_final & self.active & (upright > .96) & (velocidad_horizontal < .12)
+        self.segundos_estables = np.where(estable, self.segundos_estables + PERIODO, 0.)
+        premio_llegada = 8. * arrived
+        if not self.secuencia:
+            parada = (self.segundos_estables >= ESPERA_EN_META_S) & ~self.parada_premiada & ~fallen & ~hit
+            premio_llegada = 2. * arrived + 6. * parada
+            self.parada_premiada |= parada
         reward = (12 * gain * mover + .04 * upright - .15*(1.-upright) - .035 * near
                   - .009 * np.square(action - self.prev_action).mean(axis=1)
-                  + .08 * alternated * (gain > 0) + 8 * arrived + premio_tarea)
+                  + .08 * alternated * (gain > 0) + premio_llegada + premio_tarea)
         reward[fallen] = -4.
         reward[hit] = -7.
         self.prev_action = action.copy()
@@ -526,7 +621,8 @@ class Pista:
     def resultado(self):
         if self.secuencia:
             return self.en_meta.copy()
-        exito = self.active if self.etapa == "equilibrio" else (self.en_meta & (self.steps >= 2))
+        exito = self.active if self.etapa == "equilibrio" else (
+            self.en_meta & (self.steps >= 2) & (self.segundos_estables >= ESPERA_EN_META_S))
         return exito & ~self.caido & ~self.chocado
 
 
@@ -536,9 +632,45 @@ def ejecutar(args, app):
     torch.set_num_threads(2)
     torch.manual_seed(args.semilla)
     env = Pista(app, args)
+    def ejecutar_episodios(config, video):
+        from mostrar_cruce_visual import GrabadoraCruce
+        grabadora = GrabadoraCruce(env, video, args.robot_video, config.semilla) if video else None
+        try:
+            return aprender(config, env, grabadora)
+        finally:
+            if grabadora:
+                grabadora.cerrar()
+
     if args.verificar:
         env.verificar_sensores_y_contacto()
-    aprender(args, env)
+    if not args.validar_marcha:
+        ejecutar_episodios(args, args.video)
+        return
+    import hashlib
+    import json
+    from argparse import Namespace
+    digest = hashlib.sha256(args.modelo.read_bytes()).hexdigest()
+    digest_paso = hashlib.sha256(args.modelo_paso.read_bytes()).hexdigest()
+    resultado = dict(modelo=args.modelo.name, sha256=digest, modelo_paso=args.modelo_paso.name,
+                     sha256_paso=digest_paso, pruebas=[], aprobado=False)
+    for semilla in args.validar_marcha:
+        for etapa in ((args.etapa,) if args.etapa else ("marcha", "cruce")):
+            prueba = Namespace(**vars(args))
+            prueba.etapa, prueba.semilla, prueba.evaluar, prueba.informe = etapa, semilla, 1, None
+            env.rng = np.random.default_rng(semilla)
+            video = args.video if not resultado["pruebas"] and etapa == "cruce" else None
+            informe = ejecutar_episodios(prueba, video)
+            if (hashlib.sha256(args.modelo.read_bytes()).hexdigest() != digest or
+                    hashlib.sha256(args.modelo_paso.read_bytes()).hexdigest() != digest_paso):
+                raise RuntimeError("El checkpoint cambió durante la evaluación.")
+            resultado["pruebas"].append(informe)
+            args.informe.write_text(json.dumps(resultado, ensure_ascii=False, indent=2), encoding="utf8")
+    resultado["aprobado"] = all(
+        e["aprobados"] == e["llegadas"] == 16 and e["caidas"] == e["robots_con_choque"] == 0
+        for bloque in resultado["pruebas"] for e in bloque["episodios"])
+    args.informe.write_text(json.dumps(resultado, ensure_ascii=False, indent=2), encoding="utf8")
+    if not resultado["aprobado"]:
+        raise RuntimeError("Al menos un Xavier no completó su recorrido sin incidencias.")
 
 
 if __name__ == "__main__":
@@ -546,32 +678,40 @@ if __name__ == "__main__":
     parser.add_argument("--iteraciones", type=int, default=300)
     parser.add_argument("--pasos", type=int, default=64, help="Decisiones por robot y actualización PPO.")
     parser.add_argument("--semilla", type=int, default=17)
-    parser.add_argument("--solo-frenado", action="store_true", help="Entrena caminar, detenerse, gesticular y volver al reposo.")
-    parser.add_argument("--freno-referencia", action="store_true", help="Evalúa el controlador previo con el mismo protocolo de parada.")
     parser.add_argument("--modelo", type=Path)
-    parser.add_argument("--inicial", type=Path, help="Política de marcha para inicializar un entrenamiento de situaciones.")
+    parser.add_argument("--modelo-paso", type=Path, default=HERE / "paso_visual_campus.pt", help="Red de paso/espera a partir del RGB local.")
+    parser.add_argument("--inicial", type=Path, help="Transfiere una política de marcha a una nueva ejecución de PPO.")
     parser.add_argument("--etapa", choices=("equilibrio", "marcha", "cruce", "situaciones"))
-    parser.add_argument("--escenario", choices=("campus", "calle", "vivienda", "residencial", "acopio", "pista"), default="campus",
+    parser.add_argument("--escenario", choices=("campus", "calle", "vivienda", "pista"), default="campus",
                         help="Entorno físico y visual compartido por los 16 robots (por defecto, campus).")
     parser.add_argument("--reanudar", action="store_true")
     parser.add_argument("--evaluar", type=int, metavar="EPISODIOS")
+    parser.add_argument("--validar-marcha", type=int, nargs="+", metavar="SEMILLA",
+                        help="Evalúa los 16 robots en recta y cruce con el mismo checkpoint para cada semilla.")
     parser.add_argument("--informe", type=Path, help="Resultados de evaluación por robot en JSON.")
+    parser.add_argument("--video", type=Path, help="Graba la primera prueba de cruce con una cámara individual.")
+    parser.add_argument("--robot-video", type=int, default=0, choices=range(16))
     parser.add_argument("--visible", action="store_true")
     parser.add_argument("--fisica", choices=("cpu", "gpu"), default="cpu", help="Dispositivo del solver PhysX.")
     parser.add_argument("--verificar", action="store_true", help="Prueba las cámaras, las IMU y un choque controlado antes de empezar.")
     parser.add_argument("--captura", type=Path, help="Mosaico PNG de las 16 cámaras al empezar.")
     args, kit_args = parser.parse_known_args()
-    if args.solo_frenado and args.etapa != "situaciones":
-        parser.error("--solo-frenado requiere --etapa situaciones.")
-    if args.freno_referencia and not (args.solo_frenado and args.evaluar):
-        parser.error("--freno-referencia se usa con --solo-frenado y --evaluar.")
+    if args.video and (args.etapa != "cruce" or not (args.validar_marcha or args.evaluar == 1)):
+        parser.error("--video requiere --etapa cruce y --evaluar 1 o --validar-marcha.")
     if args.modelo is None:
-        args.modelo = HERE / ("situaciones.pt" if args.etapa == "situaciones" else "marcha_cargas.pt")
-        if args.solo_frenado and not args.freno_referencia:
-            args.modelo = HERE / "frenado_ppo.pt"
-    if args.inicial and (args.evaluar or args.reanudar or args.etapa != "situaciones" or
+        if args.etapa == "situaciones":
+            args.modelo = HERE / "situaciones_cadera_3ejes.pt"
+        elif args.evaluar or args.validar_marcha:
+            args.modelo = HERE / "marcha_campus_validada.pt"
+        else:
+            args.modelo = HERE / "marcha_cadera_estable.pt"
+    if args.validar_marcha:
+        if not args.informe or args.evaluar or args.reanudar or args.inicial or args.etapa not in (None, "cruce"):
+            parser.error("--validar-marcha requiere --informe y acepta --etapa cruce para evaluar sólo los cruces.")
+        args.evaluar = 1
+    if args.inicial and (args.evaluar or args.reanudar or
                          not args.inicial.is_file() or args.inicial.resolve() == args.modelo.resolve()):
-        parser.error("--inicial requiere una política existente, una salida distinta y una ejecución nueva de situaciones.")
+        parser.error("--inicial requiere una política de marcha existente, una salida distinta y una ejecución nueva.")
     if args.iteraciones < 1 or args.pasos < 2 or (args.evaluar is not None and args.evaluar < 1):
         parser.error("Se requieren iteraciones y episodios positivos y al menos dos pasos por actualización.")
     if (args.reanudar or args.evaluar) and not args.modelo.is_file():

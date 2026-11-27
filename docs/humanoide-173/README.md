@@ -1,6 +1,8 @@
 # Humanoide bípedo Xavier (1,73 m)
 
-Instantánea del proyecto local del 26 de noviembre de 2026. Consulta [Proyecto.md](Proyecto.md) para el diseño y el estado de las pruebas.
+Instantánea del proyecto local del 27 de noviembre de 2026. Consulta [Proyecto.md](Proyecto.md) para el diseño y el estado de las pruebas.
+
+Los 16 Xavier completaron las tres pruebas del campus con su cámara individual de 256 × 256. Hubo 48 llegadas estables, cero caídas y cero contactos. [Vídeo](isaac/cruce_visual_campus_16.mp4) · [Informe por robot](isaac/validacion_cruce_visual.json) · [Política visual](isaac/paso_visual_campus.pt)
 
 ## Archivos principales
 
@@ -14,7 +16,7 @@ Instantánea del proyecto local del 26 de noviembre de 2026. Consulta [Proyecto.
 
 En [paquetes](paquetes/) se incluyen el STEP completo de Xavier, los componentes CAD, electrónica, control CAN, animación y referencias.
 
-Tres ZIP grandes están divididos en archivos `.part001`, `.part002`, etc. Descarga todas sus partes junto con `partes.json` y `reunir_partes.py` y ejecuta:
+Los ZIP grandes están divididos en archivos `.part001`, `.part002`, etc. Descarga todas sus partes junto con `partes.json` y `reunir_partes.py` y ejecuta:
 
 ```bash
 python paquetes/reunir_partes.py

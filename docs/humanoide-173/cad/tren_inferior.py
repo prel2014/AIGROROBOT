@@ -105,8 +105,10 @@ class Leg:
         hollow=skin(0)-inside
         if thigh:
             # The two looms exit through the outboard wall above the fixed motor.
-            from equipo_rodilla import GUIDE_HEIGHTS,outlet
+            from equipo_rodilla import GUIDE_HEIGHTS,loom,outlet,pelvis_route
             hollow=hollow-outlet(self)
+            paso=loom(self,'Paso posterior para funda',pelvis_route()[6:10],6.3,DARK,12)
+            hollow=hollow-paso
             rail=pieces[9]
             pieces[9]=part(rail-[self.pin(20,25,z,1.5) for z in GUIDE_HEIGHTS],rail.label,FRAME)
         middle=(base+top)/2

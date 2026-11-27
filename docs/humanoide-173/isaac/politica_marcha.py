@@ -13,12 +13,13 @@ from torch.nn.functional import pad
 from torch.distributions import Normal
 
 from cargas_plantares import LADOS, ZONAS
+from control_marcha import ACCIONES_MARCHA, EJES_CONTROL, ESPERA_EN_META_S
 from situaciones import ACCIONES_ADICIONALES, CONTRATO, OBS_ADICIONALES, TAREAS
 
 ENTRADAS_PLANTARES = [f"{lado}/{zona}" for lado in LADOS for zona in ZONAS]
 
 class Politica(nn.Module):
-    def __init__(self, estado, acciones=7):
+    def __init__(self, estado, acciones=len(ACCIONES_MARCHA)):
         super().__init__()
         self.vision = nn.Sequential(nn.Conv2d(3, 12, 5, stride=3), nn.SiLU(),
                                     nn.Conv2d(12, 16, 3, stride=2), nn.SiLU(),
@@ -104,13 +105,15 @@ def restaurar(ckpt, model, optim=None):
                     optim.state[capa][nombre] = pad(valor, (0, adicionales))
 
 
-def aprender(args, env):
+def aprender(args, env, grabadora=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     ckpt = None
     if args.reanudar or args.evaluar:
         ckpt = torch.load(args.modelo, map_location="cpu", weights_only=True)
         env.etapa = args.etapa or ckpt.get("etapa", "equilibrio")
     obs = tensores(env.reset(), device)
+    if grabadora:
+        grabadora.capturar()
     if args.captura:
         from PIL import Image
         ordered = [env.rgb[env.contact_index[p]] for p in env.paths]
@@ -120,8 +123,14 @@ def aprender(args, env):
     inicio = 0
     racha = 0
     if args.inicial:
-        base = Politica(obs[1].shape[1] - len(OBS_ADICIONALES))
-        restaurar(torch.load(args.inicial, map_location="cpu", weights_only=True), base)
+        anterior = torch.load(args.inicial, map_location="cpu", weights_only=True)
+        n = anterior["politica"]["media.bias"].numel()
+        if n not in (7,len(ACCIONES_MARCHA)):
+            raise ValueError("--inicial necesita una política de locomoción.")
+        estado_base = obs[1].shape[1] - (len(OBS_ADICIONALES) if env.secuencia else 0)
+        # Los doce canales nuevos se agregan después de las observaciones plantares.
+        base = Politica(estado_base - (12 if n == 7 else 0), n)
+        restaurar(anterior, base)
         pesos = model.state_dict()
         # Los nuevos canales empiezan con residuo cero y un optimizador propio.
         for nombre, origen in base.state_dict().items():
@@ -131,6 +140,8 @@ def aprender(args, env):
             destino[tuple(slice(0, n) for n in origen.shape)].copy_(origen)
         model.load_state_dict(pesos)
     if ckpt is not None:
+        if (ckpt.get("perfil") or {}).get("acciones_marcha") != ACCIONES_MARCHA:
+            raise ValueError("Este checkpoint usa otro esquema de cadera. Usa --inicial para transferir una política de marcha.")
         if env.secuencia and ckpt.get("perfil"):
             perfil_guardado = ckpt["perfil"]
             if (perfil_guardado.get("contrato") != CONTRATO or
@@ -146,13 +157,21 @@ def aprender(args, env):
           f"cargas N {env.cargas.shape}, estado {tuple(obs[1].shape)}, "
           f"aceleración media {9.81 * env.imu[:, 2].mean():.2f} m/s²", flush=True)
     episode = 0
+    nivel = env.etapa
     perfil = dict(semilla=args.semilla, escenario=env.escenario, solver=args.fisica, rgb=list(obs[0].shape[1:]),
-                  periodo_control_s=env.dt_control, contrato=CONTRATO if env.secuencia else "xavier-marcha-plantar",
+                  periodo_control_s=env.dt_control, contrato=CONTRATO if env.secuencia else "xavier-marcha-cadera-3ejes",
+                  ejes_controlados=EJES_CONTROL, acciones_marcha=ACCIONES_MARCHA,
                   observaciones_adicionales=OBS_ADICIONALES if env.secuencia else (),
                   acciones_adicionales=ACCIONES_ADICIONALES if env.secuencia else ())
-    if env.solo_frenado:
-        perfil.update(tarea="frenado_y_brazos_v2", referencia=env.freno_referencia,
-                      parametros_freno=None if env.freno_referencia else env.freno[0].tolist(), fase_rad=env.fase_freno)
+    if not env.secuencia:
+        perfil.update(controlador="marcha residual con parada en doble apoyo", permanencia_en_meta_s=ESPERA_EN_META_S)
+    if env.etapa == "cruce":
+        aperture = env.focales[0].GetPrim().GetAttribute("horizontalAperture").Get()
+        perfil["decision_de_paso"] = dict(
+            observacion="RGB de la cámara de la cabeza del propio Xavier",
+            resolucion=[256, 256], posiciones_de_otros_robots=False, turnos_asignados=False,
+            campo_horizontal_grados=round(float(np.rad2deg(2*np.arctan(aperture/(2*env.focales[0].Get())))), 2),
+            reevalua="Durante la espera, hasta comprometerse a atravesar el cruce.")
     evaluaciones = []
     iterations = count(inicio + 1) if args.evaluar else range(inicio + 1, inicio + args.iteraciones + 1)
     for it in iterations:
@@ -169,8 +188,21 @@ def aprender(args, env):
                 raw = dist.mean if args.evaluar else dist.sample()
                 logp = dist.log_prob(raw).sum(-1)
             active = torch.as_tensor(env.active.copy(), device=device)
+            auditar_entrada = args.evaluar and env.etapa == "cruce"
+            if auditar_entrada:
+                antes_entrada = env.en_travesia.copy()
             new_obs, reward = env.step(raw.tanh().cpu().numpy())
+            if auditar_entrada:
+                entraron = np.flatnonzero(env.en_travesia & ~antes_entrada)
+                if len(entraron):
+                    xy = env.robot.get_root_transforms()[:, :2]
+                    for i in entraron:
+                        env.eventos.append(dict(tipo="entrada", segundos=round(float(env.salida_s[i]), 2),
+                            robot=int(env.numeros[i]), xy=xy[i].round(3).tolist(),
+                            rumbo=env.heading[i].tolist()))
             ended = env.terminado()
+            if grabadora:
+                grabadora.capturar(ended)
             cont = torch.as_tensor(env.active.copy(), device=device) & (not ended)
             if not args.evaluar:
                 buffer.append((*obs, raw, logp, value, torch.as_tensor(reward, device=device), cont, active))
@@ -178,15 +210,27 @@ def aprender(args, env):
                 episode += 1
                 aprobados = env.resultado()
                 if args.evaluar:
+                    centro_pies = env.robot.get_link_transforms()[:, env.foot_ids, :2].mean(axis=1)
+                    distancia_final = np.linalg.norm(env.goal - centro_pies, axis=1)
+                    rapidez_final = np.linalg.norm(env.robot.get_root_velocities()[:, :2], axis=1)
                     evaluaciones.append(dict(etapa=env.etapa, episodio=episode, segundos=round(env.time, 2),
+                        **(dict(decision="RGB local 256x256", sin_iniciar=int(np.isnan(env.salida_s).sum()),
+                                sin_llegar=int((~env.en_meta).sum()), horizonte_s=env.horizonte)
+                           if env.etapa == "cruce" else {}),
                         aprobados=int(aprobados.sum()), caidas=env.falls, robots_con_choque=env.hits,
-                        choques_con_entorno=int(env.chocado_entorno.sum()), llegadas=env.arrivals, eventos=env.eventos,
+                        choques_con_entorno=int(env.chocado_entorno.sum()), parejas_en_contacto=len(env.parejas),
+                        llegadas=env.arrivals, eventos=env.eventos,
                         robots=[dict(id=int(env.numeros[i]), aprobado=bool(aprobados[i]),
+                        **(dict(inicio_cruce_s=round(float(env.salida_s[i]), 2) if np.isfinite(env.salida_s[i]) else None)
+                           if env.etapa == "cruce" else {}),
                         **(dict(tarea=TAREAS[env.secuencia.tipo[i]], fases=int(env.secuencia.fase[i]),
                                 distancia_objetivo_m=round(float(env.secuencia.recorrido[i]), 3),
                                 angulo_objetivo_grados=round(float(np.rad2deg(env.secuencia.angulo[i])), 2),
                                 lado_inicial=LADOS[env.secuencia.lado[i]]) if env.secuencia else {}),
                         avance_m=round(float(env.avance[i]),3), alternancias=int(env.steps[i]),
+                        segundos_estables_en_meta=round(float(env.segundos_estables[i]), 2),
+                        distancia_final_a_meta_m=round(float(distancia_final[i]), 3),
+                        rapidez_horizontal_final_m_s=round(float(rapidez_final[i]), 3),
                         maximos_plantares_N=np.round(env.cargas_maximas[i], 2).tolist(),
                         distancia_minima_entre_pelvis_m=round(float(env.separacion_minima[i]),3),
                         caida=bool(env.caido[i]), choque=bool(env.chocado[i]), meta=bool(env.en_meta[i]))
@@ -194,26 +238,32 @@ def aprender(args, env):
                 print(f"MARCHA {env.etapa} episodio {episode}: aprobados {aprobados.sum()}/16, "
                       f"avance medio {env.avance.mean():.3f} m, "
                       f"alternancias {env.steps.sum()}, robots con choque {env.hits}/16, "
+                      f"parejas en contacto {len(env.parejas)}, con obstáculo {env.chocado_entorno.sum()}/16, "
                       f"caídas {env.falls}/16, llegadas {env.arrivals}/16", flush=True)
-                if args.evaluar and args.informe:
-                    args.informe.write_text(json.dumps(dict(semilla=args.semilla, iteracion=inicio, escenario=env.escenario,
-                        pies=LADOS, zonas_por_pie=ZONAS, perfil=perfil,
-                        episodios=evaluaciones), ensure_ascii=False, indent=2), encoding="utf8")
-                if args.evaluar and episode >= args.evaluar:
-                    return
+                if args.evaluar:
+                    informe = dict(semilla=args.semilla, iteracion=inicio, escenario=env.escenario,
+                                   pies=LADOS, zonas_por_pie=ZONAS, perfil=perfil, episodios=evaluaciones)
+                    if args.informe:
+                        args.informe.write_text(json.dumps(informe, ensure_ascii=False, indent=2), encoding="utf8")
+                    if episode >= args.evaluar:
+                        return informe
                 if not args.evaluar:
-                    racha = racha + 1 if aprobados.all() else 0
-                    if racha >= 2 and env.etapa in ("equilibrio", "marcha"):
-                        env.etapa = "marcha" if env.etapa == "equilibrio" else "cruce"
-                        racha = 0
-                        print(f"MARCHA siguiente etapa: {env.etapa}", flush=True)
+                    if env.etapa == nivel:
+                        racha = racha + 1 if aprobados.all() else 0
+                        if racha >= 2 and nivel in ("equilibrio", "marcha"):
+                            nivel = "marcha" if nivel == "equilibrio" else "cruce"
+                            racha = 0
+                            print(f"MARCHA siguiente etapa: {nivel}", flush=True)
+                    # Exponer a encuentros reales desde la etapa de marcha, aunque
+                    # algunos robots aún no completen todo el trayecto recto.
+                    env.etapa = "cruce" if nivel == "marcha" and episode % 3 == 2 else nivel
                 new_obs = env.reset()
             obs = tensores(new_obs, device)
         if not args.evaluar:
             with torch.no_grad():
                 _, bootstrap = model(*obs)
             samples = actualizar(model, optim, buffer, bootstrap)
-            guardar(args.modelo, model, optim, it, env.etapa, racha, env.escenario, perfil)
+            guardar(args.modelo, model, optim, it, nivel, racha, env.escenario, perfil)
             wall = perf_counter() - start
             fps = args.pasos / wall
             print(f"MARCHA PPO {it}: {samples} muestras activas, {fps:.2f} FPS/cámara, "

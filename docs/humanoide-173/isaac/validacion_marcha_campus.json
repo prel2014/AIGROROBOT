@@ -1,0 +1,3031 @@
+{
+  "modelo": "marcha_campus_validada.pt",
+  "sha256": "76a7b1f50aa2b0897f240cb01c772ea530e04e47e58f649949d80eb44db4e71a",
+  "pruebas": [
+    {
+      "semilla": 937,
+      "iteracion": 82,
+      "escenario": "campus",
+      "pies": [
+        "izq",
+        "der"
+      ],
+      "zonas_por_pie": [
+        "TalonInterior",
+        "TalonExterior",
+        "AntepieInterior",
+        "AntepieExterior"
+      ],
+      "perfil": {
+        "semilla": 937,
+        "escenario": "campus",
+        "solver": "cpu",
+        "rgb": [
+          256,
+          256,
+          3
+        ],
+        "periodo_control_s": 0.05,
+        "contrato": "xavier-marcha-cadera-3ejes",
+        "ejes_controlados": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "acciones_marcha": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "cadencia",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "observaciones_adicionales": [],
+        "acciones_adicionales": [],
+        "controlador": "marcha residual con parada en doble apoyo",
+        "permanencia_en_meta_s": 1.0
+      },
+      "episodios": [
+        {
+          "etapa": "marcha",
+          "episodio": 1,
+          "segundos": 10.85,
+          "aprobados": 16,
+          "caidas": 0,
+          "robots_con_choque": 0,
+          "choques_con_entorno": 0,
+          "parejas_en_contacto": 0,
+          "llegadas": 16,
+          "eventos": [],
+          "robots": [
+            {
+              "id": 0,
+              "aprobado": true,
+              "avance_m": 1.24,
+              "alternancias": 23,
+              "segundos_estables_en_meta": 2.3,
+              "distancia_final_a_meta_m": 0.163,
+              "rapidez_horizontal_final_m_s": 0.019,
+              "maximos_plantares_N": [
+                [
+                  178.95,
+                  185.87,
+                  93.54,
+                  87.34
+                ],
+                [
+                  204.1,
+                  188.28,
+                  88.31,
+                  98.38
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.024,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 1,
+              "aprobado": true,
+              "avance_m": 1.257,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 2.4,
+              "distancia_final_a_meta_m": 0.172,
+              "rapidez_horizontal_final_m_s": 0.018,
+              "maximos_plantares_N": [
+                [
+                  188.18,
+                  184.1,
+                  110.99,
+                  72.68
+                ],
+                [
+                  203.37,
+                  187.35,
+                  91.23,
+                  95.35
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.024,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 2,
+              "aprobado": true,
+              "avance_m": 1.156,
+              "alternancias": 20,
+              "segundos_estables_en_meta": 2.9,
+              "distancia_final_a_meta_m": 0.175,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  189.22,
+                  190.03,
+                  95.4,
+                  73.74
+                ],
+                [
+                  199.07,
+                  184.65,
+                  92.6,
+                  91.95
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.016,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 3,
+              "aprobado": true,
+              "avance_m": 1.202,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 2.25,
+              "distancia_final_a_meta_m": 0.168,
+              "rapidez_horizontal_final_m_s": 0.03,
+              "maximos_plantares_N": [
+                [
+                  185.74,
+                  180.71,
+                  87.26,
+                  77.33
+                ],
+                [
+                  188.62,
+                  183.8,
+                  92.95,
+                  73.4
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.016,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 4,
+              "aprobado": true,
+              "avance_m": 1.345,
+              "alternancias": 21,
+              "segundos_estables_en_meta": 1.0,
+              "distancia_final_a_meta_m": 0.137,
+              "rapidez_horizontal_final_m_s": 0.008,
+              "maximos_plantares_N": [
+                [
+                  186.69,
+                  184.3,
+                  92.08,
+                  88.63
+                ],
+                [
+                  202.41,
+                  189.32,
+                  72.48,
+                  87.01
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.0,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 5,
+              "aprobado": true,
+              "avance_m": 1.177,
+              "alternancias": 18,
+              "segundos_estables_en_meta": 1.9,
+              "distancia_final_a_meta_m": 0.142,
+              "rapidez_horizontal_final_m_s": 0.029,
+              "maximos_plantares_N": [
+                [
+                  183.42,
+                  184.47,
+                  84.84,
+                  74.37
+                ],
+                [
+                  199.7,
+                  190.09,
+                  94.05,
+                  81.02
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.0,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 6,
+              "aprobado": true,
+              "avance_m": 1.114,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 2.05,
+              "distancia_final_a_meta_m": 0.208,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  176.72,
+                  180.65,
+                  90.31,
+                  85.97
+                ],
+                [
+                  199.93,
+                  182.92,
+                  90.04,
+                  78.92
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.951,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 7,
+              "aprobado": true,
+              "avance_m": 1.177,
+              "alternancias": 18,
+              "segundos_estables_en_meta": 1.9,
+              "distancia_final_a_meta_m": 0.153,
+              "rapidez_horizontal_final_m_s": 0.017,
+              "maximos_plantares_N": [
+                [
+                  178.17,
+                  189.35,
+                  95.42,
+                  97.32
+                ],
+                [
+                  204.06,
+                  184.6,
+                  83.48,
+                  103.66
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.951,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 8,
+              "aprobado": true,
+              "avance_m": 1.159,
+              "alternancias": 21,
+              "segundos_estables_en_meta": 2.0,
+              "distancia_final_a_meta_m": 0.178,
+              "rapidez_horizontal_final_m_s": 0.025,
+              "maximos_plantares_N": [
+                [
+                  185.71,
+                  182.54,
+                  90.18,
+                  77.5
+                ],
+                [
+                  188.61,
+                  187.52,
+                  94.17,
+                  89.12
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.997,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 9,
+              "aprobado": true,
+              "avance_m": 1.178,
+              "alternancias": 16,
+              "segundos_estables_en_meta": 2.95,
+              "distancia_final_a_meta_m": 0.15,
+              "rapidez_horizontal_final_m_s": 0.013,
+              "maximos_plantares_N": [
+                [
+                  189.31,
+                  179.25,
+                  117.61,
+                  89.49
+                ],
+                [
+                  196.92,
+                  183.32,
+                  85.12,
+                  82.89
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.997,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 10,
+              "aprobado": true,
+              "avance_m": 1.13,
+              "alternancias": 16,
+              "segundos_estables_en_meta": 2.6,
+              "distancia_final_a_meta_m": 0.151,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  178.24,
+                  179.66,
+                  96.35,
+                  91.13
+                ],
+                [
+                  196.54,
+                  188.02,
+                  89.72,
+                  80.81
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.02,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 11,
+              "aprobado": true,
+              "avance_m": 1.26,
+              "alternancias": 15,
+              "segundos_estables_en_meta": 2.6,
+              "distancia_final_a_meta_m": 0.133,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  178.6,
+                  181.66,
+                  85.18,
+                  94.86
+                ],
+                [
+                  198.06,
+                  184.31,
+                  84.23,
+                  85.15
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.02,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 12,
+              "aprobado": true,
+              "avance_m": 1.318,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 1.95,
+              "distancia_final_a_meta_m": 0.153,
+              "rapidez_horizontal_final_m_s": 0.017,
+              "maximos_plantares_N": [
+                [
+                  179.61,
+                  181.41,
+                  121.83,
+                  90.84
+                ],
+                [
+                  186.35,
+                  219.59,
+                  85.31,
+                  82.53
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.012,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 13,
+              "aprobado": true,
+              "avance_m": 1.135,
+              "alternancias": 16,
+              "segundos_estables_en_meta": 1.9,
+              "distancia_final_a_meta_m": 0.148,
+              "rapidez_horizontal_final_m_s": 0.033,
+              "maximos_plantares_N": [
+                [
+                  190.63,
+                  183.3,
+                  97.39,
+                  78.3
+                ],
+                [
+                  194.04,
+                  185.79,
+                  98.72,
+                  83.55
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.012,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 14,
+              "aprobado": true,
+              "avance_m": 1.296,
+              "alternancias": 21,
+              "segundos_estables_en_meta": 2.35,
+              "distancia_final_a_meta_m": 0.167,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  187.73,
+                  181.46,
+                  93.81,
+                  72.84
+                ],
+                [
+                  195.75,
+                  188.95,
+                  89.12,
+                  77.16
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.975,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 15,
+              "aprobado": true,
+              "avance_m": 1.288,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 1.95,
+              "distancia_final_a_meta_m": 0.153,
+              "rapidez_horizontal_final_m_s": 0.022,
+              "maximos_plantares_N": [
+                [
+                  191.75,
+                  180.82,
+                  94.86,
+                  77.43
+                ],
+                [
+                  198.2,
+                  208.96,
+                  90.88,
+                  78.29
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.975,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "semilla": 937,
+      "iteracion": 82,
+      "escenario": "campus",
+      "pies": [
+        "izq",
+        "der"
+      ],
+      "zonas_por_pie": [
+        "TalonInterior",
+        "TalonExterior",
+        "AntepieInterior",
+        "AntepieExterior"
+      ],
+      "perfil": {
+        "semilla": 937,
+        "escenario": "campus",
+        "solver": "cpu",
+        "rgb": [
+          256,
+          256,
+          3
+        ],
+        "periodo_control_s": 0.05,
+        "contrato": "xavier-marcha-cadera-3ejes",
+        "ejes_controlados": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "acciones_marcha": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "cadencia",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "observaciones_adicionales": [],
+        "acciones_adicionales": [],
+        "controlador": "marcha residual con parada en doble apoyo",
+        "permanencia_en_meta_s": 1.0
+      },
+      "episodios": [
+        {
+          "etapa": "cruce",
+          "episodio": 1,
+          "segundos": 36.1,
+          "aprobados": 16,
+          "caidas": 0,
+          "robots_con_choque": 0,
+          "choques_con_entorno": 0,
+          "parejas_en_contacto": 0,
+          "llegadas": 16,
+          "eventos": [],
+          "robots": [
+            {
+              "id": 0,
+              "aprobado": true,
+              "avance_m": 2.72,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 21.05,
+              "distancia_final_a_meta_m": 0.183,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  182.5,
+                  187.31,
+                  82.93,
+                  80.18
+                ],
+                [
+                  203.63,
+                  187.88,
+                  94.79,
+                  72.52
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.811,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 1,
+              "aprobado": true,
+              "avance_m": 2.704,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 5.65,
+              "distancia_final_a_meta_m": 0.118,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  184.52,
+                  180.11,
+                  96.47,
+                  75.85
+                ],
+                [
+                  195.97,
+                  194.02,
+                  97.46,
+                  72.09
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.811,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 2,
+              "aprobado": true,
+              "avance_m": 2.703,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 17.75,
+              "distancia_final_a_meta_m": 0.224,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  186.63,
+                  181.12,
+                  95.32,
+                  117.01
+                ],
+                [
+                  194.25,
+                  185.21,
+                  90.8,
+                  72.99
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.811,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 3,
+              "aprobado": true,
+              "avance_m": 2.715,
+              "alternancias": 35,
+              "segundos_estables_en_meta": 1.25,
+              "distancia_final_a_meta_m": 0.175,
+              "rapidez_horizontal_final_m_s": 0.055,
+              "maximos_plantares_N": [
+                [
+                  183.92,
+                  192.84,
+                  94.13,
+                  101.13
+                ],
+                [
+                  196.78,
+                  187.64,
+                  85.67,
+                  103.08
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.007,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 4,
+              "aprobado": true,
+              "avance_m": 2.775,
+              "alternancias": 44,
+              "segundos_estables_en_meta": 4.85,
+              "distancia_final_a_meta_m": 0.137,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  185.71,
+                  189.66,
+                  90.96,
+                  89.68
+                ],
+                [
+                  201.03,
+                  187.41,
+                  91.58,
+                  111.18
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.824,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 5,
+              "aprobado": true,
+              "avance_m": 2.548,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 21.7,
+              "distancia_final_a_meta_m": 0.192,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  179.93,
+                  184.52,
+                  96.72,
+                  79.83
+                ],
+                [
+                  199.44,
+                  187.19,
+                  92.05,
+                  81.92
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.879,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 6,
+              "aprobado": true,
+              "avance_m": 2.604,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 1.65,
+              "distancia_final_a_meta_m": 0.18,
+              "rapidez_horizontal_final_m_s": 0.046,
+              "maximos_plantares_N": [
+                [
+                  181.34,
+                  179.05,
+                  80.73,
+                  79.77
+                ],
+                [
+                  196.37,
+                  184.03,
+                  96.66,
+                  78.82
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.904,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 7,
+              "aprobado": true,
+              "avance_m": 2.678,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 18.2,
+              "distancia_final_a_meta_m": 0.187,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  182.23,
+                  185.49,
+                  91.6,
+                  74.34
+                ],
+                [
+                  204.38,
+                  187.45,
+                  95.61,
+                  79.95
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.824,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 8,
+              "aprobado": true,
+              "avance_m": 2.613,
+              "alternancias": 38,
+              "segundos_estables_en_meta": 6.2,
+              "distancia_final_a_meta_m": 0.121,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  184.21,
+                  180.64,
+                  94.64,
+                  77.1
+                ],
+                [
+                  199.75,
+                  190.21,
+                  96.96,
+                  85.46
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.682,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 9,
+              "aprobado": true,
+              "avance_m": 2.608,
+              "alternancias": 38,
+              "segundos_estables_en_meta": 20.7,
+              "distancia_final_a_meta_m": 0.138,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  189.66,
+                  185.11,
+                  128.61,
+                  101.4
+                ],
+                [
+                  196.83,
+                  188.65,
+                  95.29,
+                  79.14
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.682,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 10,
+              "aprobado": true,
+              "avance_m": 2.678,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 2.5,
+              "distancia_final_a_meta_m": 0.156,
+              "rapidez_horizontal_final_m_s": 0.032,
+              "maximos_plantares_N": [
+                [
+                  182.75,
+                  187.18,
+                  96.78,
+                  83.55
+                ],
+                [
+                  211.26,
+                  185.78,
+                  92.84,
+                  111.14
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.94,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 11,
+              "aprobado": true,
+              "avance_m": 2.81,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 17.15,
+              "distancia_final_a_meta_m": 0.166,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  183.83,
+                  185.4,
+                  87.12,
+                  86.29
+                ],
+                [
+                  195.44,
+                  186.47,
+                  97.27,
+                  78.82
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.729,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 12,
+              "aprobado": true,
+              "avance_m": 2.768,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 20.85,
+              "distancia_final_a_meta_m": 0.134,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  191.55,
+                  198.06,
+                  96.17,
+                  80.71
+                ],
+                [
+                  197.53,
+                  183.92,
+                  95.9,
+                  77.21
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.663,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 13,
+              "aprobado": true,
+              "avance_m": 2.596,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 4.7,
+              "distancia_final_a_meta_m": 0.184,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  184.1,
+                  190.21,
+                  97.67,
+                  91.01
+                ],
+                [
+                  201.11,
+                  184.7,
+                  96.69,
+                  78.36
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.652,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 14,
+              "aprobado": true,
+              "avance_m": 2.82,
+              "alternancias": 44,
+              "segundos_estables_en_meta": 16.85,
+              "distancia_final_a_meta_m": 0.189,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  178.63,
+                  184.44,
+                  82.5,
+                  69.47
+                ],
+                [
+                  190.17,
+                  186.32,
+                  98.43,
+                  74.22
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.652,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 15,
+              "aprobado": true,
+              "avance_m": 2.778,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 1.0,
+              "distancia_final_a_meta_m": 0.186,
+              "rapidez_horizontal_final_m_s": 0.05,
+              "maximos_plantares_N": [
+                [
+                  186.04,
+                  185.46,
+                  84.92,
+                  79.19
+                ],
+                [
+                  193.51,
+                  192.53,
+                  99.76,
+                  82.14
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.937,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "semilla": 1201,
+      "iteracion": 82,
+      "escenario": "campus",
+      "pies": [
+        "izq",
+        "der"
+      ],
+      "zonas_por_pie": [
+        "TalonInterior",
+        "TalonExterior",
+        "AntepieInterior",
+        "AntepieExterior"
+      ],
+      "perfil": {
+        "semilla": 1201,
+        "escenario": "campus",
+        "solver": "cpu",
+        "rgb": [
+          256,
+          256,
+          3
+        ],
+        "periodo_control_s": 0.05,
+        "contrato": "xavier-marcha-cadera-3ejes",
+        "ejes_controlados": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "acciones_marcha": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "cadencia",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "observaciones_adicionales": [],
+        "acciones_adicionales": [],
+        "controlador": "marcha residual con parada en doble apoyo",
+        "permanencia_en_meta_s": 1.0
+      },
+      "episodios": [
+        {
+          "etapa": "marcha",
+          "episodio": 1,
+          "segundos": 11.3,
+          "aprobados": 16,
+          "caidas": 0,
+          "robots_con_choque": 0,
+          "choques_con_entorno": 0,
+          "parejas_en_contacto": 0,
+          "llegadas": 16,
+          "eventos": [],
+          "robots": [
+            {
+              "id": 0,
+              "aprobado": true,
+              "avance_m": 1.241,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 2.0,
+              "distancia_final_a_meta_m": 0.123,
+              "rapidez_horizontal_final_m_s": 0.052,
+              "maximos_plantares_N": [
+                [
+                  175.3,
+                  179.59,
+                  95.45,
+                  81.95
+                ],
+                [
+                  202.44,
+                  187.84,
+                  100.48,
+                  77.9
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.985,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 1,
+              "aprobado": true,
+              "avance_m": 1.326,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 1.9,
+              "distancia_final_a_meta_m": 0.132,
+              "rapidez_horizontal_final_m_s": 0.013,
+              "maximos_plantares_N": [
+                [
+                  186.65,
+                  181.47,
+                  130.79,
+                  98.06
+                ],
+                [
+                  201.67,
+                  192.65,
+                  92.55,
+                  74.69
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.985,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 2,
+              "aprobado": true,
+              "avance_m": 1.318,
+              "alternancias": 20,
+              "segundos_estables_en_meta": 2.75,
+              "distancia_final_a_meta_m": 0.142,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  187.9,
+                  185.29,
+                  87.21,
+                  80.65
+                ],
+                [
+                  196.46,
+                  185.82,
+                  91.57,
+                  90.02
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.028,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 3,
+              "aprobado": true,
+              "avance_m": 1.261,
+              "alternancias": 20,
+              "segundos_estables_en_meta": 2.75,
+              "distancia_final_a_meta_m": 0.127,
+              "rapidez_horizontal_final_m_s": 0.019,
+              "maximos_plantares_N": [
+                [
+                  187.34,
+                  180.91,
+                  86.9,
+                  86.06
+                ],
+                [
+                  197.68,
+                  190.77,
+                  126.96,
+                  77.68
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.028,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 4,
+              "aprobado": true,
+              "avance_m": 1.24,
+              "alternancias": 17,
+              "segundos_estables_en_meta": 2.6,
+              "distancia_final_a_meta_m": 0.142,
+              "rapidez_horizontal_final_m_s": 0.016,
+              "maximos_plantares_N": [
+                [
+                  180.03,
+                  181.78,
+                  117.82,
+                  134.49
+                ],
+                [
+                  199.19,
+                  187.78,
+                  89.14,
+                  73.67
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.991,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 5,
+              "aprobado": true,
+              "avance_m": 1.229,
+              "alternancias": 18,
+              "segundos_estables_en_meta": 2.35,
+              "distancia_final_a_meta_m": 0.179,
+              "rapidez_horizontal_final_m_s": 0.017,
+              "maximos_plantares_N": [
+                [
+                  181.6,
+                  179.98,
+                  94.76,
+                  80.18
+                ],
+                [
+                  198.77,
+                  183.68,
+                  92.57,
+                  73.66
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.991,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 6,
+              "aprobado": true,
+              "avance_m": 1.237,
+              "alternancias": 15,
+              "segundos_estables_en_meta": 2.55,
+              "distancia_final_a_meta_m": 0.144,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  190.18,
+                  185.59,
+                  91.8,
+                  90.42
+                ],
+                [
+                  199.53,
+                  185.41,
+                  89.72,
+                  85.61
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.93,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 7,
+              "aprobado": true,
+              "avance_m": 1.065,
+              "alternancias": 17,
+              "segundos_estables_en_meta": 2.4,
+              "distancia_final_a_meta_m": 0.175,
+              "rapidez_horizontal_final_m_s": 0.024,
+              "maximos_plantares_N": [
+                [
+                  191.1,
+                  185.16,
+                  89.55,
+                  76.93
+                ],
+                [
+                  201.43,
+                  184.15,
+                  79.88,
+                  82.71
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.93,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 8,
+              "aprobado": true,
+              "avance_m": 1.298,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 1.0,
+              "distancia_final_a_meta_m": 0.195,
+              "rapidez_horizontal_final_m_s": 0.066,
+              "maximos_plantares_N": [
+                [
+                  190.51,
+                  183.59,
+                  73.05,
+                  97.5
+                ],
+                [
+                  198.43,
+                  184.88,
+                  89.0,
+                  88.23
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.975,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 9,
+              "aprobado": true,
+              "avance_m": 1.337,
+              "alternancias": 20,
+              "segundos_estables_en_meta": 2.8,
+              "distancia_final_a_meta_m": 0.142,
+              "rapidez_horizontal_final_m_s": 0.006,
+              "maximos_plantares_N": [
+                [
+                  182.94,
+                  180.61,
+                  92.21,
+                  79.92
+                ],
+                [
+                  197.11,
+                  184.33,
+                  83.94,
+                  71.48
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.975,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 10,
+              "aprobado": true,
+              "avance_m": 1.177,
+              "alternancias": 21,
+              "segundos_estables_en_meta": 3.0,
+              "distancia_final_a_meta_m": 0.138,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  186.99,
+                  184.46,
+                  93.47,
+                  79.64
+                ],
+                [
+                  202.39,
+                  185.53,
+                  90.24,
+                  86.96
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.969,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 11,
+              "aprobado": true,
+              "avance_m": 1.173,
+              "alternancias": 18,
+              "segundos_estables_en_meta": 2.15,
+              "distancia_final_a_meta_m": 0.168,
+              "rapidez_horizontal_final_m_s": 0.022,
+              "maximos_plantares_N": [
+                [
+                  195.43,
+                  189.23,
+                  90.68,
+                  77.96
+                ],
+                [
+                  197.84,
+                  190.61,
+                  79.78,
+                  80.89
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.969,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 12,
+              "aprobado": true,
+              "avance_m": 1.318,
+              "alternancias": 21,
+              "segundos_estables_en_meta": 2.0,
+              "distancia_final_a_meta_m": 0.18,
+              "rapidez_horizontal_final_m_s": 0.034,
+              "maximos_plantares_N": [
+                [
+                  178.06,
+                  184.06,
+                  94.82,
+                  82.73
+                ],
+                [
+                  203.96,
+                  188.92,
+                  76.49,
+                  103.76
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.037,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 13,
+              "aprobado": true,
+              "avance_m": 1.231,
+              "alternancias": 18,
+              "segundos_estables_en_meta": 2.65,
+              "distancia_final_a_meta_m": 0.165,
+              "rapidez_horizontal_final_m_s": 0.016,
+              "maximos_plantares_N": [
+                [
+                  181.9,
+                  181.26,
+                  84.21,
+                  79.8
+                ],
+                [
+                  197.71,
+                  182.98,
+                  110.85,
+                  81.17
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.037,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 14,
+              "aprobado": true,
+              "avance_m": 1.27,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 2.65,
+              "distancia_final_a_meta_m": 0.15,
+              "rapidez_horizontal_final_m_s": 0.026,
+              "maximos_plantares_N": [
+                [
+                  189.63,
+                  181.63,
+                  90.64,
+                  90.21
+                ],
+                [
+                  187.87,
+                  188.5,
+                  92.4,
+                  83.6
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.002,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 15,
+              "aprobado": true,
+              "avance_m": 1.234,
+              "alternancias": 20,
+              "segundos_estables_en_meta": 2.35,
+              "distancia_final_a_meta_m": 0.157,
+              "rapidez_horizontal_final_m_s": 0.047,
+              "maximos_plantares_N": [
+                [
+                  179.7,
+                  189.37,
+                  87.1,
+                  83.28
+                ],
+                [
+                  203.64,
+                  183.76,
+                  93.81,
+                  80.12
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.002,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "semilla": 1201,
+      "iteracion": 82,
+      "escenario": "campus",
+      "pies": [
+        "izq",
+        "der"
+      ],
+      "zonas_por_pie": [
+        "TalonInterior",
+        "TalonExterior",
+        "AntepieInterior",
+        "AntepieExterior"
+      ],
+      "perfil": {
+        "semilla": 1201,
+        "escenario": "campus",
+        "solver": "cpu",
+        "rgb": [
+          256,
+          256,
+          3
+        ],
+        "periodo_control_s": 0.05,
+        "contrato": "xavier-marcha-cadera-3ejes",
+        "ejes_controlados": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "acciones_marcha": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "cadencia",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "observaciones_adicionales": [],
+        "acciones_adicionales": [],
+        "controlador": "marcha residual con parada en doble apoyo",
+        "permanencia_en_meta_s": 1.0
+      },
+      "episodios": [
+        {
+          "etapa": "cruce",
+          "episodio": 1,
+          "segundos": 36.55,
+          "aprobados": 16,
+          "caidas": 0,
+          "robots_con_choque": 0,
+          "choques_con_entorno": 0,
+          "parejas_en_contacto": 0,
+          "llegadas": 16,
+          "eventos": [],
+          "robots": [
+            {
+              "id": 0,
+              "aprobado": true,
+              "avance_m": 2.707,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 19.6,
+              "distancia_final_a_meta_m": 0.128,
+              "rapidez_horizontal_final_m_s": 0.013,
+              "maximos_plantares_N": [
+                [
+                  191.66,
+                  181.89,
+                  93.79,
+                  112.22
+                ],
+                [
+                  194.72,
+                  195.05,
+                  97.98,
+                  99.6
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.883,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 1,
+              "aprobado": true,
+              "avance_m": 2.774,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 5.5,
+              "distancia_final_a_meta_m": 0.103,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  182.54,
+                  185.61,
+                  85.44,
+                  83.14
+                ],
+                [
+                  197.19,
+                  193.6,
+                  94.95,
+                  76.41
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.883,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 2,
+              "aprobado": true,
+              "avance_m": 2.853,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 17.7,
+              "distancia_final_a_meta_m": 0.173,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  191.56,
+                  191.24,
+                  128.09,
+                  103.25
+                ],
+                [
+                  198.37,
+                  184.9,
+                  93.57,
+                  83.57
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.888,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 3,
+              "aprobado": true,
+              "avance_m": 2.806,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 1.75,
+              "distancia_final_a_meta_m": 0.162,
+              "rapidez_horizontal_final_m_s": 0.017,
+              "maximos_plantares_N": [
+                [
+                  183.47,
+                  185.96,
+                  122.08,
+                  101.74
+                ],
+                [
+                  200.36,
+                  192.33,
+                  95.4,
+                  86.12
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.945,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 4,
+              "aprobado": true,
+              "avance_m": 2.701,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 6.2,
+              "distancia_final_a_meta_m": 0.17,
+              "rapidez_horizontal_final_m_s": 0.014,
+              "maximos_plantares_N": [
+                [
+                  179.11,
+                  206.13,
+                  136.72,
+                  94.15
+                ],
+                [
+                  196.65,
+                  184.2,
+                  93.92,
+                  78.2
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.743,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 5,
+              "aprobado": true,
+              "avance_m": 2.597,
+              "alternancias": 40,
+              "segundos_estables_en_meta": 21.45,
+              "distancia_final_a_meta_m": 0.173,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  180.64,
+                  184.75,
+                  91.62,
+                  83.55
+                ],
+                [
+                  200.47,
+                  189.13,
+                  96.28,
+                  86.74
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.747,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 6,
+              "aprobado": true,
+              "avance_m": 2.744,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 2.45,
+              "distancia_final_a_meta_m": 0.145,
+              "rapidez_horizontal_final_m_s": 0.008,
+              "maximos_plantares_N": [
+                [
+                  180.91,
+                  186.22,
+                  98.55,
+                  86.03
+                ],
+                [
+                  195.75,
+                  184.91,
+                  91.55,
+                  80.78
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.844,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 7,
+              "aprobado": true,
+              "avance_m": 2.62,
+              "alternancias": 39,
+              "segundos_estables_en_meta": 18.0,
+              "distancia_final_a_meta_m": 0.12,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  182.65,
+                  179.69,
+                  91.9,
+                  75.66
+                ],
+                [
+                  197.82,
+                  183.45,
+                  97.9,
+                  86.17
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.743,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 8,
+              "aprobado": true,
+              "avance_m": 2.625,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 21.25,
+              "distancia_final_a_meta_m": 0.175,
+              "rapidez_horizontal_final_m_s": 0.011,
+              "maximos_plantares_N": [
+                [
+                  188.67,
+                  183.92,
+                  88.15,
+                  103.08
+                ],
+                [
+                  197.14,
+                  186.58,
+                  94.74,
+                  80.55
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.872,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 9,
+              "aprobado": true,
+              "avance_m": 2.763,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 4.25,
+              "distancia_final_a_meta_m": 0.137,
+              "rapidez_horizontal_final_m_s": 0.013,
+              "maximos_plantares_N": [
+                [
+                  183.04,
+                  185.68,
+                  99.07,
+                  83.5
+                ],
+                [
+                  190.35,
+                  193.66,
+                  95.57,
+                  81.08
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.872,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 10,
+              "aprobado": true,
+              "avance_m": 2.645,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 18.3,
+              "distancia_final_a_meta_m": 0.182,
+              "rapidez_horizontal_final_m_s": 0.013,
+              "maximos_plantares_N": [
+                [
+                  177.11,
+                  186.0,
+                  93.84,
+                  84.1
+                ],
+                [
+                  199.45,
+                  185.15,
+                  95.38,
+                  78.19
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.883,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 11,
+              "aprobado": true,
+              "avance_m": 2.719,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 1.0,
+              "distancia_final_a_meta_m": 0.196,
+              "rapidez_horizontal_final_m_s": 0.059,
+              "maximos_plantares_N": [
+                [
+                  186.35,
+                  178.61,
+                  92.24,
+                  83.35
+                ],
+                [
+                  185.0,
+                  237.4,
+                  96.36,
+                  78.15
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.93,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 12,
+              "aprobado": true,
+              "avance_m": 2.771,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 21.8,
+              "distancia_final_a_meta_m": 0.136,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  182.94,
+                  183.81,
+                  88.82,
+                  79.26
+                ],
+                [
+                  194.28,
+                  186.03,
+                  96.72,
+                  138.6
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.759,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 13,
+              "aprobado": true,
+              "avance_m": 2.547,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 5.6,
+              "distancia_final_a_meta_m": 0.244,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  176.85,
+                  189.01,
+                  96.95,
+                  82.27
+                ],
+                [
+                  201.83,
+                  189.73,
+                  92.6,
+                  80.33
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.715,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 14,
+              "aprobado": true,
+              "avance_m": 2.73,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 18.3,
+              "distancia_final_a_meta_m": 0.18,
+              "rapidez_horizontal_final_m_s": 0.009,
+              "maximos_plantares_N": [
+                [
+                  182.44,
+                  183.26,
+                  84.6,
+                  78.28
+                ],
+                [
+                  202.67,
+                  183.73,
+                  98.94,
+                  79.26
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.715,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 15,
+              "aprobado": true,
+              "avance_m": 2.733,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 2.4,
+              "distancia_final_a_meta_m": 0.188,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  178.42,
+                  186.38,
+                  87.4,
+                  69.09
+                ],
+                [
+                  195.8,
+                  185.34,
+                  91.23,
+                  151.59
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.893,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "semilla": 1417,
+      "iteracion": 82,
+      "escenario": "campus",
+      "pies": [
+        "izq",
+        "der"
+      ],
+      "zonas_por_pie": [
+        "TalonInterior",
+        "TalonExterior",
+        "AntepieInterior",
+        "AntepieExterior"
+      ],
+      "perfil": {
+        "semilla": 1417,
+        "escenario": "campus",
+        "solver": "cpu",
+        "rgb": [
+          256,
+          256,
+          3
+        ],
+        "periodo_control_s": 0.05,
+        "contrato": "xavier-marcha-cadera-3ejes",
+        "ejes_controlados": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "acciones_marcha": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "cadencia",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "observaciones_adicionales": [],
+        "acciones_adicionales": [],
+        "controlador": "marcha residual con parada en doble apoyo",
+        "permanencia_en_meta_s": 1.0
+      },
+      "episodios": [
+        {
+          "etapa": "marcha",
+          "episodio": 1,
+          "segundos": 11.35,
+          "aprobados": 16,
+          "caidas": 0,
+          "robots_con_choque": 0,
+          "choques_con_entorno": 0,
+          "parejas_en_contacto": 0,
+          "llegadas": 16,
+          "eventos": [],
+          "robots": [
+            {
+              "id": 0,
+              "aprobado": true,
+              "avance_m": 1.338,
+              "alternancias": 17,
+              "segundos_estables_en_meta": 1.35,
+              "distancia_final_a_meta_m": 0.176,
+              "rapidez_horizontal_final_m_s": 0.027,
+              "maximos_plantares_N": [
+                [
+                  202.32,
+                  186.74,
+                  98.08,
+                  89.56
+                ],
+                [
+                  198.11,
+                  185.35,
+                  92.35,
+                  94.33
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.972,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 1,
+              "aprobado": true,
+              "avance_m": 1.293,
+              "alternancias": 21,
+              "segundos_estables_en_meta": 2.7,
+              "distancia_final_a_meta_m": 0.11,
+              "rapidez_horizontal_final_m_s": 0.027,
+              "maximos_plantares_N": [
+                [
+                  185.38,
+                  183.59,
+                  96.04,
+                  76.02
+                ],
+                [
+                  192.6,
+                  182.5,
+                  82.79,
+                  103.85
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.972,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 2,
+              "aprobado": true,
+              "avance_m": 1.303,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 2.9,
+              "distancia_final_a_meta_m": 0.152,
+              "rapidez_horizontal_final_m_s": 0.016,
+              "maximos_plantares_N": [
+                [
+                  176.67,
+                  183.92,
+                  88.96,
+                  69.56
+                ],
+                [
+                  200.23,
+                  188.27,
+                  83.08,
+                  81.12
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.944,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 3,
+              "aprobado": true,
+              "avance_m": 1.26,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 1.35,
+              "distancia_final_a_meta_m": 0.186,
+              "rapidez_horizontal_final_m_s": 0.014,
+              "maximos_plantares_N": [
+                [
+                  191.84,
+                  205.17,
+                  93.57,
+                  87.3
+                ],
+                [
+                  203.76,
+                  188.65,
+                  91.3,
+                  102.9
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.944,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 4,
+              "aprobado": true,
+              "avance_m": 1.139,
+              "alternancias": 17,
+              "segundos_estables_en_meta": 2.4,
+              "distancia_final_a_meta_m": 0.176,
+              "rapidez_horizontal_final_m_s": 0.013,
+              "maximos_plantares_N": [
+                [
+                  188.48,
+                  188.4,
+                  90.32,
+                  130.69
+                ],
+                [
+                  197.91,
+                  183.39,
+                  93.65,
+                  82.77
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.009,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 5,
+              "aprobado": true,
+              "avance_m": 1.322,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 2.5,
+              "distancia_final_a_meta_m": 0.166,
+              "rapidez_horizontal_final_m_s": 0.017,
+              "maximos_plantares_N": [
+                [
+                  179.94,
+                  184.24,
+                  91.29,
+                  75.52
+                ],
+                [
+                  201.49,
+                  184.64,
+                  91.38,
+                  77.33
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.009,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 6,
+              "aprobado": true,
+              "avance_m": 1.144,
+              "alternancias": 18,
+              "segundos_estables_en_meta": 3.1,
+              "distancia_final_a_meta_m": 0.126,
+              "rapidez_horizontal_final_m_s": 0.016,
+              "maximos_plantares_N": [
+                [
+                  189.32,
+                  184.73,
+                  86.55,
+                  103.98
+                ],
+                [
+                  203.92,
+                  184.26,
+                  95.67,
+                  90.82
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.003,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 7,
+              "aprobado": true,
+              "avance_m": 1.209,
+              "alternancias": 18,
+              "segundos_estables_en_meta": 2.25,
+              "distancia_final_a_meta_m": 0.144,
+              "rapidez_horizontal_final_m_s": 0.014,
+              "maximos_plantares_N": [
+                [
+                  189.13,
+                  193.89,
+                  95.41,
+                  94.52
+                ],
+                [
+                  203.23,
+                  187.25,
+                  85.78,
+                  103.01
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.003,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 8,
+              "aprobado": true,
+              "avance_m": 1.135,
+              "alternancias": 18,
+              "segundos_estables_en_meta": 3.4,
+              "distancia_final_a_meta_m": 0.122,
+              "rapidez_horizontal_final_m_s": 0.013,
+              "maximos_plantares_N": [
+                [
+                  185.51,
+                  185.64,
+                  91.63,
+                  82.67
+                ],
+                [
+                  202.37,
+                  186.82,
+                  88.54,
+                  93.56
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.907,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 9,
+              "aprobado": true,
+              "avance_m": 1.078,
+              "alternancias": 16,
+              "segundos_estables_en_meta": 2.55,
+              "distancia_final_a_meta_m": 0.178,
+              "rapidez_horizontal_final_m_s": 0.034,
+              "maximos_plantares_N": [
+                [
+                  190.73,
+                  193.33,
+                  93.88,
+                  81.6
+                ],
+                [
+                  200.81,
+                  184.43,
+                  92.17,
+                  101.51
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.907,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 10,
+              "aprobado": true,
+              "avance_m": 1.185,
+              "alternancias": 18,
+              "segundos_estables_en_meta": 3.5,
+              "distancia_final_a_meta_m": 0.11,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  186.71,
+                  185.52,
+                  83.16,
+                  98.19
+                ],
+                [
+                  196.79,
+                  183.97,
+                  142.82,
+                  89.08
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.99,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 11,
+              "aprobado": true,
+              "avance_m": 1.102,
+              "alternancias": 17,
+              "segundos_estables_en_meta": 2.45,
+              "distancia_final_a_meta_m": 0.163,
+              "rapidez_horizontal_final_m_s": 0.025,
+              "maximos_plantares_N": [
+                [
+                  183.28,
+                  180.98,
+                  109.62,
+                  77.93
+                ],
+                [
+                  188.49,
+                  184.53,
+                  88.58,
+                  76.13
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.99,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 12,
+              "aprobado": true,
+              "avance_m": 1.217,
+              "alternancias": 21,
+              "segundos_estables_en_meta": 1.95,
+              "distancia_final_a_meta_m": 0.224,
+              "rapidez_horizontal_final_m_s": 0.006,
+              "maximos_plantares_N": [
+                [
+                  188.18,
+                  184.47,
+                  87.29,
+                  100.87
+                ],
+                [
+                  198.06,
+                  190.14,
+                  95.29,
+                  100.01
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.944,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 13,
+              "aprobado": true,
+              "avance_m": 1.32,
+              "alternancias": 23,
+              "segundos_estables_en_meta": 1.0,
+              "distancia_final_a_meta_m": 0.195,
+              "rapidez_horizontal_final_m_s": 0.021,
+              "maximos_plantares_N": [
+                [
+                  198.95,
+                  194.61,
+                  95.4,
+                  89.49
+                ],
+                [
+                  202.41,
+                  185.63,
+                  88.2,
+                  95.63
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.944,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 14,
+              "aprobado": true,
+              "avance_m": 1.175,
+              "alternancias": 19,
+              "segundos_estables_en_meta": 2.15,
+              "distancia_final_a_meta_m": 0.15,
+              "rapidez_horizontal_final_m_s": 0.008,
+              "maximos_plantares_N": [
+                [
+                  199.53,
+                  187.38,
+                  89.44,
+                  99.61
+                ],
+                [
+                  197.66,
+                  189.02,
+                  88.23,
+                  80.52
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.005,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 15,
+              "aprobado": true,
+              "avance_m": 1.327,
+              "alternancias": 20,
+              "segundos_estables_en_meta": 1.75,
+              "distancia_final_a_meta_m": 0.128,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  182.52,
+                  181.29,
+                  84.64,
+                  80.64
+                ],
+                [
+                  198.18,
+                  183.21,
+                  93.34,
+                  80.24
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 1.005,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "semilla": 1417,
+      "iteracion": 82,
+      "escenario": "campus",
+      "pies": [
+        "izq",
+        "der"
+      ],
+      "zonas_por_pie": [
+        "TalonInterior",
+        "TalonExterior",
+        "AntepieInterior",
+        "AntepieExterior"
+      ],
+      "perfil": {
+        "semilla": 1417,
+        "escenario": "campus",
+        "solver": "cpu",
+        "rgb": [
+          256,
+          256,
+          3
+        ],
+        "periodo_control_s": 0.05,
+        "contrato": "xavier-marcha-cadera-3ejes",
+        "ejes_controlados": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "acciones_marcha": [
+          "cadera_izq",
+          "rodilla_izq",
+          "tobillo_izq",
+          "cadera_der",
+          "rodilla_der",
+          "tobillo_der",
+          "cadencia",
+          "giro_cadera_izq",
+          "apertura_cadera_izq",
+          "giro_cadera_der",
+          "apertura_cadera_der"
+        ],
+        "observaciones_adicionales": [],
+        "acciones_adicionales": [],
+        "controlador": "marcha residual con parada en doble apoyo",
+        "permanencia_en_meta_s": 1.0
+      },
+      "episodios": [
+        {
+          "etapa": "cruce",
+          "episodio": 1,
+          "segundos": 36.4,
+          "aprobados": 16,
+          "caidas": 0,
+          "robots_con_choque": 0,
+          "choques_con_entorno": 0,
+          "parejas_en_contacto": 0,
+          "llegadas": 16,
+          "eventos": [],
+          "robots": [
+            {
+              "id": 0,
+              "aprobado": true,
+              "avance_m": 2.796,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 20.45,
+              "distancia_final_a_meta_m": 0.149,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  181.88,
+                  192.95,
+                  94.86,
+                  84.7
+                ],
+                [
+                  189.21,
+                  189.27,
+                  110.79,
+                  120.83
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.85,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 1,
+              "aprobado": true,
+              "avance_m": 2.713,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 4.3,
+              "distancia_final_a_meta_m": 0.177,
+              "rapidez_horizontal_final_m_s": 0.008,
+              "maximos_plantares_N": [
+                [
+                  176.33,
+                  191.1,
+                  89.84,
+                  84.34
+                ],
+                [
+                  195.2,
+                  192.93,
+                  96.48,
+                  72.07
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.823,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 2,
+              "aprobado": true,
+              "avance_m": 2.857,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 16.1,
+              "distancia_final_a_meta_m": 0.168,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  188.37,
+                  187.14,
+                  101.52,
+                  98.4
+                ],
+                [
+                  193.04,
+                  183.63,
+                  111.97,
+                  84.03
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.823,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 3,
+              "aprobado": true,
+              "avance_m": 2.821,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 1.0,
+              "distancia_final_a_meta_m": 0.172,
+              "rapidez_horizontal_final_m_s": 0.026,
+              "maximos_plantares_N": [
+                [
+                  181.26,
+                  185.03,
+                  91.29,
+                  82.82
+                ],
+                [
+                  203.39,
+                  184.1,
+                  94.55,
+                  79.36
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.921,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 4,
+              "aprobado": true,
+              "avance_m": 2.587,
+              "alternancias": 37,
+              "segundos_estables_en_meta": 20.35,
+              "distancia_final_a_meta_m": 0.191,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  191.58,
+                  188.77,
+                  91.49,
+                  92.16
+                ],
+                [
+                  198.51,
+                  188.13,
+                  96.15,
+                  88.81
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.824,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 5,
+              "aprobado": true,
+              "avance_m": 2.769,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 5.9,
+              "distancia_final_a_meta_m": 0.151,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  178.9,
+                  181.72,
+                  88.36,
+                  79.98
+                ],
+                [
+                  194.16,
+                  183.5,
+                  95.46,
+                  75.4
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.824,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 6,
+              "aprobado": true,
+              "avance_m": 2.729,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 18.8,
+              "distancia_final_a_meta_m": 0.175,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  181.78,
+                  183.74,
+                  90.31,
+                  81.55
+                ],
+                [
+                  195.66,
+                  183.15,
+                  96.32,
+                  74.94
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.884,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 7,
+              "aprobado": true,
+              "avance_m": 2.72,
+              "alternancias": 44,
+              "segundos_estables_en_meta": 1.25,
+              "distancia_final_a_meta_m": 0.174,
+              "rapidez_horizontal_final_m_s": 0.033,
+              "maximos_plantares_N": [
+                [
+                  183.57,
+                  188.24,
+                  104.73,
+                  105.75
+                ],
+                [
+                  203.94,
+                  188.85,
+                  122.95,
+                  100.77
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.884,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 8,
+              "aprobado": true,
+              "avance_m": 2.544,
+              "alternancias": 37,
+              "segundos_estables_en_meta": 21.55,
+              "distancia_final_a_meta_m": 0.169,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  182.2,
+                  186.41,
+                  94.24,
+                  106.11
+                ],
+                [
+                  192.24,
+                  188.13,
+                  96.91,
+                  80.35
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.637,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 9,
+              "aprobado": true,
+              "avance_m": 2.41,
+              "alternancias": 38,
+              "segundos_estables_en_meta": 5.0,
+              "distancia_final_a_meta_m": 0.238,
+              "rapidez_horizontal_final_m_s": 0.012,
+              "maximos_plantares_N": [
+                [
+                  193.35,
+                  203.05,
+                  93.55,
+                  88.0
+                ],
+                [
+                  205.74,
+                  183.03,
+                  91.56,
+                  88.63
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.637,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 10,
+              "aprobado": true,
+              "avance_m": 2.708,
+              "alternancias": 45,
+              "segundos_estables_en_meta": 17.4,
+              "distancia_final_a_meta_m": 0.178,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  197.86,
+                  186.52,
+                  107.48,
+                  97.26
+                ],
+                [
+                  197.78,
+                  195.44,
+                  100.47,
+                  93.41
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.639,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 11,
+              "aprobado": true,
+              "avance_m": 2.641,
+              "alternancias": 37,
+              "segundos_estables_en_meta": 1.95,
+              "distancia_final_a_meta_m": 0.12,
+              "rapidez_horizontal_final_m_s": 0.027,
+              "maximos_plantares_N": [
+                [
+                  183.77,
+                  179.71,
+                  91.78,
+                  77.03
+                ],
+                [
+                  199.88,
+                  184.48,
+                  94.15,
+                  84.07
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.935,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 12,
+              "aprobado": true,
+              "avance_m": 2.605,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 5.75,
+              "distancia_final_a_meta_m": 0.138,
+              "rapidez_horizontal_final_m_s": 0.017,
+              "maximos_plantares_N": [
+                [
+                  182.43,
+                  212.5,
+                  93.58,
+                  82.3
+                ],
+                [
+                  194.01,
+                  185.64,
+                  123.8,
+                  98.17
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.694,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 13,
+              "aprobado": true,
+              "avance_m": 2.794,
+              "alternancias": 43,
+              "segundos_estables_en_meta": 20.35,
+              "distancia_final_a_meta_m": 0.125,
+              "rapidez_horizontal_final_m_s": 0.01,
+              "maximos_plantares_N": [
+                [
+                  184.26,
+                  188.91,
+                  92.59,
+                  92.34
+                ],
+                [
+                  190.9,
+                  189.75,
+                  102.12,
+                  94.3
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.694,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 14,
+              "aprobado": true,
+              "avance_m": 2.649,
+              "alternancias": 41,
+              "segundos_estables_en_meta": 1.65,
+              "distancia_final_a_meta_m": 0.159,
+              "rapidez_horizontal_final_m_s": 0.03,
+              "maximos_plantares_N": [
+                [
+                  184.73,
+                  191.39,
+                  83.66,
+                  84.08
+                ],
+                [
+                  193.7,
+                  186.57,
+                  93.63,
+                  85.87
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.947,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            },
+            {
+              "id": 15,
+              "aprobado": true,
+              "avance_m": 2.887,
+              "alternancias": 42,
+              "segundos_estables_en_meta": 17.95,
+              "distancia_final_a_meta_m": 0.149,
+              "rapidez_horizontal_final_m_s": 0.007,
+              "maximos_plantares_N": [
+                [
+                  181.59,
+                  183.93,
+                  104.75,
+                  122.22
+                ],
+                [
+                  196.14,
+                  186.63,
+                  89.04,
+                  90.58
+                ]
+              ],
+              "distancia_minima_entre_pelvis_m": 0.757,
+              "caida": false,
+              "choque": false,
+              "meta": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "aprobado": true
+}

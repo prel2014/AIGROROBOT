@@ -1,13 +1,48 @@
 """Referencias articulares en radianes para el Xavier con los pies libres."""
 import numpy as np
 
+ARTICULACIONES = [f"{eje}_{lado}" for lado in ("izq","der") for eje in ("cadera","rodilla","tobillo")]
+EJES_CADERA = [f"{eje}_cadera_{lado}" for lado in ("izq","der") for eje in ("giro","apertura")]
+EJES_CONTROL = ARTICULACIONES + EJES_CADERA
+ACCIONES_MARCHA = ARTICULACIONES + ["cadencia"] + EJES_CADERA
+
 
 # Parámetros identificados con poblaciones de dieciséis Xavier en PhysX.
-MARCHA = np.array([1.2184, 2.6745, 15.707, 12.1023, .4417, 3.2384, .0682,
+MARCHA = np.array([1.615, 1.561, 14.675, 12.205, .4417, 3.2384, .0682,
                    .5492, 1.041, 1.6143, .8405, 5.3419, .0244, .1654])
+SESGO_FLEXION_GRADOS = 2.674
+SESGO_TOBILLO_GRADOS = -3.826
+APERTURA_MARCHA_GRADOS = 2.041
+REALIMENTACION_LATERAL = .356
+# Autoridad de los residuos medidos sobre los diez ejes, expresada en grados.
+RESIDUO_SAGITAL = .15
+RESIDUO_GIRO = .55
+RESIDUO_APERTURA = .32
+RESIDUO_CADENCIA = .008
+GANANCIAS_CADERA_TRANSVERSAL = ([550., 480.], [16., 16.])
+UMBRAL_CAPTURA_M = .006
+ESPERA_EN_META_S = 1.
 CAPTURA = np.array([.0168, .1884, .831, .2341, 1.1396, .216, -.1637, .0393])
 GANANCIAS_MARCHA = ([745., 350., 248.], [13.8, 17.6, 7.9])
 GANANCIAS_REPOSO = ([1000., 900., 600.], [10., 8., 4.])
+
+
+def punto_captura(centro, velocidad, pies, frente):
+    """Proyección longitudinal del centro de masa extrapolado, relativa a los tobillos."""
+    altura = np.maximum(centro[:, 2] - pies[:, 2] + .029, .05)
+    proyeccion = centro[:, :2] - pies[:, :2] + velocidad[:, :2] * np.sqrt(altura[:, None] / 9.81)
+    return (proyeccion * frente).sum(axis=1) + .042
+
+
+def postura_de_parada(inicial, captura, velocidad):
+    """Conserva parte del escalonamiento de los pies al entrar en doble apoyo."""
+    piernas = inicial.reshape(-1, 2, 3)
+    postura = .4 * piernas + .6 * piernas.mean(axis=1, keepdims=True)
+    postura[:, :, 0] += np.deg2rad(2.)
+    postura[:, :, 1] += np.deg2rad(1.)
+    error = np.clip(.002 - captura, -.12, .12)
+    postura[:, :, 2] += (5. * error - .4 * velocidad - np.deg2rad(2.))[:, None]
+    return postura.reshape(-1, 6)
 
 
 def frenar_con_apoyo(inicial, q, separacion, velocidad, segundos):

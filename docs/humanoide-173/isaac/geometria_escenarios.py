@@ -21,7 +21,7 @@ ACABADOS = {
     "oxido": ((.48, .16, .075), .72, 0),
     "grafito": ((.055, .064, .065), .45, .38),
     "aluminio": ((.49, .53, .53), .30, .78),
-    "vidrio": ((.075, .092, .096), .065, .12),
+    "vidrio": ((.15, .29, .32), .13, .26),
     "ceramica": ((.85, .84, .76), .24, 0),
     "laton": ((.58, .36, .12), .34, .63),
     "ocre": ((.84, .53, .12), .67, 0),
@@ -40,16 +40,19 @@ REPETICION = {
     "asfalto": (4., 4.),
     "ladrillo": (.89, .69),
     "hormigon": (1.70, 1.70),
-    "revoque": (2., 2.),
-    "suelo_seco": (2.8, 2.8),
-    "cesped": (5., 5.),
     "tejido": (.15, .15)
 }
 
 
-SUPERFICIES_PBR = {"roble": "wood_planks_dirt", "asfalto": "asphalt_04",
-                   "revoque": "plastered_wall_02", "suelo_seco": "brown_mud_dry",
-                   "cesped": "aerial_grass_rock"}
+SUPERFICIES_PBR = {"roble": "wood_planks_dirt", "asfalto": "asphalt_04"}
+REVOQUES = {
+    "cal": (.94, .91, .85), "marfil": (.88, .82, .69), "arena": (.69, .55, .40),
+    "ocre": (.72, .49, .27), "oxido": (.60, .36, .26), "petroleo": (.28, .43, .42)
+}
+for tinte in REVOQUES:
+    REPETICION["revoque_" + tinte] = (2.2, 2.2)
+    SUPERFICIES_PBR["revoque_" + tinte] = "plastered_wall_02"
+REPETICION["roble_mueble"] = (1.8, .8)
 
 
 def mapa(stage, mat, nombre, archivo, lector, espacio):
@@ -73,7 +76,12 @@ def material(stage, raiz, nombre, archivo=None):
     diffuse = shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f)
     diffuse.Set(color)
     if nombre == "vidrio":
-        shader.CreateInput("opacity", Sdf.ValueTypeNames.Float).Set(.31)
+        shader.CreateInput("opacity", Sdf.ValueTypeNames.Float).Set(.18)
+        shader.GetInput("metallic").Set(0.)
+        shader.CreateInput("ior", Sdf.ValueTypeNames.Float).Set(1.52)
+    if nombre == "roble_mueble":
+        archivo = "roble.jpg"
+        shader.GetInput("roughness").Set(.43)
     if archivo:
         lector = UsdShade.Shader.Define(stage, str(mat.GetPath()) + "/Coordenadas")
         lector.CreateIdAttr("UsdPrimvarReader_float2")
@@ -90,6 +98,9 @@ def material(stage, raiz, nombre, archivo=None):
             rough = mapa(stage, mat, "Rugosidad", base + "_rough.jpg", lector, "raw")
             shader.GetInput("roughness").ConnectToSource(rough.CreateOutput("r", Sdf.ValueTypeNames.Float))
         tex = mapa(stage, mat, "Albedo", archivo, lector, "sRGB")
+        if nombre.startswith("revoque_"):
+            tinte = REVOQUES[nombre.removeprefix("revoque_")]
+            tex.CreateInput("scale", Sdf.ValueTypeNames.Float4).Set((*tinte, 1.))
         tex.CreateOutput("rgb", Sdf.ValueTypeNames.Float3)
         diffuse.ConnectToSource(tex.ConnectableAPI(), "rgb")
     mat.CreateSurfaceOutput().ConnectToSource(shader.ConnectableAPI(), "surface")
@@ -272,10 +283,24 @@ def silla(t, p, pos, giro=0):
 
 def mesa(t, p, pos, ancho=1.6, fondo=.85, alto=.76):
     g = t.grupo(p, "Mesa", pos)
-    t.caja(g, "Tablero", (0, 0, alto - .025), (ancho, fondo, .05), "roble", True, .018)
+    t.caja(g, "Tablero", (0, 0, alto - .018), (ancho, fondo, .036), "roble_mueble", True, .006)
+    for lado in (-1, 1):
+        t.caja(g, "Faldon", (0, lado * (fondo / 2 - .09), alto - .068),
+               (ancho - .17, .025, .064), "roble_mueble", bisel=.003)
+        t.caja(g, "Travesano", (lado * (ancho / 2 - .09), 0, alto - .068),
+               (.025, fondo - .18, .064), "roble_mueble", bisel=.003)
     for x, y in product((-.5, .5), repeat=2):
-        t.caja(g, "Pata", (x * (ancho - .16), y * (fondo - .15), alto / 2), (.055, .055, alto), "grafito",
-               True)
+        pie = (x * (ancho - .11), y * (fondo - .11))
+        union = (x * (ancho - .18), y * (fondo - .18))
+        # Pata de sección decreciente con ligera apertura hacia el suelo.
+        anillos = []
+        for (cx, cy), radio, z in ((pie, .015, .008), (union, .026, alto - .037)):
+            anillos.append([(cx + radio * math.cos(i * math.tau / 12),
+                             cy + radio * math.sin(i * math.tau / 12), z) for i in range(12)])
+        bajo, superior = anillos
+        caras = [bajo[::-1], superior] + [[bajo[i-1], bajo[i], superior[i], superior[i-1]] for i in range(12)]
+        t.malla(g, "Pata", caras, "roble_mueble", colision="obstaculo", aprox="convexHull")
+        t.disco(g, "Regaton", (*pie, .006), .016, .012, "grafito")
     return g
 
 

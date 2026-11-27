@@ -1,0 +1,344 @@
+{
+  "semilla": 2081,
+  "pares": 48,
+  "umbral": 0.3,
+  "ambas_correctas": 32,
+  "pares_observados": [
+    {
+      "robot": 1,
+      "riesgo_libre": 0.0005772974691353738,
+      "riesgo_ocupado": 0.19945184886455536,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 3,
+      "riesgo_libre": 0.001527397776953876,
+      "riesgo_ocupado": 0.22175756096839905,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 9,
+      "riesgo_libre": 0.000408829451771453,
+      "riesgo_ocupado": 0.9827636480331421,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 12,
+      "riesgo_libre": 0.29224419593811035,
+      "riesgo_ocupado": 0.9960969090461731,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 3,
+      "riesgo_libre": 0.001270857872441411,
+      "riesgo_ocupado": 0.006289627868682146,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 4,
+      "riesgo_libre": 0.004394193179905415,
+      "riesgo_ocupado": 0.9971956014633179,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 7,
+      "riesgo_libre": 0.0007250810158438981,
+      "riesgo_ocupado": 0.9380452036857605,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 15,
+      "riesgo_libre": 0.00017149564519058913,
+      "riesgo_ocupado": 0.018758846446871758,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 2,
+      "riesgo_libre": 0.014736205339431763,
+      "riesgo_ocupado": 0.9357064366340637,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 5,
+      "riesgo_libre": 0.00010588244185782969,
+      "riesgo_ocupado": 0.0047716363333165646,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 13,
+      "riesgo_libre": 0.00021980598103255033,
+      "riesgo_ocupado": 0.05176292732357979,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 15,
+      "riesgo_libre": 0.008931435644626617,
+      "riesgo_ocupado": 0.38727590441703796,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 8,
+      "riesgo_libre": 9.362948912894353e-05,
+      "riesgo_ocupado": 0.005873582325875759,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 11,
+      "riesgo_libre": 0.00898571778088808,
+      "riesgo_ocupado": 0.4079625606536865,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 13,
+      "riesgo_libre": 0.07073526084423065,
+      "riesgo_ocupado": 0.8972535133361816,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 14,
+      "riesgo_libre": 7.047697727102786e-05,
+      "riesgo_ocupado": 0.3665085732936859,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 3,
+      "riesgo_libre": 4.970211739419028e-05,
+      "riesgo_ocupado": 0.07000575214624405,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 5,
+      "riesgo_libre": 0.016871247440576553,
+      "riesgo_ocupado": 0.9958363771438599,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 12,
+      "riesgo_libre": 0.0006753358175046742,
+      "riesgo_ocupado": 0.6193247437477112,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 13,
+      "riesgo_libre": 0.005039452109485865,
+      "riesgo_ocupado": 0.9690589904785156,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 2,
+      "riesgo_libre": 0.002460540970787406,
+      "riesgo_ocupado": 0.7991166710853577,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 7,
+      "riesgo_libre": 0.047958772629499435,
+      "riesgo_ocupado": 0.9578778743743896,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 12,
+      "riesgo_libre": 0.0007870991248637438,
+      "riesgo_ocupado": 0.11462071537971497,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 13,
+      "riesgo_libre": 8.222478209063411e-05,
+      "riesgo_ocupado": 0.5869993567466736,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 3,
+      "riesgo_libre": 0.013473954051733017,
+      "riesgo_ocupado": 0.5194479823112488,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 4,
+      "riesgo_libre": 0.00011003614781657234,
+      "riesgo_ocupado": 0.877824068069458,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 8,
+      "riesgo_libre": 0.00223832787014544,
+      "riesgo_ocupado": 0.01998325251042843,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 14,
+      "riesgo_libre": 0.03490239381790161,
+      "riesgo_ocupado": 0.9365522861480713,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 1,
+      "riesgo_libre": 0.0004343794716987759,
+      "riesgo_ocupado": 0.02192346192896366,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 2,
+      "riesgo_libre": 0.5052098035812378,
+      "riesgo_ocupado": 0.989253580570221,
+      "pasa_libre": false,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 5,
+      "riesgo_libre": 0.0002500296104699373,
+      "riesgo_ocupado": 0.22560256719589233,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 9,
+      "riesgo_libre": 0.0008768447441980243,
+      "riesgo_ocupado": 0.6846053600311279,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 0,
+      "riesgo_libre": 0.004210582468658686,
+      "riesgo_ocupado": 0.3508676290512085,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 3,
+      "riesgo_libre": 0.000919742975383997,
+      "riesgo_ocupado": 0.4293098449707031,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 12,
+      "riesgo_libre": 0.0030105309560894966,
+      "riesgo_ocupado": 0.9266611337661743,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 13,
+      "riesgo_libre": 0.001592159504070878,
+      "riesgo_ocupado": 0.876684308052063,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 2,
+      "riesgo_libre": 0.24357523024082184,
+      "riesgo_ocupado": 0.8288542032241821,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 4,
+      "riesgo_libre": 0.0007254504016600549,
+      "riesgo_ocupado": 0.5497880578041077,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 5,
+      "riesgo_libre": 0.04339851811528206,
+      "riesgo_ocupado": 0.9992464780807495,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 12,
+      "riesgo_libre": 0.0011904207058250904,
+      "riesgo_ocupado": 0.2470034956932068,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 6,
+      "riesgo_libre": 0.0010864493669942021,
+      "riesgo_ocupado": 0.08547677099704742,
+      "pasa_libre": true,
+      "espera_ocupado": false
+    },
+    {
+      "robot": 9,
+      "riesgo_libre": 0.05253241956233978,
+      "riesgo_ocupado": 0.8462282419204712,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 12,
+      "riesgo_libre": 0.0037442517932504416,
+      "riesgo_ocupado": 0.9947763681411743,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 14,
+      "riesgo_libre": 0.002957887016236782,
+      "riesgo_ocupado": 0.4836350381374359,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 4,
+      "riesgo_libre": 0.10457228869199753,
+      "riesgo_ocupado": 0.6827464699745178,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 8,
+      "riesgo_libre": 0.05944402888417244,
+      "riesgo_ocupado": 0.9602918028831482,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 12,
+      "riesgo_libre": 0.011308613233268261,
+      "riesgo_ocupado": 0.8707260489463806,
+      "pasa_libre": true,
+      "espera_ocupado": true
+    },
+    {
+      "robot": 15,
+      "riesgo_libre": 0.3227176070213318,
+      "riesgo_ocupado": 0.33913588523864746,
+      "pasa_libre": false,
+      "espera_ocupado": true
+    }
+  ]
+}

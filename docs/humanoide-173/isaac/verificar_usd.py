@@ -64,7 +64,27 @@ def comprobar():
             visited.add(link)
             link = parent[link]
         assert str(link) == "/Humanoide/pelvis"
-    assert len(bodies) == 94 and loops == 30 and driven == 33
+    assert len(bodies) == 98 and loops == 30 and driven == 37
+    for side, sign in (("izq",-1),("der",1)):
+        indice = 2 if sign == -1 else 4
+        pierna = 7 if sign == -1 else 9
+        for link, prefix in ((f"bastidor_giro_{side}",f"o1.20.{indice}."),
+                             (f"bastidor_apertura_{side}",f"o1.20.{indice+1}."),
+                             (f"muslo_{side}",f"o1.{pierna}.6.")):
+            visual = stage.GetPrimAtPath(f"/Humanoide/{link}/Visual")
+            assert any(m.GetAttribute("cad:ocurrencia").Get().startswith(prefix) for m in visual.GetChildren())
+        for name, axis, limits, link0, link1 in (
+            ("giro_cadera",(0,0,-sign),(-20,20),"pelvis","bastidor_giro_"+side),
+            ("apertura_cadera",(0,-sign,0),(-8,18),"bastidor_giro_"+side,"bastidor_apertura_"+side),
+            ("cadera",(1,0,0),(-15,35),"bastidor_apertura_"+side,"muslo_"+side),
+        ):
+            j = UsdPhysics.RevoluteJoint(stage.GetPrimAtPath(f"/Humanoide/Juntas/{name}_{side}"))
+            assert str(j.GetBody0Rel().GetTargets()[0]) == "/Humanoide/"+link0
+            assert str(j.GetBody1Rel().GetTargets()[0]) == "/Humanoide/"+link1
+            np.testing.assert_allclose(j.GetLocalRot0Attr().Get().Transform(Gf.Vec3f(1,0,0)),axis,atol=1e-6)
+            assert (j.GetLowerLimitAttr().Get(),j.GetUpperLimitAttr().Get()) == limits
+            assert j.GetPrim().GetAttribute("drive:angular:physics:maxForce").Get() == 24.
+            assert j.GetPrim().GetAttribute("physxJoint:maxJointVelocity").Get() == 420.
     for file, expected in (("humanoide_xavier_isaac.usd", "/Humanoide/pelvis"),
                            ("banco_xavier.usda", "/World/Humanoide/Anclaje")):
         saved = Usd.Stage.Open(str(HERE / file))

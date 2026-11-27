@@ -1,0 +1,550 @@
+{
+  "semilla": 937,
+  "iteracion": 71,
+  "escenario": "campus",
+  "pies": [
+    "izq",
+    "der"
+  ],
+  "zonas_por_pie": [
+    "TalonInterior",
+    "TalonExterior",
+    "AntepieInterior",
+    "AntepieExterior"
+  ],
+  "perfil": {
+    "semilla": 937,
+    "escenario": "campus",
+    "solver": "cpu",
+    "rgb": [
+      256,
+      256,
+      3
+    ],
+    "periodo_control_s": 0.05,
+    "contrato": "xavier-marcha-cadera-3ejes",
+    "ejes_controlados": [
+      "cadera_izq",
+      "rodilla_izq",
+      "tobillo_izq",
+      "cadera_der",
+      "rodilla_der",
+      "tobillo_der",
+      "giro_cadera_izq",
+      "apertura_cadera_izq",
+      "giro_cadera_der",
+      "apertura_cadera_der"
+    ],
+    "acciones_marcha": [
+      "cadera_izq",
+      "rodilla_izq",
+      "tobillo_izq",
+      "cadera_der",
+      "rodilla_der",
+      "tobillo_der",
+      "cadencia",
+      "giro_cadera_izq",
+      "apertura_cadera_izq",
+      "giro_cadera_der",
+      "apertura_cadera_der"
+    ],
+    "observaciones_adicionales": [],
+    "acciones_adicionales": []
+  },
+  "episodios": [
+    {
+      "etapa": "marcha",
+      "episodio": 1,
+      "segundos": 11.8,
+      "aprobados": 0,
+      "caidas": 16,
+      "robots_con_choque": 0,
+      "choques_con_entorno": 0,
+      "llegadas": 0,
+      "eventos": [
+        {
+          "segundos": 3.55,
+          "tipo": "caida",
+          "robot": 7,
+          "marcha_s": 2.95
+        },
+        {
+          "segundos": 3.65,
+          "tipo": "caida",
+          "robot": 6,
+          "marcha_s": 3.05
+        },
+        {
+          "segundos": 4.5,
+          "tipo": "caida",
+          "robot": 15,
+          "marcha_s": 3.9
+        },
+        {
+          "segundos": 4.85,
+          "tipo": "caida",
+          "robot": 12,
+          "marcha_s": 4.25
+        },
+        {
+          "segundos": 4.85,
+          "tipo": "caida",
+          "robot": 13,
+          "marcha_s": 4.25
+        },
+        {
+          "segundos": 4.9,
+          "tipo": "caida",
+          "robot": 4,
+          "marcha_s": 4.3
+        },
+        {
+          "segundos": 4.9,
+          "tipo": "caida",
+          "robot": 14,
+          "marcha_s": 4.3
+        },
+        {
+          "segundos": 4.95,
+          "tipo": "caida",
+          "robot": 3,
+          "marcha_s": 4.35
+        },
+        {
+          "segundos": 4.95,
+          "tipo": "caida",
+          "robot": 8,
+          "marcha_s": 4.35
+        },
+        {
+          "segundos": 5.0,
+          "tipo": "caida",
+          "robot": 0,
+          "marcha_s": 4.4
+        },
+        {
+          "segundos": 5.65,
+          "tipo": "caida",
+          "robot": 1,
+          "marcha_s": 5.05
+        },
+        {
+          "segundos": 5.9,
+          "tipo": "caida",
+          "robot": 2,
+          "marcha_s": 5.3
+        },
+        {
+          "segundos": 6.05,
+          "tipo": "caida",
+          "robot": 11,
+          "marcha_s": 5.45
+        },
+        {
+          "segundos": 7.3,
+          "tipo": "caida",
+          "robot": 9,
+          "marcha_s": 6.7
+        },
+        {
+          "segundos": 9.6,
+          "tipo": "caida",
+          "robot": 10,
+          "marcha_s": 9.0
+        },
+        {
+          "segundos": 11.8,
+          "tipo": "caida",
+          "robot": 5,
+          "marcha_s": 11.2
+        }
+      ],
+      "robots": [
+        {
+          "id": 0,
+          "aprobado": false,
+          "avance_m": 0.24,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              137.64,
+              183.75,
+              79.55,
+              77.73
+            ],
+            [
+              172.22,
+              182.57,
+              87.11,
+              90.39
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.001,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 1,
+          "aprobado": false,
+          "avance_m": 0.359,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              121.45,
+              185.87,
+              95.72,
+              89.89
+            ],
+            [
+              171.27,
+              182.42,
+              88.57,
+              95.24
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.937,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 2,
+          "aprobado": false,
+          "avance_m": 0.478,
+          "alternancias": 5,
+          "maximos_plantares_N": [
+            [
+              121.69,
+              180.6,
+              93.07,
+              122.93
+            ],
+            [
+              170.94,
+              179.73,
+              79.86,
+              94.68
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.034,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 3,
+          "aprobado": false,
+          "avance_m": 0.279,
+          "alternancias": 8,
+          "maximos_plantares_N": [
+            [
+              128.04,
+              183.8,
+              81.21,
+              85.29
+            ],
+            [
+              171.61,
+              187.35,
+              79.6,
+              88.14
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.034,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 4,
+          "aprobado": false,
+          "avance_m": 0.233,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              129.17,
+              185.12,
+              94.24,
+              77.75
+            ],
+            [
+              175.27,
+              179.08,
+              80.34,
+              83.4
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.998,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 5,
+          "aprobado": false,
+          "avance_m": 0.939,
+          "alternancias": 9,
+          "maximos_plantares_N": [
+            [
+              141.31,
+              183.99,
+              92.8,
+              86.9
+            ],
+            [
+              179.67,
+              185.08,
+              81.26,
+              94.44
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.998,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 6,
+          "aprobado": false,
+          "avance_m": 0.082,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              118.06,
+              186.57,
+              42.53,
+              64.15
+            ],
+            [
+              173.87,
+              179.06,
+              57.83,
+              62.13
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.029,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 7,
+          "aprobado": false,
+          "avance_m": 0.14,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              186.94,
+              185.59,
+              63.51,
+              63.77
+            ],
+            [
+              176.52,
+              181.03,
+              57.91,
+              63.62
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.029,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 8,
+          "aprobado": false,
+          "avance_m": 0.219,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              128.3,
+              179.99,
+              86.66,
+              78.75
+            ],
+            [
+              179.48,
+              182.82,
+              83.46,
+              101.11
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.012,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 9,
+          "aprobado": false,
+          "avance_m": 0.477,
+          "alternancias": 4,
+          "maximos_plantares_N": [
+            [
+              126.5,
+              174.68,
+              77.92,
+              90.09
+            ],
+            [
+              179.22,
+              189.86,
+              93.04,
+              91.68
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.012,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 10,
+          "aprobado": false,
+          "avance_m": 0.716,
+          "alternancias": 8,
+          "maximos_plantares_N": [
+            [
+              129.32,
+              179.31,
+              83.99,
+              89.95
+            ],
+            [
+              183.9,
+              185.8,
+              81.77,
+              94.03
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 0.864,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 11,
+          "aprobado": false,
+          "avance_m": 0.284,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              126.7,
+              181.87,
+              74.31,
+              85.76
+            ],
+            [
+              184.1,
+              186.17,
+              85.64,
+              87.14
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.009,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 12,
+          "aprobado": false,
+          "avance_m": 0.246,
+          "alternancias": 8,
+          "maximos_plantares_N": [
+            [
+              125.4,
+              184.88,
+              90.77,
+              75.64
+            ],
+            [
+              181.56,
+              184.24,
+              78.28,
+              75.92
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.045,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 13,
+          "aprobado": false,
+          "avance_m": 0.276,
+          "alternancias": 6,
+          "maximos_plantares_N": [
+            [
+              140.36,
+              186.4,
+              88.49,
+              75.32
+            ],
+            [
+              171.75,
+              184.76,
+              65.27,
+              107.51
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.045,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 14,
+          "aprobado": false,
+          "avance_m": 0.236,
+          "alternancias": 8,
+          "maximos_plantares_N": [
+            [
+              127.06,
+              184.01,
+              77.59,
+              75.44
+            ],
+            [
+              172.11,
+              187.2,
+              78.19,
+              82.48
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.034,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        },
+        {
+          "id": 15,
+          "aprobado": false,
+          "avance_m": 0.09,
+          "alternancias": 7,
+          "maximos_plantares_N": [
+            [
+              122.06,
+              186.68,
+              27.03,
+              63.66
+            ],
+            [
+              210.25,
+              184.9,
+              58.69,
+              62.46
+            ]
+          ],
+          "distancia_minima_entre_pelvis_m": 1.034,
+          "caida": true,
+          "choque": false,
+          "meta": false
+        }
+      ]
+    }
+  ]
+}

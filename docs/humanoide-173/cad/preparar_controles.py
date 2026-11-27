@@ -5,6 +5,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 from arnes_brazos import external_points, rounded_path
 from equipo_brazos import traction_points
+from equipo_rodilla import pelvis_route
 from cinematica_manos import finger, module_positions, rotation, translation, wrist_pose
 from instalacion_control import cable_axes, hand_loom_path
 from manos_servo import OPEN, THUMB_REST, WRIST_REST_DEG, library, loc, part_key
@@ -87,7 +88,9 @@ def build():
             blend=[0,0,.12,.70,.96,1,1,1,1,1,1,1,1]
             curves.append(route(rounded_path(anchors,12),anchors,[(v,0) for v in blend],
                                 spacing=2 if side<0 else 5))
-        sides[key]={'digits':frames,'curves':curves}
+        hip=[(side*(112+u),y,z) for u,y,z in pelvis_route()]
+        weights=[(v,) for v in (0,0,0,.12,.38,.65,1,1,1,1,1,1,1)]
+        sides[key]={'digits':frames,'curves':curves,'lazo':route(rounded_path(hip,12),hip,weights,3)}
     return {'groups':groups,'moves':moves,'sides':sides}
 
 if __name__=='__main__':

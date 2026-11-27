@@ -207,16 +207,20 @@ class "XavierMarcha" (
 {
     rel isaac:physics:robotJoints = [
         </XavierMarcha/Juntas/cuello>,
+        </XavierMarcha/Juntas/giro_cadera_izq>,
+        </XavierMarcha/Juntas/apertura_cadera_izq>,
+        </XavierMarcha/Juntas/cadera_izq>,
         </XavierMarcha/Juntas/hombro_izq>,
         </XavierMarcha/Juntas/codo_izq>,
         </XavierMarcha/Juntas/muneca_izq>,
-        </XavierMarcha/Juntas/cadera_izq>,
         </XavierMarcha/Juntas/rodilla_izq>,
         </XavierMarcha/Juntas/tobillo_izq>,
+        </XavierMarcha/Juntas/giro_cadera_der>,
+        </XavierMarcha/Juntas/apertura_cadera_der>,
+        </XavierMarcha/Juntas/cadera_der>,
         </XavierMarcha/Juntas/hombro_der>,
         </XavierMarcha/Juntas/codo_der>,
         </XavierMarcha/Juntas/muneca_der>,
-        </XavierMarcha/Juntas/cadera_der>,
         </XavierMarcha/Juntas/rodilla_der>,
         </XavierMarcha/Juntas/tobillo_der>,
     ]
@@ -229,12 +233,16 @@ class "XavierMarcha" (
         </XavierMarcha/muslo_izq>,
         </XavierMarcha/pantorrilla_izq>,
         </XavierMarcha/pie_izq>,
+        </XavierMarcha/bastidor_giro_izq>,
+        </XavierMarcha/bastidor_apertura_izq>,
         </XavierMarcha/brazo_der>,
         </XavierMarcha/antebrazo_der>,
         </XavierMarcha/mano_der>,
         </XavierMarcha/muslo_der>,
         </XavierMarcha/pantorrilla_der>,
         </XavierMarcha/pie_der>,
+        </XavierMarcha/bastidor_giro_der>,
+        </XavierMarcha/bastidor_apertura_der>,
     ]
 
     over "mano_izq" (
@@ -2958,6 +2966,34 @@ class "XavierMarcha" (
         }
     }
 
+    over "bastidor_giro_izq" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/bastidor_giro_izq/Visual>
+        )
+        {
+        }
+    }
+
+    over "bastidor_apertura_izq" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/bastidor_apertura_izq/Visual>
+        )
+        {
+        }
+    }
+
     over "brazo_der" (
         prepend apiSchemas = ["PhysxContactReportAPI"]
     )
@@ -3009,6 +3045,34 @@ class "XavierMarcha" (
         over "Visual" (
             instanceable = true
             prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/pantorrilla_der/Visual>
+        )
+        {
+        }
+    }
+
+    over "bastidor_giro_der" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/bastidor_giro_der/Visual>
+        )
+        {
+        }
+    }
+
+    over "bastidor_apertura_der" (
+        prepend apiSchemas = ["PhysxContactReportAPI"]
+    )
+    {
+        custom float physxContactReport:threshold = 0
+
+        over "Visual" (
+            instanceable = true
+            prepend references = @./humanoide_xavier_isaac.usd@</Humanoide/bastidor_apertura_der/Visual>
         )
         {
         }
