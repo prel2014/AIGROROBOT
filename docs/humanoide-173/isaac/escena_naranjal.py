@@ -7,8 +7,55 @@ FRUTO=(.250, .75, .87)
 RADIO=.029
 
 
+def rama_visible(t):
+    """Ramificación visual entre el tronco y el pedúnculo del fruto de ensayo."""
+    import math
+    import numpy as np
+    from geometria_escenarios import material
+
+    p = t.grupo(t.raiz, "RamaFructifera")
+    materiales = t.raiz + "/Materiales"
+    t.materiales["corteza"] = material(t.stage, materiales, "corteza",
+            "../objetos/tree_small_02/textures/tree_small_02_diff_1k.jpg")
+    t.materiales["hoja_frutal"] = material(t.stage, materiales, "hoja_frutal",
+            "../objetos/orange_tree/textures/hoja_huerto.png")
+    centros = np.array([(1.10, 1.33, 1.04), (.90,1.34,1.01), (.76,1.25,.985),
+                        (.57,1.09,.98), (.40,.90,.966), (.25,.75,.965)])
+    radios = (.035, .029, .022, .015, .009, .0035)
+    anillos = []
+    for i, (centro, radio) in enumerate(zip(centros, radios)):
+        eje = centros[min(i+1, len(centros)-1)] - centros[max(i-1, 0)]
+        u = np.cross(eje, [0,0,1]); u /= np.linalg.norm(u)
+        v = np.cross(eje, u); v /= np.linalg.norm(v)
+        anillos.append([centro + radio * (math.cos(k*math.tau/9)*u + math.sin(k*math.tau/9)*v)
+                        for k in range(9)])
+    caras, uv = [], []
+    for i in range(len(centros)-1):
+        for k in range(9):
+            h=(k+1)%9
+            caras.append([anillos[i][k], anillos[i][h], anillos[i+1][h], anillos[i+1][k]])
+            uv += [(k/9,i/5), ((k+1)/9,i/5), ((k+1)/9,(i+1)/5), (k/9,(i+1)/5)]
+    t.malla(p, "Corteza", caras, "corteza", uv=uv)
+    for i, inicio in enumerate(centros[1:-1]):
+        for lado in (-1, 1):
+            extremo = inicio + np.array((-.075*lado, .096*lado, .06 + i*.008))
+            t.varilla(p,"Ramilla",inicio,extremo,.0027,"oliva")
+            for paso in range(3):
+                base = inicio + (extremo-inicio)*(.46+.25*paso)
+                direccion = np.array((-.072, (.049 if paso%2 else -.067)*lado, .014-.012*paso))
+                ancho = np.array((-direccion[1],direccion[0],0))*.25
+                punta = base + direccion
+                medio = base + direccion*.49
+                vena = medio + np.array((0,0,.006))
+                t.malla(p,"Hoja",[[base,medio-ancho,vena],[base,vena,medio+ancho],
+                        [vena,medio-ancho,punta],[vena,punta,medio+ancho]],"hoja_frutal",
+                        uv=[(.5,0),(0,.5),(.5,.5),(.5,0),(.5,.5),(1,.5),
+                            (.5,.5),(0,.5),(.5,1),(.5,.5),(.5,1),(1,.5)])
+
+
 def crear():
-    from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade
+    from pxr import Gf, Sdf, Usd, UsdGeom, UsdLux, UsdPhysics, UsdShade
+    from geometria_escenarios import Taller
     stage=Usd.Stage.CreateNew(str(ESCENA))
     UsdGeom.SetStageMetersPerUnit(stage,1.)
     UsdGeom.SetStageUpAxis(stage,'Z')
@@ -87,13 +134,33 @@ def crear():
     tallo.CreateLocalPos1Attr((0.,0.,.030))
     tallo.CreateJointEnabledAttr(True)
     tallo.GetPrim().SetDocumentation("Soporte del ensayo. Se libera al comprobar contacto opuesto sostenido para medir la retención de la mano bajo gravedad.")
-    for i,(tx,ty) in enumerate([(.95,1.45),(-2.,1.5),(.95,3.9),(-2.,3.9)]):
+    taller = Taller(stage)
+    UsdGeom.Imageable(stage.GetPrimAtPath('/World/ArbolObjetivo/Rama')).MakeInvisible()
+    rama_visible(taller)
+    taller.suelo(taller.raiz, "Tierra", (0, 0), (60, 60), "suelo_seco")
+    cielo = UsdLux.DomeLight(stage.GetPrimAtPath('/World/Luz'))
+    cielo.CreateTextureFileAttr(Sdf.AssetPath('./texturas/kloofendal_48d_partly_cloudy_puresky_1k.hdr'))
+    cielo.CreateTextureFormatAttr('latlong')
+    cielo.CreateIntensityAttr(470.)
+    sol = UsdLux.DistantLight(stage.GetPrimAtPath('/World/LuzPrincipal'))
+    sol.CreateIntensityAttr(880.)
+    sol.CreateAngleAttr(3.2)
+    posiciones = [(.95,1.45),(-2.,1.5),(.95,3.9),(-2.,3.9)]
+    posiciones += [(x,y) for x in (-8., -5., -2., 1., 4., 7.) for y in (7., 10., 13.)]
+    for i,(tx,ty) in enumerate(posiciones):
         arbol=UsdGeom.Xform.Define(stage,'/World/Huerto/Arbol'+str(i))
         arbol.AddTranslateOp().Set((tx,ty,0.))
+        arbol.AddRotateZOp().Set(float((i * 67) % 360))
+        arbol.AddScaleOp().Set((.63,) * 3)
         child=UsdGeom.Xform.Define(stage,str(arbol.GetPath())+'/Modelo')
-        child.GetPrim().GetReferences().AddReference(base_model+'/orange_tree/visual.usda')
+        child.GetPrim().GetReferences().AddReference(base_model+'/tree_small_02/visual.usdc')
         child.GetPrim().SetInstanceable(True)
-    stage.GetRootLayer().customLayerData={'cameraSettings':{'Perspective':{'position':Gf.Vec3d(2.2,-1.7,1.6),'target':Gf.Vec3d(0,.6,.95)}}}
+    ojo, centro = Gf.Vec3d(1.9,-1.75,1.48), Gf.Vec3d(.05,.56,.96)
+    cam = UsdGeom.Camera.Define(stage, taller.raiz + "/Vista")
+    cam.AddTransformOp().Set(Gf.Matrix4d().SetLookAt(ojo, centro, Gf.Vec3d(0,0,1)).GetInverse())
+    cam.CreateHorizontalApertureAttr(32.)
+    cam.CreateFocalLengthAttr(25.)
+    stage.GetRootLayer().customLayerData={'cameraSettings':{'Perspective':{'position':ojo,'target':centro}}}
     stage.GetRootLayer().Save()
 
 

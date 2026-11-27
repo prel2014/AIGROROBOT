@@ -551,7 +551,7 @@ if __name__ == "__main__":
     parser.add_argument("--modelo", type=Path)
     parser.add_argument("--inicial", type=Path, help="Política de marcha para inicializar un entrenamiento de situaciones.")
     parser.add_argument("--etapa", choices=("equilibrio", "marcha", "cruce", "situaciones"))
-    parser.add_argument("--escenario", choices=("campus", "calle", "vivienda", "pista"), default="campus",
+    parser.add_argument("--escenario", choices=("campus", "calle", "vivienda", "residencial", "acopio", "pista"), default="campus",
                         help="Entorno físico y visual compartido por los 16 robots (por defecto, campus).")
     parser.add_argument("--reanudar", action="store_true")
     parser.add_argument("--evaluar", type=int, metavar="EPISODIOS")

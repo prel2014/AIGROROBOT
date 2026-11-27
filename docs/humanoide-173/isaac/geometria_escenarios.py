@@ -21,7 +21,7 @@ ACABADOS = {
     "oxido": ((.48, .16, .075), .72, 0),
     "grafito": ((.055, .064, .065), .45, .38),
     "aluminio": ((.49, .53, .53), .30, .78),
-    "vidrio": ((.15, .29, .32), .13, .26),
+    "vidrio": ((.075, .092, .096), .065, .12),
     "ceramica": ((.85, .84, .76), .24, 0),
     "laton": ((.58, .36, .12), .34, .63),
     "ocre": ((.84, .53, .12), .67, 0),
@@ -40,11 +40,16 @@ REPETICION = {
     "asfalto": (4., 4.),
     "ladrillo": (.89, .69),
     "hormigon": (1.70, 1.70),
+    "revoque": (2., 2.),
+    "suelo_seco": (2.8, 2.8),
+    "cesped": (5., 5.),
     "tejido": (.15, .15)
 }
 
 
-SUPERFICIES_PBR = {"roble": "wood_planks_dirt", "asfalto": "asphalt_04"}
+SUPERFICIES_PBR = {"roble": "wood_planks_dirt", "asfalto": "asphalt_04",
+                   "revoque": "plastered_wall_02", "suelo_seco": "brown_mud_dry",
+                   "cesped": "aerial_grass_rock"}
 
 
 def mapa(stage, mat, nombre, archivo, lector, espacio):
@@ -67,6 +72,8 @@ def material(stage, raiz, nombre, archivo=None):
     shader.CreateInput("metallic", Sdf.ValueTypeNames.Float).Set(float(metal))
     diffuse = shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f)
     diffuse.Set(color)
+    if nombre == "vidrio":
+        shader.CreateInput("opacity", Sdf.ValueTypeNames.Float).Set(.31)
     if archivo:
         lector = UsdShade.Shader.Define(stage, str(mat.GetPath()) + "/Coordenadas")
         lector.CreateIdAttr("UsdPrimvarReader_float2")
