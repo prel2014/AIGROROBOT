@@ -108,6 +108,7 @@ def material(stage, raiz, nombre, archivo=None):
 
 
 class Taller:
+    repeticion = REPETICION
 
     def __init__(self, stage):
         self.stage = stage
@@ -156,9 +157,9 @@ class Taller:
         mesh.CreateDoubleSidedAttr(True)
         mesh.CreateExtentAttr([Gf.Vec3f(*puntos.min(0)), Gf.Vec3f(*puntos.max(0))])
         mesh.AddTranslateOp().Set(Gf.Vec3d(*pos))
-        if acabado in REPETICION and uv is None:
+        if acabado in self.repeticion and uv is None:
             uv = []
-            escala = REPETICION[acabado]
+            escala = self.repeticion[acabado]
             for cara in caras:
                 f = np.asarray(cara)
                 normal = np.cross(f[1] - f[0], f[2] - f[0])
@@ -173,7 +174,7 @@ class Taller:
         return mesh
 
     def caja(self, parent, nombre, pos, medidas, acabado, solido=False, bisel=0):
-        if not bisel and acabado not in REPETICION:
+        if not bisel and acabado not in self.repeticion:
             cubo = UsdGeom.Cube.Define(self.stage, self.ruta(parent, nombre))
             cubo.CreateSizeAttr(1.)
             cubo.AddTranslateOp().Set(Gf.Vec3d(*pos))

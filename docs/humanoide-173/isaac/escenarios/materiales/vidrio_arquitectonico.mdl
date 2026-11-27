@@ -1,0 +1,18 @@
+mdl 1.7;
+import ::df::*;
+
+// Paños cerrados con espesor en metros. La misma interfaz refleja y transmite.
+export material vidrio_arquitectonico(
+    uniform float rugosidad = 0.035,
+    uniform float indice = 1.52,
+    uniform color absorcion = color(0.24, 0.08, 0.12)
+) = material(
+    thin_walled: false,
+    ior: color(indice),
+    surface: material_surface(scattering: df::microfacet_ggx_smith_bsdf(
+        roughness_u: rugosidad * rugosidad,
+        roughness_v: rugosidad * rugosidad,
+        tint: color(1.0),
+        mode: df::scatter_reflect_transmit)),
+    volume: material_volume(absorption_coefficient: absorcion)
+);

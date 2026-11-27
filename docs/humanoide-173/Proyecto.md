@@ -262,6 +262,10 @@ La evaluación del campus usó la política guardada en la iteración 331, en et
 
 Para regenerar las capas USD se usa `isaac/escenarios_marcha.py` con el Python de Isaac Sim. La cámara `/World/Escenario/Vista` muestra el entorno arquitectónico y `isaac/vistas_escenarios.py` renderiza la lámina en RTX. La madera y el asfalto utilizan juegos fotográficos PBR 2K. La planta de interior y el banco referencian modelos USD con sus propios materiales. Los cojines tienen normales continuas y los vehículos incorporan pasos de rueda, espejos y llantas. [Vista RTX](isaac/escenarios/vistas.jpg) · [Modelos y licencias](isaac/escenarios/texturas/origen.md)
 
+### Escenarios de servicio
+
+Los ocho entornos se abren individualmente en Isaac Sim. La guía incluye los archivos USD, los recorridos y diez primeros planos del mercado, el bus y el invernadero. [Abrir la guía de escenarios](isaac/escenarios/SERVICIO.md)
+
 ### Entrenamiento con cuatro situaciones
 
 La etapa `situaciones` asigna cuatro Xavier por tarea en cada episodio. Una semilla determina el robot, el lado y la flexión solicitada entre 28° y 48°. Las tareas consisten en flexionar y extender un codo, alternar los brazos, flexionar y extender ambos codos juntos, y caminar entre 0,38 y 0,72 m para detenerse, levantar un antebrazo y bajarlo.
