@@ -14,6 +14,8 @@ En la [vista lateral del cuerpo completo](cad/xavier_completo_paso_lateral_20261
 
 ### Entrenamiento de las caderas en Isaac
 
+El [currículo de habilidades](isaac/HABILIDADES.md) prepara ocho ejercicios y una misión combinada en vivienda, calle y campus. Incluye los comandos de preparación, entrenamiento manual y evaluación por tarea.
+
 Los 16 Xavier llegaron y permanecieron estables en cada una de las tres pruebas de cruce sin coordinador. En los 48 recorridos hubo cero caídas, cero contactos entre robots y cero contactos con el entorno. El último robot completó la parada a los 56,90 s en la semilla 937, a los 56,80 s en la 1201 y a los 51,65 s en la 1417. En la grabación, Xavier 04 espera hasta los 22,20 s para empezar a caminar. [Vídeo de la prueba 937](isaac/cruce_visual_campus_16.mp4) · [Las 16 cámaras a los cuatro segundos](isaac/cruce_visual_campus_16_camaras.jpg) · [Informe por robot](isaac/validacion_cruce_visual.json) · [Pesos de la decisión visual](isaac/paso_visual_campus.pt)
 
 En una prueba complementaria se mantuvo fija la cámara y se colocó un robot del carril transversal alternativamente fuera y dentro de la zona de conflicto. En fotogramas aislados, la CNN indicó paso libre en 46 de 48 vistas despejadas y espera en 34 de 48 vistas ocupadas. Esta medición evalúa la discriminación visual estática. En los recorridos físicos se evalúa la secuencia de imágenes durante toda la espera. [Resultados de las vistas emparejadas](isaac/prueba_pareada_camaras.json)

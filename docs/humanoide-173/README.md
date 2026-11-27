@@ -6,6 +6,8 @@ Los 16 Xavier completaron las tres pruebas del campus con su cámara individual 
 
 ## Archivos principales
 
+El [plan de entrenamiento de habilidades](isaac/HABILIDADES.md) contiene las nueve tareas, sus tres niveles y las instrucciones para iniciarlas.
+
 - [USD del robot para Isaac Sim](isaac/humanoide_xavier_isaac.usd).
 - [Pista de marcha para 16 robots](isaac/pista_marcha_16.usda).
 - [Escenarios de campus, calle y vivienda](isaac/escenarios/), con texturas.
